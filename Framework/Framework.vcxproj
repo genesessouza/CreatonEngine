@@ -23,7 +23,7 @@
     <Keyword>Win32Proj</Keyword>
     <ProjectGuid>{f22a662c-6c0e-4d6c-8388-562de52a67a9}</ProjectGuid>
     <RootNamespace>Framework</RootNamespace>
-    <WindowsTargetPlatformVersion>10.0.22621.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0.26100.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -112,7 +112,8 @@
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
-      <AdditionalIncludeDirectories>$(ProjectDir)include; $(SolutionDir)Core\include; $(SolutionDir)Platform\include; $(SolutionDir)Rendering\include; $(SolutionDir)vendor\glm\include;</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)include; $(SolutionDir)Core\include; $(SolutionDir)Rendering\include; $(SolutionDir)Platform\include; $(SolutionDir)vendor\glad\include; $(SolutionDir)vendor\glm\include;</AdditionalIncludeDirectories>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -129,7 +130,8 @@
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
-      <AdditionalIncludeDirectories>$(ProjectDir)include; $(SolutionDir)Core\include; $(SolutionDir)Platform\include; $(SolutionDir)Rendering\include; $(SolutionDir)vendor\glm\include;</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)include; $(SolutionDir)Core\include; $(SolutionDir)Rendering\include; $(SolutionDir)Platform\include; $(SolutionDir)vendor\glad\include; $(SolutionDir)vendor\glm\include;</AdditionalIncludeDirectories>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -140,12 +142,16 @@
     <ClInclude Include="include\Engine\Framework\Camera.h" />
     <ClInclude Include="include\Engine\Framework\GameObject.h" />
     <ClInclude Include="include\Engine\Framework\Mesh.h" />
+    <ClInclude Include="include\Engine\Framework\MeshLibrary.h" />
     <ClInclude Include="include\Engine\Framework\Scene.h" />
     <ClInclude Include="include\Engine\Framework\Transform.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\Scene.cpp" />
-    <ClCompile Include="src\Transform.cpp" />
+    <ClCompile Include="src\Camera.cpp" />
+    <ClCompile Include="src\Transform.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
+    </ClCompile>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

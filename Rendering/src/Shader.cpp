@@ -1,7 +1,6 @@
 #include "Engine/Rendering/Shader.h"
 
 #include <Engine/Core/Log/Logger.h>
-
 #include <Engine/Core/Paths.h>
 
 #include <glad/glad.h>
@@ -13,9 +12,10 @@
 
 namespace Engine::Rendering
 {
-	std::shared_ptr<Shader> Shader::Create()
+	std::shared_ptr<Shader> Shader::CreateDefaultShader()
 	{
-		return std::make_shared<Shader>(ShaderFilepath "Default-Lit.cshader");
+		//return std::make_shared<Shader>("D:/Dev/CreationEngine/Assets/Shaders/Dummy-Test.cshader");
+		return std::make_shared<Shader>("D:/Dev/CreationEngine/Assets/Shaders/Default-Lit.cshader");
 	}
 
 	void Shader::GetShaderInfoLog(const std::string& uniformName, unsigned int location) const

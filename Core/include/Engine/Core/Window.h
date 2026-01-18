@@ -3,6 +3,7 @@
 #include "Engine/Core/CoreAPI.h"
 
 #include "Engine/Core/Log/Logger.h"
+
 #include "Engine/Core/Event/Event.h"
 
 #include <memory>
@@ -21,7 +22,18 @@ namespace Engine::Core
 			uint32_t Width = 800;
 			uint32_t Height = 600;
 		};
+		struct WindowSize
+		{
+			int width;
+			int height;
+		};
+		struct FramebufferSize
+		{
+			int width;
+			int height;
+		};
 	public:
+		Window() = default;
 		virtual ~Window() = default;
 
 		using WindowFactory = std::unique_ptr<Window>(*)(const WindowProps&);
@@ -32,12 +44,13 @@ namespace Engine::Core
 		using EventCallbackFn = std::function<void(Event::Event&)>;
 		virtual void SetEventCallback(const EventCallbackFn& callback) = 0;
 
+		virtual FramebufferSize GetFramebufferSize() = 0;
+
 		virtual void Init(const Window::WindowProps props) = 0;
 
 		virtual void OnUpdate() = 0;
 
-		virtual uint32_t GetWidth() const = 0;
-		virtual uint32_t GetHeight() const = 0;
+		virtual WindowSize GetWindowSize() const = 0;
 
 		virtual void SetTitle(const std::string& title) = 0;
 		virtual void Resize(uint32_t width, uint32_t height) = 0;
@@ -49,9 +62,9 @@ namespace Engine::Core
 	
 		virtual bool ShouldClose() const = 0;
 	protected:
+		WindowProps m_Props;
 		bool m_VSync = false;
 
-		EventCallbackFn m_EventCallback;
-		WindowProps m_Props;
+		std::unique_ptr<EventCallbackFn> m_EventCallback;
 	};
 }

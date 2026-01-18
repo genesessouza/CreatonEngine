@@ -1,8 +1,7 @@
 #pragma once
 
 #include "Engine/Core/CoreAPI.h"
-
-#include "Window.h"
+#include "Engine/Core/Window.h"
 
 #include "Engine/Core/Log/Logger.h"
 
@@ -11,13 +10,14 @@
 #include "Engine/Core/Layer/Layer.h"
 #include "Engine/Core/Layer/LayerStack.h"
 
-#include "Event/WindowEvent.h"
+#include "Engine/Core/Event/WindowEvent.h"
+#include "Engine/Core/Event/FramebufferEvent.h"
 
 #include <memory>
 
 namespace Engine::Core
 {
-	class CORE_API Application
+	class Application
 	{
 	public:
 		Application();
@@ -35,12 +35,11 @@ namespace Engine::Core
 	protected:
 		virtual void OnUpdate();
 		virtual void OnEvent(Event::Event& e);
-		bool OnWindowClose(Event::WindowCloseEvent& e);
-	protected:
-		bool m_ShowFps = false;
-		float m_FPS = 0.0f;
 
-		Time::Time deltaTime;
+		bool OnWindowClose(Event::WindowCloseEvent& e);
+		bool OnFramebufferResize(Event::FramebufferResizeEvent e);
+	protected:
+		Time::Time timestep;
 	private:
 		bool m_Running = true;
 

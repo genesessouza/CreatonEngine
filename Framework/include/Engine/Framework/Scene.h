@@ -1,51 +1,30 @@
 #pragma once
 
 #include "Engine/Framework/Camera.h"
-
-#include "Simpleton/Geometry/GameObject.h"
-
-#include "Engine/Core/Layer/Layer.h"
-
-#include "Engine/Rendering/RenderCommand.h"
-#include "Engine/Rendering/Array/Array.h"
-
-#include <Engine/Core/Time/Time.h>
+#include "Engine/Framework/GameObject.h"
 
 namespace Engine::Framework
 {
-	class Scene : public Engine::Core::Layer::Layer
-	{
-	public:
-		Scene();
-		void InitObjects();
+    class Scene
+    {
+    public:
+        virtual ~Scene() = default;
 
-		void OnUpdate(Engine::Core::Time::Time deltaTime) override;
-		void OnEvent(Engine::Core::Event::Event& event) override;
-	protected:
-		std::shared_ptr<Quad> m_GroundPlane;
-		std::shared_ptr<Camera> m_SceneCamera;
-		std::shared_ptr<GameObject> m_DefaultGameObject;
-	};
+        inline void OnViewportResize(uint32_t width, uint32_t height) 
+        { 
+            m_SceneCamera.SetViewportSize(width, height); 
+        }
 
-	class Scene3D : public Scene
-	{
-	public:
-		Scene3D()
-		{
-			m_ScenePerspCamera = PerspectiveCamera::Create();
-			m_SceneCamera = m_ScenePerspCamera;
+        void Render()
+        {
+            //CRTN_LOG_INFO("SceneRenderer::Render() called");
 
-			m_DefaultCube.reset(new Cube());
-			m_DefaultGameObject = m_DefaultCube;
+            for (auto& obj : m_SceneObjects)
+                obj->Draw(m_SceneCamera);
+        }
 
-			m_GroundPlane.reset(new Quad());
-
-			InitObjects();
-		}
-
-		inline static Scene3D* Create() { return new Scene3D(); }
-	private:
-		std::shared_ptr<PerspectiveCamera> m_ScenePerspCamera;
-		std::shared_ptr<Cube> m_DefaultCube;
-	};
+    public:
+        Camera m_SceneCamera;
+        std::vector<std::unique_ptr<GameObject>> m_SceneObjects;
+    };
 }

@@ -15,7 +15,7 @@
     <Keyword>Win32Proj</Keyword>
     <ProjectGuid>{093bb236-ee11-4241-972a-007177042214}</ProjectGuid>
     <RootNamespace>Sandbox</RootNamespace>
-    <WindowsTargetPlatformVersion>10.0.22621.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0.26100.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
@@ -59,7 +59,8 @@
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
-      <AdditionalIncludeDirectories>$(SolutionDir)Core\include; $(SolutionDir)Platform\include; $(SolutionDir)Rendering\include; $(SolutionDir)vendor\GLFW\include; $(SolutionDir)vendor\glad\include;</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)Core\include; $(SolutionDir)Platform\include; $(SolutionDir)Rendering\include; $(SolutionDir)Framework\include; $(SolutionDir)vendor\GLFW\include; $(SolutionDir)vendor\glad\include; $(SolutionDir)vendor\glm\include;</AdditionalIncludeDirectories>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -86,7 +87,8 @@
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
-      <AdditionalIncludeDirectories>$(SolutionDir)Core\include; $(SolutionDir)Platform\include; $(SolutionDir)Rendering\include; $(SolutionDir)vendor\GLFW\include; $(SolutionDir)vendor\glad\include;</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)Core\include; $(SolutionDir)Platform\include; $(SolutionDir)Rendering\include; $(SolutionDir)Framework\include; $(SolutionDir)vendor\GLFW\include; $(SolutionDir)vendor\glad\include; $(SolutionDir)vendor\glm\include;</AdditionalIncludeDirectories>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -115,6 +117,9 @@
   <ItemGroup>
     <ProjectReference Include="..\Core\Core.vcxproj">
       <Project>{5f857dc1-69e8-4390-af83-2b1434b897c3}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\Framework\Framework.vcxproj">
+      <Project>{f22a662c-6c0e-4d6c-8388-562de52a67a9}</Project>
     </ProjectReference>
     <ProjectReference Include="..\Platform\Platform.vcxproj">
       <Project>{dfa92b23-49c6-409d-925a-d4dfa08544b2}</Project>

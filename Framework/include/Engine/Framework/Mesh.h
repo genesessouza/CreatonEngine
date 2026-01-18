@@ -1,9 +1,11 @@
 #pragma once
 
+#include <Engine/Rendering/Buffer/VertexBufferLayout.h>
+
+#include <glad/glad.h>
+
 #include <glm/vec3.hpp>
 #include <glm/vec2.hpp>
-
-#include <Engine/Rendering/Buffer/VertexBufferLayout.h>
 
 namespace Engine::Framework::Geometry
 {

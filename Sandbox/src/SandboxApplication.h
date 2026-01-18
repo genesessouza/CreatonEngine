@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Engine/Core/Application.h"
+#include <Engine/Core/Application.h>
 
 class SandboxApplication : public Engine::Core::Application
 {

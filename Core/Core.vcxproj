@@ -15,7 +15,7 @@
     <Keyword>Win32Proj</Keyword>
     <ProjectGuid>{5f857dc1-69e8-4390-af83-2b1434b897c3}</ProjectGuid>
     <RootNamespace>Core</RootNamespace>
-    <WindowsTargetPlatformVersion>10.0.22621.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0.26100.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
@@ -63,7 +63,8 @@
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
-      <AdditionalIncludeDirectories>$(ProjectDir)\include;</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)\include; $(SolutionDir)Rendering\include;</AdditionalIncludeDirectories>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -81,7 +82,8 @@
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
-      <AdditionalIncludeDirectories>$(ProjectDir)\include;</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)\include; $(SolutionDir)Rendering\include;</AdditionalIncludeDirectories>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -95,6 +97,7 @@
     <ClInclude Include="include\core\time.h" />
     <ClInclude Include="include\Engine\Core\Application.h" />
     <ClInclude Include="include\Engine\Core\CoreAPI.h" />
+    <ClInclude Include="include\Engine\Core\Event\FramebufferEvent.h" />
     <ClInclude Include="include\Engine\Core\Event\KeyEvent.h" />
     <ClInclude Include="include\Engine\Core\Event\MouseEvent.h" />
     <ClInclude Include="include\Engine\Core\Event\WindowEvent.h" />
@@ -102,14 +105,16 @@
     <ClInclude Include="include\Engine\Core\Layer\LayerStack.h" />
     <ClInclude Include="include\Engine\Core\Log\Logger.h" />
     <ClInclude Include="include\Engine\Core\Paths.h" />
-    <ClInclude Include="include\Engine\Core\Time\Time.h" />
     <ClInclude Include="include\Engine\Core\Event\Event.h" />
+    <ClInclude Include="include\Engine\Core\RenderCommand.h" />
+    <ClInclude Include="include\Engine\Core\Time\Time.h" />
     <ClInclude Include="include\Engine\Core\Window.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Application.cpp" />
     <ClCompile Include="src\Layer\LayerStack.cpp" />
     <ClCompile Include="src\Log\Logger.cpp" />
+    <ClCompile Include="src\RenderCommand.cpp" />
     <ClCompile Include="src\Time\Time.cpp" />
     <ClCompile Include="src\Window.cpp" />
   </ItemGroup>

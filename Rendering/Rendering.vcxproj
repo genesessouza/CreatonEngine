@@ -15,7 +15,7 @@
     <Keyword>Win32Proj</Keyword>
     <ProjectGuid>{4b5a11d1-49f4-41f2-b62c-ad4ff3d5ccac}</ProjectGuid>
     <RootNamespace>Rendering</RootNamespace>
-    <WindowsTargetPlatformVersion>10.0.22621.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0.26100.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
@@ -59,15 +59,12 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>RENDERING_BUILD_DLL; _DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>SHADERS_REPOSITORY="$(SolutionDir)Assets/Shaders/";  _DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
-      <AdditionalIncludeDirectories>$(ProjectDir)\include; $(SolutionDir)Core\include; $(SolutionDir)Platform\include; $(SolutionDir)Framework\include; $(SolutionDir)vendor\GLFW\include; $(SolutionDir)vendor\glad\include; $(SolutionDir)vendor\glm\include;</AdditionalIncludeDirectories>
-      <AdditionalOptions>/DSOLUTION_DIR=\"$(SolutionDir)\"
-/DASSETS_FOLDER=\"$(SolutionDir)Assets\"
-/DSHADERS_FOLDER=\"$(SolutionDir)Assets\Shaders\"
-/DIMPORTED_MODEL_DATA=\"$(SolutionDir)Assets\ModelData\" %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalIncludeDirectories>$(ProjectDir)\include; $(SolutionDir)Core\include; $(SolutionDir)Platform\include; $(SolutionDir)Framework\include; $(SolutionDir)vendor\glad\include; $(SolutionDir)vendor\glm\include;</AdditionalIncludeDirectories>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -80,15 +77,12 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>RENDERING_BUILD_DLL; NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>SHADERS_REPOSITORY="$(SolutionDir)Assets/Shaders/";  NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
-      <AdditionalIncludeDirectories>$(ProjectDir)\include; $(SolutionDir)Core\include; $(SolutionDir)Platform\include; $(SolutionDir)Framework\include; $(SolutionDir)vendor\GLFW\include; $(SolutionDir)vendor\glad\include; $(SolutionDir)vendor\glm\include;</AdditionalIncludeDirectories>
-      <AdditionalOptions>/DSOLUTION_DIR=\"$(SolutionDir)\"
-/DASSETS_FOLDER=\"$(SolutionDir)Assets\"
-/DSHADERS_FOLDER=\"$(SolutionDir)Assets\Shaders\"
-/DIMPORTED_MODEL_DATA=\"$(SolutionDir)Assets\ModelData\" %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalIncludeDirectories>$(ProjectDir)\include; $(SolutionDir)Core\include; $(SolutionDir)Platform\include; $(SolutionDir)Framework\include; $(SolutionDir)vendor\glad\include; $(SolutionDir)vendor\glm\include;</AdditionalIncludeDirectories>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -99,11 +93,9 @@
     <ClInclude Include="include\Engine\Rendering\Array\Array.h" />
     <ClInclude Include="include\Engine\Rendering\Buffer\Buffer.h" />
     <ClInclude Include="include\Engine\Rendering\Buffer\VertexBufferLayout.h" />
-    <ClInclude Include="include\Engine\Rendering\GraphicsContext.h" />
     <ClInclude Include="include\Engine\Rendering\Material.h" />
-    <ClInclude Include="include\Engine\Rendering\RenderCommand.h" />
-    <ClInclude Include="include\Engine\Rendering\Renderer.h" />
-    <ClInclude Include="include\Engine\Rendering\RenderingAPI.h" />
+    <ClInclude Include="include\Engine\Rendering\MeshRenderer.h" />
+    <ClInclude Include="include\Engine\Rendering\RendererAPI.h" />
     <ClInclude Include="include\Engine\Rendering\Shader.h" />
     <ClInclude Include="include\renderer.h" />
     <ClInclude Include="include\shader.h" />
@@ -112,11 +104,9 @@
   <ItemGroup>
     <ClCompile Include="src\Array\Array.cpp" />
     <ClCompile Include="src\Buffer\Buffer.cpp" />
-    <ClCompile Include="src\GraphicsContext.cpp" />
-    <ClCompile Include="src\Material.cpp" />
     <ClCompile Include="src\MeshGPU.cpp" />
-    <ClCompile Include="src\RenderCommand.cpp" />
-    <ClCompile Include="src\Renderer.cpp" />
+    <ClCompile Include="src\MeshRenderer.cpp" />
+    <ClCompile Include="src\RendererAPI.cpp" />
     <ClCompile Include="src\Shader.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

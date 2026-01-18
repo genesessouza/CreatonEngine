@@ -1,6 +1,7 @@
 #pragma once
 
-#include "Engine/Platform/OpenGL/OpenGLArray.h"
+#include <Engine/Platform/OpenGL/OpenGLArray.h>
+#include <Engine/Platform/OpenGL/OpenGLBuffer.h>
 
 #include <Engine/Framework/Mesh.h>
 
@@ -13,10 +14,11 @@ namespace Engine::Rendering
 
 		void Bind() const;
 
-		size_t GetIndexCount() { return m_MeshIBO.GetCount(); }
+		size_t GetIndexCount() { return m_MeshIBO->GetCount(); }
 	private:
-		Engine::Platform::OpenGL::OpenGLVertexArray m_MeshVAO;
-		Engine::Platform::OpenGL::OpenGLVertexBuffer m_MeshVBO;
-		Engine::Platform::OpenGL::OpenGLIndexBuffer m_MeshIBO;
+		std::shared_ptr<Engine::Rendering::Array::VertexArray> m_MeshVAO;
+
+		std::shared_ptr<Engine::Rendering::Buffer::VertexBuffer> m_MeshVBO;
+		std::shared_ptr<Engine::Rendering::Buffer::IndexBuffer> m_MeshIBO;
 	};
 }

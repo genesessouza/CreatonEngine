@@ -1,10 +1,13 @@
 #include "Engine/Platform/Windows/WindowsWindow.h"
 
+#include <Engine/Core/Application.h>
+
 #include "Engine/Core/Log/Logger.h"
 
 #include <Engine/Core/Event/WindowEvent.h>
 #include <Engine/Core/Event/KeyEvent.h>
 #include <Engine/Core/Event/MouseEvent.h>
+#include <Engine/Core/Event/FramebufferEvent.h>
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
@@ -27,6 +30,14 @@ namespace Engine::Platform::Windows
 		m_EventCallback = callback;
 	}
 
+	Engine::Core::Window::FramebufferSize WindowsWindow::GetFramebufferSize()
+	{
+		int width, height;
+		glfwGetFramebufferSize(m_Window, &width, &height);
+
+		return { width, height };
+	}
+
 	void WindowsWindow::Init(const Window::WindowProps props)
 	{
 		int status = glfwInit();
@@ -39,11 +50,11 @@ namespace Engine::Platform::Windows
 		m_Window = glfwCreateWindow(props.Width, props.Height, props.Title.c_str(), NULL, NULL);
 		CRTN_ASSERT(m_Window, "Failed to create GLFW window!");
 
-		m_Context = new Engine::Rendering::GraphicsContext(m_Window);
+		m_Context = new Engine::Platform::GraphicsContext(m_Window);
 		m_Context->Init();
 
 		/* -------------------------------------------------------------------------------- */
-		/* ------------------------------ WINDOW EVENTS ----------------------------------- */
+		/* ------------------------------ WINDOW CALLBACKS -------------------------------- */
 		/* -------------------------------------------------------------------------------- */
 
 		glfwSetWindowUserPointer(m_Window, this);
@@ -86,11 +97,13 @@ namespace Engine::Platform::Windows
 		glfwSetFramebufferSizeCallback(m_Window,
 			[](GLFWwindow* window, int width, int height)
 			{
-				glViewport(0, 0, width, height);
+				auto* win = (WindowsWindow*)glfwGetWindowUserPointer(window);
+				Engine::Core::Event::FramebufferResizeEvent e(width, height);
+				win->m_EventCallback(e);
 			});
 
 		/* ------------------------------------------------------------------------------------- */
-		/* ----------------------------------- MOUSE EVENTS ------------------------------------ */
+		/* ---------------------------------- MOUSE CALLBACKS ---------------------------------- */
 		/* ------------------------------------------------------------------------------------- */
 
 		glfwSetMouseButtonCallback(m_Window,
@@ -121,7 +134,7 @@ namespace Engine::Platform::Windows
 			});
 
 		/* ------------------------------------------------------------------------------------- */
-		/* ------------------------------------ KEY EVENTS ------------------------------------- */
+		/* ---------------------------------- KEY CALLBACKS ------------------------------------ */
 		/* ------------------------------------------------------------------------------------- */
 
 		glfwSetKeyCallback(m_Window,
@@ -151,7 +164,6 @@ namespace Engine::Platform::Windows
 					}
 				}
 			});
-
 	}
 
 	void WindowsWindow::OnUpdate()
@@ -160,24 +172,17 @@ namespace Engine::Platform::Windows
 		glfwSwapBuffers(m_Window);
 	}
 
-	uint32_t WindowsWindow::GetWidth() const
+	Engine::Core::Window::WindowSize WindowsWindow::GetWindowSize() const
 	{
 		int width, height;
 		glfwGetWindowSize(m_Window, &width, &height);
-		return static_cast<uint32_t>(width);
-	}
-
-	uint32_t WindowsWindow::GetHeight() const
-	{
-		int width, height;
-		glfwGetWindowSize(m_Window, &width, &height);
-		return static_cast<uint32_t>(height);
+		return { width, height };
 	}
 
 	void WindowsWindow::SetTitle(const std::string& title)
 	{
 		m_Props.Title = title;
-		glfwSetWindowTitle(m_Window, title.c_str());
+		glfwSetWindowTitle(m_Window, m_Props.Title.c_str());
 	}
 
 	void WindowsWindow::Resize(uint32_t width, uint32_t height)

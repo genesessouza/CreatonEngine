@@ -47,7 +47,7 @@ namespace Engine::Rendering
 		const glm::vec4 GetUniformVec4(const std::string& uniformName) const;
 		const glm::mat4 GetUniformMat4(const std::string& uniformName) const;
 
-		static std::shared_ptr<Shader> Create();
+		static std::shared_ptr<Shader> CreateDefaultShader();
 	public:
 		inline uint32_t GetShader() const { return m_RendererId; }
 
@@ -72,9 +72,6 @@ namespace Engine::Rendering
 				break;
 			case Color:
 				return "u_Color";
-				break;
-			case ColorOverride:
-				return "u_OverrideBaseColor";
 				break;
 			default:
 				return "Invalid uniform name!";

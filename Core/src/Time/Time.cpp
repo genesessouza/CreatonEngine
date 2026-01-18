@@ -1,5 +1,6 @@
-#include "Engine/Core/Time/Time.h"
 #include "Engine/Core/Log/Logger.h"
+
+#include "Engine/Core/Time/Time.h"
 
 namespace Engine::Core::Time
 {

@@ -1,21 +1,26 @@
 #include "Engine/Rendering/Buffer/Buffer.h"
 
-#include <Engine/Platform/OpenGL/OpenGLBuffer.h>
 #include <Engine/Core/Log/Logger.h>
+
+#include <Engine/Platform/OpenGL/OpenGLBuffer.h>
+
+#include <memory>
 
 namespace Engine::Rendering::Buffer
 {
-	VertexBuffer* VertexBuffer::Create(const void* data, size_t sizeInBytes)
+	std::shared_ptr<VertexBuffer> VertexBuffer::Create(const void* data, size_t size)
 	{
-		Engine::Platform::OpenGL::OpenGLVertexBuffer* openGLVertexBuffer = new Engine::Platform::OpenGL::OpenGLVertexBuffer(data, sizeInBytes);
-		CRTN_ASSERT(openGLVertexBuffer, "OpenGL Vertex Buffer is null!");
-		return openGLVertexBuffer;
+		auto vbo = std::make_shared<Engine::Platform::OpenGL::OpenGLVertexBuffer>(data, size);
+		CRTN_ASSERT(vbo, "Vertex buffer could not be created!");
+		
+		return vbo;
 	}
 
-	IndexBuffer* IndexBuffer::Create(const void* data, size_t size)
+	std::shared_ptr<IndexBuffer> IndexBuffer::Create(const void* data, size_t size)
 	{
-		Engine::Platform::OpenGL::OpenGLIndexBuffer* openGLIndexBuffer = new Engine::Platform::OpenGL::OpenGLIndexBuffer(data, size);
-		CRTN_ASSERT(openGLIndexBuffer, "OpenGL Index Buffer is null!");
-		return openGLIndexBuffer;
+		auto ibo = std::make_shared<Engine::Platform::OpenGL::OpenGLIndexBuffer>(data, size);
+		CRTN_ASSERT(ibo, "Index buffer could not be created!");
+	
+		return ibo;
 	}
 }

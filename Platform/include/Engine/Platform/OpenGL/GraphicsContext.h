@@ -2,7 +2,7 @@
 
 struct GLFWwindow;
 
-namespace Engine::Rendering
+namespace Engine::Platform
 {
 	class GraphicsContext
 	{

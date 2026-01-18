@@ -2,12 +2,14 @@
 
 #include <cstdint>
 
+#include <memory>
+
 namespace Engine::Rendering::Buffer
 {
 	class VertexBuffer
 	{
 	public:
-		static VertexBuffer* Create(const void* data, size_t sizeInBytes);
+		static std::shared_ptr<VertexBuffer> Create(const void* data, size_t size);
 
 		virtual void Bind() const = 0;
 		virtual void Unbind() const = 0;
@@ -16,7 +18,7 @@ namespace Engine::Rendering::Buffer
 	class IndexBuffer
 	{
 	public:
-		static IndexBuffer* Create(const void* data, size_t size);
+		static std::shared_ptr<IndexBuffer> Create(const void* data, size_t size);
 
 		virtual void Bind() const = 0;
 		virtual void Unbind() const = 0;

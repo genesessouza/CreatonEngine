@@ -1,27 +1,21 @@
 #include "Engine/Framework/Transform.h"
 
-#include <glm/gtc/quaternion.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 
 namespace Engine::Framework
 {
-	glm::mat4 Transform::BuildTransformRotationScale() const
-	{
-		glm::mat4 mat(1.0f);
+    glm::mat4 Transform::GetMatrix() const
+    {
+        glm::mat4 modelMatrix(1.0f);
 
-		mat = glm::translate(mat, m_Position);
-		mat *= glm::mat4_cast(glm::quat(m_Rotation));
-		mat = glm::scale(mat, m_Scale);
+        modelMatrix = glm::translate(modelMatrix, m_Position);
+        
+        modelMatrix = glm::rotate(modelMatrix, glm::radians(m_Rotation.x), { 1,0,0 });
+        modelMatrix = glm::rotate(modelMatrix, glm::radians(m_Rotation.y), { 0,1,0 });
+        modelMatrix = glm::rotate(modelMatrix, glm::radians(m_Rotation.z), { 0,0,1 });
 
-		return mat;
-	}
+        modelMatrix = glm::scale(modelMatrix, m_Scale);
 
-	const glm::mat4& Transform::GetMatrix()
-	{
-		if (m_MatrixUpdated)
-		{
-			m_CachedMatrix = BuildTransformRotationScale();
-			m_MatrixUpdated = false;
-		}
-		return m_CachedMatrix;
-	}
+        return modelMatrix;
+    }
 }

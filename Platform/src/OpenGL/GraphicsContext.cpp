@@ -1,11 +1,11 @@
-#include "Engine/Rendering/GraphicsContext.h"
+#include "Engine/Platform/OpenGL/GraphicsContext.h"
 
 #include <Engine/Core/Log/Logger.h>
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
-namespace Engine::Rendering
+namespace Engine::Platform
 {
 	GraphicsContext::GraphicsContext(GLFWwindow* windowHandle) : m_WindowHandle(windowHandle)
 	{

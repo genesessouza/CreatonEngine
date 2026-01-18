@@ -29,7 +29,9 @@ namespace Engine::Platform::OpenGL
 		glBindVertexArray(0);
 	}
 
-	void OpenGLVertexArray::AddVertexBuffer(const std::shared_ptr<Engine::Rendering::Buffer::VertexBuffer>& vertexBuffer, const Engine::Rendering::Buffer::VertexBufferLayout& layout)
+	void OpenGLVertexArray::AddVertexBuffer(
+		const std::shared_ptr<Engine::Rendering::Buffer::VertexBuffer>& vertexBuffer, 
+		const Engine::Rendering::Buffer::VertexBufferLayout& layout)
 	{
 		glBindVertexArray(m_RendererId);
 		vertexBuffer->Bind();
@@ -44,7 +46,7 @@ namespace Engine::Platform::OpenGL
 				element.type,
 				element.normalized ? GL_TRUE : GL_FALSE,
 				layout.GetStride(),
-				reinterpret_cast<const void*>(element.offset)
+				(const void*)(uintptr_t)element.offset
 			);
 		}
 

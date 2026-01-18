@@ -35,6 +35,7 @@ namespace Engine::Core::Event
     class Event
     {
     public:
+        Event() = default;
         virtual ~Event() = default;
 
         virtual EventType GetType() const = 0;

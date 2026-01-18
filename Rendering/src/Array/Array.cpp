@@ -1,11 +1,15 @@
 #include "Engine/Rendering/Array/Array.h"
 
-#include "Engine/Platform/OpenGL/OpenGLArray.h"
+#include <Engine/Platform/OpenGL/OpenGLArray.h>
+#include <Engine/Core/Log/Logger.h>
 
 namespace Engine::Rendering::Array
 {
-	VertexArray* VertexArray::Create()
+	std::shared_ptr<VertexArray> VertexArray::Create()
 	{
-		return new Engine::Platform::OpenGL::OpenGLVertexArray();
+		auto vao = std::make_shared<Engine::Platform::OpenGL::OpenGLVertexArray>();
+		CRTN_ASSERT(vao, "Vertex Array could not be created!");
+	
+		return vao;
 	}
 }

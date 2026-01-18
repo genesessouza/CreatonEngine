@@ -1,50 +1,43 @@
 #pragma once
 
-#include "Transform.h"
+#include "Engine/Framework/Transform.h"
 
-#include <glm/gtc/matrix_transform.hpp>
+#include <glm/ext/matrix_clip_space.hpp>
 
 #include <string>
 #include <memory>
 
 namespace Engine::Framework
 {
-	class Camera
-	{
-	public:
-		enum CameraType { Perspective };
+    class Camera
+    {
+    public:
+        const glm::mat4 GetViewMatrix();
+        const glm::mat4 GetProjectionMatrix();
+        const glm::mat4 GetViewProjectionMatrix() const;
 
-		Camera() = default;
+        void SetViewportSize(uint32_t width, uint32_t height);
+        
+        const void SetFOV(float newFOV) { m_FOV = newFOV; }
+        
+        const void SetNear(float newNearPlane) { m_NearPlane = newNearPlane; }
+        const void SetFar(float newFarPlane) { m_FarPlane = newFarPlane; }
 
-		const glm::mat4& GetViewMatrix() { return glm::inverse(m_Transform.GetMatrix()); }
-		const glm::mat4& GetViewProjectionMatrix() { return m_ProjectionMatrix * GetViewMatrix(); }
-	public:
-		CameraType CameraType = CameraType::Perspective;
-	protected:
-		Transform m_Transform;
-		glm::mat4 m_ProjectionMatrix = glm::mat4(1.0f);
-		glm::mat4 m_ViewMatrix = glm::mat4(1.0f);
-	};
+        const void MoveCamera(const glm::vec3& position);
+        const void RotateCamera(const glm::vec3& rotation);
+    
+        const glm::vec3& GetPosition() const { return m_Transform.m_Position; }
+    private:
+        float m_FOV = 60.0f;
+        float m_AspectRatio = 16.0f / 9.0f;
+        float m_NearPlane = 0.1f;
+        float m_FarPlane = 100.0f;
 
-	class PerspectiveCamera : public Camera
-	{
-	public:
-		PerspectiveCamera(float fov, float aspectRatio, float nearClip, float farClip)
-		{
-			m_ProjectionMatrix = glm::perspective(glm::radians(fov), aspectRatio, nearClip, farClip);
-			m_ViewMatrix = glm::mat4(1.0f);
+        bool m_Dirty = false;
+    private:
+        Engine::Framework::Transform m_Transform;
 
-			CameraType = Perspective;
-		}
-
-		inline static std::shared_ptr<PerspectiveCamera> Create()
-		{
-			return std::make_shared<PerspectiveCamera>(45.0f, 800.0f / 600.0f, 0.1f, 50.0f);
-		}
-
-		inline void SetPerspectiveProjection(float fov, float aspectRatio, float nearClip, float farClip)
-		{
-			m_ProjectionMatrix = glm::perspective(glm::radians(fov), aspectRatio, nearClip, farClip);
-		}
-	};
+        glm::mat4 m_ProjectionMatrix = glm::mat4(1.0f);
+        glm::mat4 m_CachedViewMatrix = glm::mat4(1.0f);
+    };
 }

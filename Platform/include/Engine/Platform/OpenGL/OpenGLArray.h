@@ -1,12 +1,8 @@
 #pragma once
 
-#include "OpenGLBuffer.h"
-
 #include <Engine/Rendering/Array/Array.h>
-
+#include <Engine/Rendering/Buffer/Buffer.h>
 #include <Engine/Rendering/Buffer/VertexBufferLayout.h>
-
-#include <glad/glad.h>
 
 namespace Engine::Platform::OpenGL
 {
@@ -14,8 +10,7 @@ namespace Engine::Platform::OpenGL
 	{
 	public:
 		OpenGLVertexArray();
-
-		virtual ~OpenGLVertexArray();
+		~OpenGLVertexArray();
 
 		virtual void Bind() const override;
 		virtual void Unbind() const override;
@@ -23,8 +18,8 @@ namespace Engine::Platform::OpenGL
 		virtual void AddVertexBuffer(const std::shared_ptr<Engine::Rendering::Buffer::VertexBuffer>& vertexBuffer, const Engine::Rendering::Buffer::VertexBufferLayout& layout) override;
 		virtual void SetIndexBuffer(const std::shared_ptr<Engine::Rendering::Buffer::IndexBuffer>& indexBuffer) override;
 
-		virtual const std::vector<std::shared_ptr<Engine::Rendering::Buffer::VertexBuffer>>& GetVertexBuffers() { return m_VertexBuffers; }
-		virtual const std::shared_ptr<Engine::Rendering::Buffer::IndexBuffer>& GetIndexBuffer() { return m_IndexBuffer; }
+		virtual const std::vector<std::shared_ptr<Engine::Rendering::Buffer::VertexBuffer>>& GetVertexBuffers() const override { return m_VertexBuffers; }
+		virtual const std::shared_ptr<Engine::Rendering::Buffer::IndexBuffer>& GetIndexBuffer() const override { return m_IndexBuffer; }
 	private:
 		uint32_t m_RendererId;
 

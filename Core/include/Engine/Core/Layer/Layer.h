@@ -1,5 +1,7 @@
 #pragma once
+
 #include "Engine/Core/Event/Event.h"
+#include "Engine/Core/Time/Time.h"
 
 #include <string>
 

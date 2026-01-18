@@ -4,7 +4,7 @@
 
 namespace Engine::Core::Time
 {
-    class CORE_API Time
+    class Time
     {
     public:
         using TimeProvider = double(*)();

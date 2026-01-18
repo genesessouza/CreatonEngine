@@ -1,9 +1,8 @@
 #include "Engine/Core/Application.h"
 #include "Engine/Core/Window.h"
+#include "Engine/Core/RenderCommand.h"
 
-#include <Engine/Core/Event/WindowEvent.h>
-
-#include <format>
+#include "Engine/Core/Event/WindowEvent.h"
 
 namespace Engine::Core
 {
@@ -13,11 +12,14 @@ namespace Engine::Core
 	{
 		CRTN_ASSERT(!s_Instance, "Application already exists!");
 		s_Instance = this;
-		m_ShowFps = true;
 
 		m_Window = Window::Create(Window::WindowProps{});
 		m_Window->SetEventCallback([this](Event::Event& e) { OnEvent(e); });
 		m_Window->SetVSync(false);
+
+		auto [w, h] = m_Window->GetFramebufferSize();
+        Event::FramebufferResizeEvent framebufferResizeEvent(w, h);
+        OnEvent(framebufferResizeEvent);
 
 		m_Running = true;
 	}
@@ -39,29 +41,52 @@ namespace Engine::Core
 
 	void Application::Run()
 	{
+		float lastTime = Time::Time::GetTime();
+		float fpsTimer = 0.0f;
+		uint32_t frameCount = 0;
+
 		while (m_Running)
 		{
-			float deltaTime = Time::Time::GetDeltaTime();
+			float currentTime = Time::Time::GetTime();
+			float deltaTime = currentTime - lastTime;
+			lastTime = currentTime;
 
-			static float currentTime = 0;
-			currentTime += deltaTime;
+			fpsTimer += deltaTime;
+			frameCount++;
+
+			if (fpsTimer >= 0.5f)
+			{
+				float fps = frameCount / fpsTimer;
+
+				char title[128];
+				snprintf(title, sizeof(title), "CreationEngine | FPS: %.2f");
+				m_Window->SetTitle(title);
+
+				fpsTimer = 0.0f;
+				frameCount = 0;
+			}
 
 			OnUpdate();
 			m_Window->OnUpdate();
 
-			if (currentTime >= 0.008)
-			{
-				for (Layer::Layer* layer : m_LayerStack)
-					layer->OnUpdate(deltaTime);
-
-				currentTime = 0;
-			}
+			for (Layer::Layer* layer : m_LayerStack)
+				layer->OnUpdate(deltaTime);
 		}
 	}
 
 	Application& Application::Get()
 	{
 		return *s_Instance;
+	}
+
+	bool Application::OnFramebufferResize(Event::FramebufferResizeEvent e)
+	{
+		if (e.GetWidth() == 0 || e.GetHeight() == 0)
+			return false;
+
+		RenderCommand::SetViewport(0, 0, e.GetWidth(), e.GetHeight());
+
+		return false;
 	}
 
 	void Application::OnUpdate()
@@ -72,9 +97,9 @@ namespace Engine::Core
 	void Application::OnEvent(Event::Event& e)
 	{
 		Event::EventDispatcher dispatcher(e);
-		dispatcher.Dispatch<Event::WindowCloseEvent>(
-			BIND_EVENT_FN(Application::OnWindowClose)
-		);
+		dispatcher.Dispatch<Event::WindowCloseEvent>(BIND_EVENT_FN(Application::OnWindowClose));
+
+		dispatcher.Dispatch<Event::FramebufferResizeEvent>(BIND_EVENT_FN(Application::OnFramebufferResize));
 
 		for (auto it = m_LayerStack.rbegin(); it != m_LayerStack.rend(); ++it)
 		{
@@ -83,12 +108,12 @@ namespace Engine::Core
 				break;
 		}
 
-		CRTN_LOG_TRACE("Application registered event: <%s>", e.ToString().c_str());
+		//CRTN_LOG_TRACE("Application registered event: <%s>", e.ToString().c_str());
 	}
 
 	bool Application::OnWindowClose(Event::WindowCloseEvent& e)
 	{
 		m_Running = false;
-		return false;
+		return m_Running;
 	}
 }
