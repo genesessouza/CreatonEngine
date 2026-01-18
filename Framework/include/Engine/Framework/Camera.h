@@ -12,6 +12,8 @@ namespace Engine::Framework
     class Camera
     {
     public:
+        Camera();
+
         const glm::mat4 GetViewMatrix();
         const glm::mat4 GetProjectionMatrix();
         const glm::mat4 GetViewProjectionMatrix() const;

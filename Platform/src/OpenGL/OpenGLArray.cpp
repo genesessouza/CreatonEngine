@@ -10,6 +10,8 @@ namespace Engine::Platform::OpenGL
 {
 	OpenGLVertexArray::OpenGLVertexArray()
 	{
+		CRTN_LOG_DEBUG("[OPEN GL VERTEX ARRAY]: Generating VAO");
+
 		glGenVertexArrays(1, &m_RendererId);
 		Bind();
 	}
@@ -29,10 +31,10 @@ namespace Engine::Platform::OpenGL
 		glBindVertexArray(0);
 	}
 
-	void OpenGLVertexArray::AddVertexBuffer(
-		const std::shared_ptr<Engine::Rendering::Buffer::VertexBuffer>& vertexBuffer, 
-		const Engine::Rendering::Buffer::VertexBufferLayout& layout)
+	void OpenGLVertexArray::AddVertexBuffer(const std::shared_ptr<Engine::Rendering::Buffer::VertexBuffer>& vertexBuffer, const Engine::Rendering::Buffer::VertexBufferLayout& layout)
 	{
+		CRTN_LOG_DEBUG("[OPEN GL VERTEX ARRAY]: Adding buffers to VAO");
+
 		glBindVertexArray(m_RendererId);
 		vertexBuffer->Bind();
 
@@ -55,6 +57,8 @@ namespace Engine::Platform::OpenGL
 
 	void OpenGLVertexArray::SetIndexBuffer(const std::shared_ptr<Engine::Rendering::Buffer::IndexBuffer>& indexBuffer)
 	{
+		CRTN_LOG_DEBUG("[OPEN GL VERTEX ARRAY]: Setting Index Buffer on VAO\n");
+
 		glBindVertexArray(m_RendererId);
 		indexBuffer->Bind();
 

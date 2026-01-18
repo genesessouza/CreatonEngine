@@ -43,6 +43,8 @@ namespace Engine::Platform::Windows
 		int status = glfwInit();
 		CRTN_ASSERT(status, "Failed to initialize GLFW!");
 
+		CRTN_LOG_DEBUG("[WINDOWS WINDOW]: GLFW initialized");
+
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 5);
 		glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
@@ -50,12 +52,16 @@ namespace Engine::Platform::Windows
 		m_Window = glfwCreateWindow(props.Width, props.Height, props.Title.c_str(), NULL, NULL);
 		CRTN_ASSERT(m_Window, "Failed to create GLFW window!");
 
+		CRTN_LOG_TRACE("[WINDOWS WINDOW]: Window Dimensions: [%dx%d]\n", props.Width, props.Height);
+
 		m_Context = new Engine::Platform::GraphicsContext(m_Window);
 		m_Context->Init();
 
 		/* -------------------------------------------------------------------------------- */
 		/* ------------------------------ WINDOW CALLBACKS -------------------------------- */
 		/* -------------------------------------------------------------------------------- */
+
+		CRTN_LOG_DEBUG("[WINDOWS WINDOW]: Setting GLFW callbacks...");
 
 		glfwSetWindowUserPointer(m_Window, this);
 
@@ -164,6 +170,9 @@ namespace Engine::Platform::Windows
 					}
 				}
 			});
+
+		CRTN_LOG_DEBUG("[WINDOWS WINDOW]: Done\n");
+
 	}
 
 	void WindowsWindow::OnUpdate()

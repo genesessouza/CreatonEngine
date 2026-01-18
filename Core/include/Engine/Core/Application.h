@@ -42,7 +42,7 @@ namespace Engine::Core
 		Time::Time timestep;
 	private:
 		bool m_Running = true;
-
+	private:
 		std::unique_ptr<Window> m_Window;
 		Log::Logger m_Logger;
 		Layer::LayerStack m_LayerStack;

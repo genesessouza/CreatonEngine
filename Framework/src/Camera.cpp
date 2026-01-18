@@ -6,60 +6,67 @@
 
 namespace Engine::Framework
 {
-    const glm::mat4 Camera::GetViewMatrix()
-    {
-        if (m_Dirty)
-        {
-            m_CachedViewMatrix = glm::inverse(m_Transform.GetMatrix());
-            m_Dirty = false;
-        }
-        return m_CachedViewMatrix;
-    }
+	Camera::Camera()
+	{
+		m_AspectRatio = 16.0f / 9.0f;
 
-    const glm::mat4 Camera::GetProjectionMatrix()
-    {
-        m_ProjectionMatrix = glm::perspective(
-            glm::radians(m_FOV),
-            m_AspectRatio,
-            m_NearPlane,
-            m_FarPlane
-        );
+		GetViewMatrix();
+		GetProjectionMatrix();
+	}
+	const glm::mat4 Camera::GetViewMatrix()
+	{
+		if (m_Dirty)
+		{
+			m_CachedViewMatrix = glm::inverse(m_Transform.GetMatrix());
+			m_Dirty = false;
+		}
+		return m_CachedViewMatrix;
+	}
 
-        return m_ProjectionMatrix;
-    }
+	const glm::mat4 Camera::GetProjectionMatrix()
+	{
+		m_ProjectionMatrix = glm::perspective(
+			glm::radians(m_FOV),
+			m_AspectRatio,
+			m_NearPlane,
+			m_FarPlane
+		);
 
-    const glm::mat4 Camera::GetViewProjectionMatrix() const
-    {
-        return m_ProjectionMatrix * m_CachedViewMatrix;
-    }
+		return m_ProjectionMatrix;
+	}
 
-    void Camera::SetViewportSize(uint32_t width, uint32_t height)
-    {
-        m_AspectRatio = (float)width / (float)height;
+	const glm::mat4 Camera::GetViewProjectionMatrix() const
+	{
+		return m_ProjectionMatrix * m_CachedViewMatrix;
+	}
 
-        m_ProjectionMatrix = glm::perspective(
-            glm::radians(m_FOV),
-            m_AspectRatio,
-            m_NearPlane,
-            m_FarPlane
-        );
+	void Camera::SetViewportSize(uint32_t width, uint32_t height)
+	{
+		m_AspectRatio = (float)width / (float)height;
 
-        m_Dirty = true;
-    }
+		m_ProjectionMatrix = glm::perspective(
+			glm::radians(m_FOV),
+			m_AspectRatio,
+			m_NearPlane,
+			m_FarPlane
+		);
 
-    const void Camera::MoveCamera(const glm::vec3& position)
-    {
-        m_Transform.m_Position += glm::vec3(position.x, position.y, -position.z);
-        m_Dirty = true;
+		m_Dirty = true;
+	}
 
-        GetViewMatrix();
-    }
+	const void Camera::MoveCamera(const glm::vec3& position)
+	{
+		m_Transform.m_Position += glm::vec3(position.x, position.y, -position.z);
+		m_Dirty = true;
 
-    const void Camera::RotateCamera(const glm::vec3& rotation)
-    {
-        m_Transform.m_Rotation += glm::vec3(-rotation.x, rotation.y, 0);
-        m_Dirty = true;
+		GetViewMatrix();
+	}
 
-        GetViewMatrix();
-    }
+	const void Camera::RotateCamera(const glm::vec3& rotation)
+	{
+		m_Transform.m_Rotation += glm::vec3(-rotation.x, -rotation.y, 0);
+		m_Dirty = true;
+
+		GetViewMatrix();
+	}
 }

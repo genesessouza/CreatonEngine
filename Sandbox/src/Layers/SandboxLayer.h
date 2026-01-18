@@ -3,36 +3,33 @@
 #include <Engine/Framework/MeshLibrary.h>
 
 #include <Engine/Core/Event/KeyEvent.h>
+#include <Engine/Core/Event/WindowEvent.h>
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
-#include <Engine/Core/Event/WindowEvent.h>
 
 class SandboxLayer
 	: public Engine::Core::Layer::Layer
 {
 public:
 	SandboxLayer()
-		: Layer("Sandbox")
+		: Layer("Sandbox"), m_CameraMovementDirection(0.0f), m_CameraRotationDirection(0.0f)
 	{
-		glEnable(GL_DEPTH_TEST);
-		glEnable(GL_CULL_FACE);
-
 		// CAMERA
 		m_MainScene.m_SceneCamera.MoveCamera({ 0, 2, -5 });
 
-		// GROUND PLANE
-		auto quad = std::make_unique<Engine::Framework::GameObject>();
+		// GROUND CUBE
+		auto groundCube = std::make_unique<Engine::Framework::GameObject>();
 
-		quad->m_Transform.m_Position = { 0, 0, 0 };
-		quad->m_Transform.m_Rotation = { 0,0,0 };
-		quad->m_Transform.m_Scale = { 10, 1, 10 };
+		groundCube->m_Transform.m_Position = { 0, 0, 0 };
+		groundCube->m_Transform.m_Scale = { 10, 0.3, 10 };
 
-		quad->m_Renderer = std::make_unique<Engine::Rendering::MeshRenderer>();
-		quad->m_Renderer->m_Mesh = Engine::Framework::MeshLibrary::InstantiateQuad();
-		quad->m_Renderer->m_Shader = Engine::Rendering::Shader::CreateDefaultShader();
+		groundCube->m_Renderer = std::make_unique<Engine::Rendering::MeshRenderer>();
+		groundCube->m_Renderer->m_Mesh = Engine::Framework::MeshLibrary::InstantiateCube();
+		groundCube->m_Renderer->m_Shader = Engine::Rendering::Shader::CreateDefaultShader();
+		groundCube->m_Renderer->m_Shader->DefineUniformVec4("u_Color", glm::vec4(0.3, 0.3, 0.3, 1));
 
-		m_MainScene.m_SceneObjects.push_back(std::move(quad));
+		m_MainScene.m_SceneObjects.push_back(std::move(groundCube));
 
 		// DEFAULT CUBE
 		auto cube = std::make_unique<Engine::Framework::GameObject>();
@@ -50,15 +47,12 @@ public:
 
 	void OnAttach() override
 	{
-		CRTN_LOG_INFO("SandboxLayer attached");
+		//CRTN_LOG_INFO("SandboxLayer attached");
 	}
 
 	void OnUpdate(float deltaTime) override
 	{
 		//CRTN_LOG_INFO("SandboxLayer update");
-
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		glClearColor(0.3f, 0.3f, 0.3f, 1.0f);
 
 		m_MainScene.m_SceneCamera.MoveCamera(m_CameraMovementDirection * m_CameraMovementSpeed * deltaTime);
 		m_MainScene.m_SceneCamera.RotateCamera(m_CameraRotationDirection * m_CameraRotationSpeed * deltaTime);
@@ -82,46 +76,45 @@ public:
 				return false;
 			});
 
-		if (e.GetType() != Engine::Core::Event::EventType::KeyPressed &&
-			e.GetType() != Engine::Core::Event::EventType::KeyReleased)
-			return;
+		// KEY PRESSED
+		dispatcher.Dispatch<Engine::Core::Event::KeyPressedEvent>([this](Engine::Core::Event::KeyPressedEvent& e)
+			{
+				float speed = 1.0f;
 
-		auto& keyEvt = static_cast<Engine::Core::Event::KeyEvent&>(e);
+				// MOVEMENT
+				if (e.GetKeyCode() == GLFW_KEY_W) m_CameraMovementDirection.z = speed;
+				if (e.GetKeyCode() == GLFW_KEY_S) m_CameraMovementDirection.z = -speed;
 
-		const float speed = 1.0f;
+				if (e.GetKeyCode() == GLFW_KEY_A) m_CameraMovementDirection.x = -speed;
+				if (e.GetKeyCode() == GLFW_KEY_D) m_CameraMovementDirection.x = speed;
 
-		if (e.GetType() == Engine::Core::Event::EventType::KeyPressed)
-		{
-			if (keyEvt.GetKeyCode() == GLFW_KEY_W) m_CameraMovementDirection.z = speed;
-			if (keyEvt.GetKeyCode() == GLFW_KEY_S) m_CameraMovementDirection.z = -speed;
+				if (e.GetKeyCode() == GLFW_KEY_SPACE) m_CameraMovementDirection.y = speed;
+				if (e.GetKeyCode() == GLFW_KEY_LEFT_SHIFT) m_CameraMovementDirection.y = -speed;
 
-			if (keyEvt.GetKeyCode() == GLFW_KEY_A) m_CameraMovementDirection.x = -speed;
-			if (keyEvt.GetKeyCode() == GLFW_KEY_D) m_CameraMovementDirection.x = speed;
+				// ROTATION
+				if (e.GetKeyCode() == GLFW_KEY_LEFT) m_CameraRotationDirection.y = -speed;
+				if (e.GetKeyCode() == GLFW_KEY_RIGHT) m_CameraRotationDirection.y = speed;
 
-			if (keyEvt.GetKeyCode() == GLFW_KEY_SPACE) m_CameraMovementDirection.y = speed;
-			if (keyEvt.GetKeyCode() == GLFW_KEY_LEFT_SHIFT) m_CameraMovementDirection.y = -speed;
+				if (e.GetKeyCode() == GLFW_KEY_UP) m_CameraRotationDirection.x = -speed;
+				if (e.GetKeyCode() == GLFW_KEY_DOWN) m_CameraRotationDirection.x = speed;
 
-			if (keyEvt.GetKeyCode() == GLFW_KEY_LEFT) m_CameraRotationDirection.y = -speed;
-			if (keyEvt.GetKeyCode() == GLFW_KEY_RIGHT) m_CameraRotationDirection.y = speed;
+				return false;
+			});
 
-			if (keyEvt.GetKeyCode() == GLFW_KEY_UP) m_CameraRotationDirection.x = -speed;
-			if (keyEvt.GetKeyCode() == GLFW_KEY_DOWN) m_CameraRotationDirection.x = speed;
-		}
+		// KEY RELEASED
+		dispatcher.Dispatch<Engine::Core::Event::KeyReleasedEvent>([this](Engine::Core::Event::KeyReleasedEvent& e)
+			{
+				// MOVEMENT
+				if (e.GetKeyCode() == GLFW_KEY_W || e.GetKeyCode() == GLFW_KEY_S) m_CameraMovementDirection.z = 0.0f;				
+				if (e.GetKeyCode() == GLFW_KEY_A || e.GetKeyCode() == GLFW_KEY_D) m_CameraMovementDirection.x = 0.0f;				
+				if (e.GetKeyCode() == GLFW_KEY_SPACE || e.GetKeyCode() == GLFW_KEY_LEFT_SHIFT) m_CameraMovementDirection.y = 0.0f;
 
-		if (e.GetType() == Engine::Core::Event::EventType::KeyReleased)
-		{
-			if (keyEvt.GetKeyCode() == GLFW_KEY_W || keyEvt.GetKeyCode() == GLFW_KEY_S)
-				m_CameraMovementDirection.z = 0.0f;
+				// ROTATION
+				//if (e.GetKeyCode() == GLFW_KEY_UP || e.GetKeyCode() == GLFW_KEY_DOWN) m_CameraRotationDirection.y = 0.0f;
+				//if (e.GetKeyCode() == GLFW_KEY_LEFT || e.GetKeyCode() == GLFW_KEY_RIGHT) m_CameraRotationDirection.x = 0.0f;
 
-			if (keyEvt.GetKeyCode() == GLFW_KEY_A || keyEvt.GetKeyCode() == GLFW_KEY_D)
-				m_CameraMovementDirection.x = 0.0f;
-
-			if (keyEvt.GetKeyCode() == GLFW_KEY_SPACE || keyEvt.GetKeyCode() == GLFW_KEY_LEFT_SHIFT)
-				m_CameraMovementDirection.y = 0.0f;
-
-			if (keyEvt.GetKeyCode() == GLFW_KEY_Q || keyEvt.GetKeyCode() == GLFW_KEY_E)
-				m_CameraRotationDirection.y = 0.0f;
-		}
+				return false;
+			});
 	}
 private:
 	const float m_CameraMovementSpeed = 10.0f;

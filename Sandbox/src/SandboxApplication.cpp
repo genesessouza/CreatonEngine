@@ -12,11 +12,19 @@ Engine::Core::Application* CreateApplication()
 	Engine::Core::Time::Time::SetProvider(Engine::Platform::Glfw::GlfwGetTimeSeconds);
 
 	auto* app = new SandboxApplication();
-	app->PushLayer(new SandboxLayer());
+	auto* sandboxLayer = new SandboxLayer();
+	app->PushLayer(sandboxLayer);
+
+	auto [w, h] = Engine::Core::Application::Get().GetWindow().GetFramebufferSize();
+	Engine::Core::Event::FramebufferResizeEvent e(w, h);
+	sandboxLayer->OnEvent(e);
+
+	CRTN_LOG_DEBUG("[SANDBOX APP]: SandboxApplication ------------- Running\n");
+
 	return app;
 }
 
 SandboxApplication::SandboxApplication()
 {
-	CRTN_LOG_DEBUG("SandboxApplication Constructor() called");
+	//CRTN_LOG_DEBUG("[SANDBOX APP]: Constructor called");
 }

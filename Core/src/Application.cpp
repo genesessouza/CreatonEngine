@@ -13,13 +13,12 @@ namespace Engine::Core
 		CRTN_ASSERT(!s_Instance, "Application already exists!");
 		s_Instance = this;
 
+		CRTN_LOG_DEBUG("[APPLICATION]: Base application initialized");
+		CRTN_LOG_DEBUG("[APPLICATION]: Opening application window\n");
+
 		m_Window = Window::Create(Window::WindowProps{});
 		m_Window->SetEventCallback([this](Event::Event& e) { OnEvent(e); });
 		m_Window->SetVSync(false);
-
-		auto [w, h] = m_Window->GetFramebufferSize();
-        Event::FramebufferResizeEvent framebufferResizeEvent(w, h);
-        OnEvent(framebufferResizeEvent);
 
 		m_Running = true;
 	}
@@ -59,7 +58,7 @@ namespace Engine::Core
 				float fps = frameCount / fpsTimer;
 
 				char title[128];
-				snprintf(title, sizeof(title), "CreationEngine | FPS: %.2f");
+				snprintf(title, sizeof(title), "CreationEngine | FPS: %.2f", fps);
 				m_Window->SetTitle(title);
 
 				fpsTimer = 0.0f;
@@ -85,7 +84,6 @@ namespace Engine::Core
 			return false;
 
 		RenderCommand::SetViewport(0, 0, e.GetWidth(), e.GetHeight());
-
 		return false;
 	}
 

@@ -6,22 +6,27 @@
 
 namespace Engine::Rendering
 {
-    RendererAPI::API RendererAPI::GetAPI()
-    {
-        return API::OpenGL;
-    }
+	RendererAPI::API RendererAPI::GetAPI()
+	{
+		return API::OpenGL;
+	}
 
-    std::unique_ptr<RendererAPI> RendererAPI::Create()
-    {
-        switch (GetAPI())
-        {
-        case API::OpenGL:
-            return std::make_unique<Engine::Platform::OpenGL::OpenGLRendererAPI>();
+	std::unique_ptr<RendererAPI> RendererAPI::Create()
+	{
+		//CRTN_LOG_DEBUG("[RENDERER API]: Initializing Renderer API");
 
-        case API::None:
-        default:
-            CRTN_ASSERT("Unknown API!");
-            return nullptr;
-        }
-    }
+		switch (GetAPI())
+		{
+			case API::OpenGL:
+			{
+				return std::make_unique<Engine::Platform::OpenGL::OpenGLRendererAPI>();
+				CRTN_LOG_DEBUG("[RENDERER API]: OpenGL context started");
+			}
+
+			case API::None:
+			default:
+				CRTN_ASSERT("Unknown API!");
+				return nullptr;
+		}
+	}
 }

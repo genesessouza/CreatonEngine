@@ -19,8 +19,6 @@ int main(int argc, char** argv)
 	SetConsoleMode(hOut, dwMode);
 
 	// Starting point
-	CRTN_LOG_DEBUG("Starting EntryPoint");
-
 	auto app = CreateApplication();
 	CRTN_ASSERT(app != nullptr, "Application creation failed!");
 
