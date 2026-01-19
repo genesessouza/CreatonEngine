@@ -59,7 +59,7 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>CORE_BUILD_DLL; CRTN_PLATFORM_WINDOWS;        _DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>CORE_BUILD_DLL; CRTN_PLATFORM_WINDOWS; _DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
@@ -104,6 +104,7 @@
     <ClInclude Include="include\Engine\Core\Layer\Layer.h" />
     <ClInclude Include="include\Engine\Core\Layer\LayerStack.h" />
     <ClInclude Include="include\Engine\Core\Log\Logger.h" />
+    <ClInclude Include="include\Engine\Core\MemoryManager.h" />
     <ClInclude Include="include\Engine\Core\Paths.h" />
     <ClInclude Include="include\Engine\Core\Event\Event.h" />
     <ClInclude Include="include\Engine\Core\RenderCommand.h" />
@@ -114,6 +115,7 @@
     <ClCompile Include="src\Application.cpp" />
     <ClCompile Include="src\Layer\LayerStack.cpp" />
     <ClCompile Include="src\Log\Logger.cpp" />
+    <ClCompile Include="src\MemoryManager.cpp" />
     <ClCompile Include="src\RenderCommand.cpp" />
     <ClCompile Include="src\Time\Time.cpp" />
     <ClCompile Include="src\Window.cpp" />

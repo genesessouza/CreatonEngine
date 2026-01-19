@@ -36,12 +36,17 @@ namespace Engine::Rendering
 
 		void GetShaderInfoLog(const std::string& uniformName, unsigned int location) const;
 
+		void DefineUniformMat3(const std::string& uniformName, const glm::mat3& matrix) const;
 		void DefineUniformMat4(const std::string& uniformName, const glm::mat4& matrix) const;
 
 		void DefineUniformVec3(const std::string& uniformName, const glm::vec3& vector) const;
 		void DefineUniformVec4(const std::string& uniformName, const glm::vec4& vector) const;
 
 		void DefineUniformBool(const std::string& uniformName, const bool override) const;
+
+		void DefineUniformInt(const std::string& uniformName, const int value) const;
+		void DefineUniformFloat(const std::string& uniformName, const float value) const;
+		void DefineUniformFloat3(const std::string& uniformName, const glm::vec3& value) const;
 
 		const glm::vec3 GetUniformVec3(const std::string& uniformName) const;
 		const glm::vec4 GetUniformVec4(const std::string& uniformName) const;

@@ -25,7 +25,7 @@ namespace Engine::Rendering
 
 			case API::None:
 			default:
-				CRTN_ASSERT("Unknown API!");
+				CRTN_ASSERT(false, "Unknown API!");
 				return nullptr;
 		}
 	}

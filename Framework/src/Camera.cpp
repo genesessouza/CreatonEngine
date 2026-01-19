@@ -56,7 +56,8 @@ namespace Engine::Framework
 
 	const void Camera::MoveCamera(const glm::vec3& position)
 	{
-		m_Transform.m_Position += glm::vec3(position.x, position.y, -position.z);
+		glm::vec3 newPosition = m_Transform.GetPosition() + glm::vec3(position.x, position.y, -position.z);
+		m_Transform.SetPosition(newPosition);
 		m_Dirty = true;
 
 		GetViewMatrix();
@@ -64,7 +65,8 @@ namespace Engine::Framework
 
 	const void Camera::RotateCamera(const glm::vec3& rotation)
 	{
-		m_Transform.m_Rotation += glm::vec3(-rotation.x, -rotation.y, 0);
+		glm::vec3 newRotation = m_Transform.GetRotation() + glm::vec3(-rotation.x, -rotation.y, rotation.z);
+		m_Transform.SetRotation(newRotation);
 		m_Dirty = true;
 
 		GetViewMatrix();

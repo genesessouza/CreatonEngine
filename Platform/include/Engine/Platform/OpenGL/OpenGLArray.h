@@ -1,5 +1,7 @@
 #pragma once
 
+#include <Engine/Core/Log/Logger.h>
+
 #include <Engine/Rendering/Array/Array.h>
 #include <Engine/Rendering/Buffer/Buffer.h>
 #include <Engine/Rendering/Buffer/VertexBufferLayout.h>
@@ -19,7 +21,11 @@ namespace Engine::Platform::OpenGL
 		virtual void SetIndexBuffer(const std::shared_ptr<Engine::Rendering::Buffer::IndexBuffer>& indexBuffer) override;
 
 		virtual const std::vector<std::shared_ptr<Engine::Rendering::Buffer::VertexBuffer>>& GetVertexBuffers() const override { return m_VertexBuffers; }
-		virtual const std::shared_ptr<Engine::Rendering::Buffer::IndexBuffer>& GetIndexBuffer() const override { return m_IndexBuffer; }
+		virtual const std::shared_ptr<Engine::Rendering::Buffer::IndexBuffer>& GetIndexBuffer() const override
+		{
+			CRTN_CHECK_PTR(m_IndexBuffer);
+			return m_IndexBuffer;
+		}
 	private:
 		uint32_t m_RendererId;
 

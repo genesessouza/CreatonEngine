@@ -59,7 +59,7 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>SHADERS_REPOSITORY="$(SolutionDir)Assets/Shaders/";  _DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
@@ -95,6 +95,7 @@
     <ClInclude Include="include\Engine\Rendering\Buffer\VertexBufferLayout.h" />
     <ClInclude Include="include\Engine\Rendering\Material.h" />
     <ClInclude Include="include\Engine\Rendering\MeshRenderer.h" />
+    <ClInclude Include="include\Engine\Rendering\Renderer.h" />
     <ClInclude Include="include\Engine\Rendering\RendererAPI.h" />
     <ClInclude Include="include\Engine\Rendering\Shader.h" />
     <ClInclude Include="include\renderer.h" />
@@ -106,6 +107,7 @@
     <ClCompile Include="src\Buffer\Buffer.cpp" />
     <ClCompile Include="src\MeshGPU.cpp" />
     <ClCompile Include="src\MeshRenderer.cpp" />
+    <ClCompile Include="src\Renderer.cpp" />
     <ClCompile Include="src\RendererAPI.cpp" />
     <ClCompile Include="src\Shader.cpp" />
   </ItemGroup>

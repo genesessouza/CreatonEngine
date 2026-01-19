@@ -55,11 +55,11 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>CRTN_PLATFORM_WINDOWS;   _DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>CRTN_PLATFORM_WINDOWS;  _DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
-      <AdditionalIncludeDirectories>$(SolutionDir)Core\include; $(SolutionDir)Platform\include; $(SolutionDir)Rendering\include; $(SolutionDir)Framework\include; $(SolutionDir)vendor\GLFW\include; $(SolutionDir)vendor\glad\include; $(SolutionDir)vendor\glm\include;</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)include; $(ProjectDir)include; $(SolutionDir)Core\include; $(SolutionDir)Platform\include; $(SolutionDir)Rendering\include; $(SolutionDir)Framework\include; $(SolutionDir)vendor\GLFW\include; $(SolutionDir)vendor\glad\include; $(SolutionDir)vendor\glm\include;</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
     </ClCompile>
     <Link>
@@ -83,11 +83,11 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>CRTN_PLATFORM_WINDOWS;   NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>CRTN_PLATFORM_WINDOWS; NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
-      <AdditionalIncludeDirectories>$(SolutionDir)Core\include; $(SolutionDir)Platform\include; $(SolutionDir)Rendering\include; $(SolutionDir)Framework\include; $(SolutionDir)vendor\GLFW\include; $(SolutionDir)vendor\glad\include; $(SolutionDir)vendor\glm\include;</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)include; $(SolutionDir)Core\include; $(SolutionDir)Platform\include; $(SolutionDir)Rendering\include; $(SolutionDir)Framework\include; $(SolutionDir)vendor\GLFW\include; $(SolutionDir)vendor\glad\include; $(SolutionDir)vendor\glm\include;</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
     </ClCompile>
     <Link>
@@ -106,12 +106,13 @@
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="src\Platform\EntryPoint.h" />
-    <ClInclude Include="src\Layers\SandboxLayer.h" />
-    <ClInclude Include="src\SandboxApplication.h" />
+    <ClInclude Include="include\Engine\Sandbox\MainScene.h" />
+    <ClInclude Include="EntryPoint.h" />
+    <ClInclude Include="include\Engine\Sandbox\SandboxLayer.h" />
+    <ClInclude Include="include\Engine\Sandbox\SandboxApplication.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\Platform\EntryPoint.cpp" />
+    <ClCompile Include="EntryPoint.cpp" />
     <ClCompile Include="src\SandboxApplication.cpp" />
   </ItemGroup>
   <ItemGroup>

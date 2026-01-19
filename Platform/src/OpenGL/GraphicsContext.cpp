@@ -5,6 +5,8 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
+#include <stdio.h>
+
 namespace Engine::Platform
 {
 	GraphicsContext::GraphicsContext(GLFWwindow* windowHandle) : m_WindowHandle(windowHandle)
@@ -23,13 +25,13 @@ namespace Engine::Platform
 		CRTN_LOG_TRACE("[GRAPHICS CONTEXT]: OpenGL version: %s", glGetString(GL_VERSION));
 
 		glEnable(GL_DEPTH_TEST);
-		
+
 		CRTN_LOG_INFO("[GRAPHICS CONTEXT]: Depth Test enabled");
-		
+
 		glEnable(GL_CULL_FACE);
-		glCullFace(GL_FRONT);
-		
-		CRTN_LOG_INFO("[GRAPHICS CONTEXT]: Face Culling::Front enabled\n");
+		glCullFace(GL_BACK);
+
+		CRTN_LOG_INFO("[GRAPHICS CONTEXT]: Face Culling::Back enabled\n");
 	}
 
 	void GraphicsContext::SwapBuffers()

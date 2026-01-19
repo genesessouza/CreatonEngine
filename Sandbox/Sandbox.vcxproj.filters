@@ -15,18 +15,21 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\Platform\EntryPoint.h">
+    <ClInclude Include="EntryPoint.h">
       <Filter>Arquivos de Cabeçalho</Filter>
     </ClInclude>
-    <ClInclude Include="src\Layers\SandboxLayer.h">
+    <ClInclude Include="include\Engine\Sandbox\SandboxLayer.h">
       <Filter>Arquivos de Cabeçalho</Filter>
     </ClInclude>
-    <ClInclude Include="src\SandboxApplication.h">
+    <ClInclude Include="include\Engine\Sandbox\SandboxApplication.h">
+      <Filter>Arquivos de Cabeçalho</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Engine\Sandbox\MainScene.h">
       <Filter>Arquivos de Cabeçalho</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\Platform\EntryPoint.cpp">
+    <ClCompile Include="EntryPoint.cpp">
       <Filter>Arquivos de Origem</Filter>
     </ClCompile>
     <ClCompile Include="src\SandboxApplication.cpp">

@@ -14,7 +14,11 @@ namespace Engine::Rendering
 
 		void Bind() const;
 
-		size_t GetIndexCount() { return m_MeshIBO->GetCount(); }
+		size_t GetIndexCount() 
+		{ 
+			CRTN_CHECK_PTR(m_MeshIBO);
+			return m_MeshIBO->GetCount(); 
+		}
 	private:
 		std::shared_ptr<Engine::Rendering::Array::VertexArray> m_MeshVAO;
 

@@ -26,15 +26,25 @@ namespace Engine::Core::Log
 //////////// LOG MACROS //////////////
 //////////////////////////////////////
 
+#define CRTN_CHECK_PTR(ptr) \
+    do { \
+        if (!(ptr)) { \
+            CRTN_LOG_CRITICAL("Null Pointer detected: Pointer: %s | File: %s | Line: %d", #ptr, __FILE__, __LINE__); \
+            __debugbreak(); \
+        } \
+    } while (0)
+
 #define CRTN_ASSERT(condition, ...) \
-		do { \
-			if (!(condition)) { \
-				Engine::Core::Log::Logger::LogMessage(Engine::Core::Log::Logger::LogLevel::CRITICAL, \
-					"Assertion failed: (%s), function %s, file %s, line %d. " __VA_ARGS__, \
-					#condition, __FUNCTION__, __FILE__, __LINE__); \
-				assert(condition); \
-			} \
-		} while (0)
+    do { \
+        if (!(condition)) { \
+            Engine::Core::Log::Logger::LogMessage(Engine::Core::Log::Logger::LogLevel::CRITICAL, \
+                "Assert result: %s. File: %s, Line: %d", #condition, __FILE__, __LINE__); \
+            \
+            Engine::Core::Log::Logger::LogMessage(Engine::Core::Log::Logger::LogLevel::CRITICAL, __VA_ARGS__); \
+            \
+            __debugbreak(); \
+        } \
+    } while (0)
 
 #define CRTN_LOG_TRACE(...) \
 		Engine::Core::Log::Logger::LogMessage(Engine::Core::Log::Logger::LogLevel::TRACE, __VA_ARGS__)

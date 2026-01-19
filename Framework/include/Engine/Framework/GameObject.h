@@ -9,18 +9,32 @@
 
 namespace Engine::Framework
 {
-    class GameObject
-    {
-    public:
-        inline void Draw(const Camera& camera) const
-        {
-            //CRTN_LOG_INFO("GameObject::Draw() called");
+	class GameObject
+	{
+	public:
+		GameObject() : m_Renderer(nullptr)
+		{
+		}
 
-            if (m_Renderer)
-                m_Renderer->Draw(m_Transform, camera);
-        }
-    public:
-        Transform m_Transform;
-        std::unique_ptr<Engine::Rendering::MeshRenderer> m_Renderer;
-    };
+		virtual ~GameObject() = default;
+
+		void Init()
+		{
+			m_Renderer = Engine::Rendering::MeshRenderer::Create();
+
+			if (m_Renderer)
+				m_Renderer->Init();
+		}
+
+		inline void Draw() const
+		{
+			if (m_Renderer)
+				m_Renderer->Draw(m_Transform);
+		}
+
+		static std::shared_ptr<GameObject> Create() { return std::make_shared<GameObject>(); }
+	public:
+		Transform m_Transform;
+		std::shared_ptr<Engine::Rendering::MeshRenderer> m_Renderer;
+	};
 }

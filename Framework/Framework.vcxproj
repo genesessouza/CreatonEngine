@@ -141,6 +141,7 @@
   <ItemGroup>
     <ClInclude Include="include\Engine\Framework\Camera.h" />
     <ClInclude Include="include\Engine\Framework\GameObject.h" />
+    <ClInclude Include="include\Engine\Framework\Light.h" />
     <ClInclude Include="include\Engine\Framework\Mesh.h" />
     <ClInclude Include="include\Engine\Framework\MeshLibrary.h" />
     <ClInclude Include="include\Engine\Framework\Scene.h" />

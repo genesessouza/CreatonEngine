@@ -28,7 +28,9 @@ namespace Engine::Framework
         const void MoveCamera(const glm::vec3& position);
         const void RotateCamera(const glm::vec3& rotation);
     
-        const glm::vec3& GetPosition() const { return m_Transform.m_Position; }
+        const glm::vec3& GetPosition() const { return m_Transform.GetPosition(); }
+
+        static std::shared_ptr<Camera> Create() { return std::make_shared<Camera>(); }
     private:
         float m_FOV = 60.0f;
         float m_AspectRatio = 16.0f / 9.0f;
