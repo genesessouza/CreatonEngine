@@ -30,6 +30,9 @@ namespace Engine::Framework
     
         const glm::vec3& GetPosition() const { return m_Transform.GetPosition(); }
 
+        bool IsDirty() const { return m_Dirty; }
+        void ClearDirty() { m_Dirty = false; }
+
         static std::shared_ptr<Camera> Create() { return std::make_shared<Camera>(); }
     private:
         float m_FOV = 60.0f;

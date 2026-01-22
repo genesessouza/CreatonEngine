@@ -9,7 +9,7 @@ namespace Engine::Framework::Lights
     public:
         DirectionalLight() : GameObject(ObjectType::Null)
         {
-            m_Direction = glm::vec3(-10, -30, 30);
+            m_Direction = glm::vec3(1, 5, -3);
             m_Color = glm::vec4(1.00, 0.95, 0.70, 1.0);
             m_Intensity = 3.0f;
         }

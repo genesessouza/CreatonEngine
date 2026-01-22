@@ -20,16 +20,31 @@
     <ClInclude Include="include\Engine\Platform\Windows\WindowsWindowFactory.h" />
     <ClInclude Include="include\Glad\include\glad\glad.h" />
     <ClInclude Include="include\Glad\include\KHR\khrplatform.h" />
+    <ClInclude Include="vendor\include\ImGui\imconfig.h" />
+    <ClInclude Include="vendor\include\ImGui\imgui.h" />
+    <ClInclude Include="vendor\include\ImGui\imgui_impl_glfw.h" />
+    <ClInclude Include="vendor\include\ImGui\imgui_impl_opengl3.h" />
+    <ClInclude Include="vendor\include\ImGui\imgui_impl_opengl3_loader.h" />
+    <ClInclude Include="vendor\include\ImGui\imgui_internal.h" />
+    <ClInclude Include="vendor\include\ImGui\imstb_rectpack.h" />
+    <ClInclude Include="vendor\include\ImGui\imstb_textedit.h" />
+    <ClInclude Include="vendor\include\ImGui\imstb_truetype.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="include\Engine\Platform\Glfw\GlfwTimer.cpp" />
-    <ClCompile Include="src\glad\glad.c" />
     <ClCompile Include="src\OpenGL\GraphicsContext.cpp" />
     <ClCompile Include="src\OpenGL\OpenGLArray.cpp" />
     <ClCompile Include="src\OpenGL\OpenGLBuffer.cpp" />
     <ClCompile Include="src\OpenGL\OpenGLRendererAPI.cpp" />
     <ClCompile Include="src\Windows\WindowsWindow.cpp" />
     <ClCompile Include="src\Windows\WindowsWindowFactory.cpp" />
+    <ClCompile Include="vendor\src\glad\glad.c" />
+    <ClCompile Include="vendor\src\ImGui\imgui.cpp" />
+    <ClCompile Include="vendor\src\ImGui\imgui_draw.cpp" />
+    <ClCompile Include="vendor\src\ImGui\imgui_impl_glfw.cpp" />
+    <ClCompile Include="vendor\src\ImGui\imgui_impl_opengl3.cpp" />
+    <ClCompile Include="vendor\src\ImGui\imgui_tables.cpp" />
+    <ClCompile Include="vendor\src\ImGui\imgui_widgets.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Core\Core.vcxproj">
@@ -85,12 +100,15 @@
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
-      <AdditionalIncludeDirectories>$(ProjectDir)include; $(SolutionDir)Core\include; $(SolutionDir)Rendering\include; $(SolutionDir)vendor\GLFW\include; $(SolutionDir)vendor\glad\include; $(SolutionDir)vendor\glm\include;</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)include; $(ProjectDir)vendor\include; $(ProjectDir)vendor\src; $(SolutionDir)Core\include; $(SolutionDir)Rendering\include; $(SolutionDir)vendor\GLFW\include; $(SolutionDir)vendor\glad\include; $(SolutionDir)vendor\glm\include;</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>
+      </AdditionalLibraryDirectories>
+      <AdditionalDependencies>$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <Lib>
       <AdditionalDependencies>
@@ -109,12 +127,15 @@
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
-      <AdditionalIncludeDirectories>$(ProjectDir)include; $(SolutionDir)Core\include; $(SolutionDir)Rendering\include; $(SolutionDir)vendor\GLFW\include; $(SolutionDir)vendor\glad\include; $(SolutionDir)vendor\glm\include;</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)include; $(ProjectDir)vendor\include; $(ProjectDir)vendor\src; $(SolutionDir)Core\include; $(SolutionDir)Rendering\include; $(SolutionDir)vendor\GLFW\include; $(SolutionDir)vendor\glad\include; $(SolutionDir)vendor\glm\include;</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>
+      </AdditionalLibraryDirectories>
+      <AdditionalDependencies>$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <Lib>
       <AdditionalDependencies>

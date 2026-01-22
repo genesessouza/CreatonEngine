@@ -7,8 +7,6 @@
 #include <Engine/Core/Event/FramebufferEvent.h>
 
 #include <Engine/Framework/Scene.h>
-#include <Engine/Framework/GameObject.h>
-#include <Engine/Framework/MeshLibrary.h>
 
 #include "Engine/Sandbox/MainScene.h"
 
@@ -37,6 +35,26 @@ namespace Engine::Sandbox
 			m_MainScene.m_SceneCamera->RotateCamera(m_CameraRotationDirection * m_CameraRotationSpeed * deltaTime);
 
 			m_MainScene.Render();
+
+			if (m_GroundSpecular < 0) 
+				m_GroundSpecular = 0;
+			if (m_GroundSpecular > 1)
+				m_GroundSpecular = 1;
+
+			if (m_GroundShininess < 8)
+				m_GroundShininess = 8;
+			if (m_GroundShininess > 128)
+				m_GroundShininess = 128;
+
+			if (m_CubeSpecular < 0)
+				m_CubeSpecular = 0;
+			if (m_CubeSpecular > 1)
+				m_CubeSpecular = 1;
+
+			if (m_CubeShininess < 8)
+				m_CubeShininess = 8;
+			if (m_CubeShininess > 128)
+				m_CubeShininess = 128;
 
 			//auto& cameraPos = m_MainScene.m_SceneCamera->GetPosition();
 			//CRTN_LOG_DEBUG("Camera Pos: X [%.2f] | Y [%.2f] | Z [%.2f]", cameraPos.x, cameraPos.y, cameraPos.z);
@@ -79,6 +97,75 @@ namespace Engine::Sandbox
 					if (e.GetKeyCode() == GLFW_KEY_Q) m_CameraRotationDirection.z = -speed;
 					if (e.GetKeyCode() == GLFW_KEY_E) m_CameraRotationDirection.z = speed;
 
+					// GROUND
+					{
+						if (e.GetKeyCode() == GLFW_KEY_1)
+						{
+							m_GroundShininess *= 2;
+							m_MainScene.GetObjects()[1]->m_MeshRenderer->GetMaterial()->SetShininess(m_GroundShininess);
+
+							CRTN_LOG_TRACE("Ground Shininess set to: %f", m_GroundShininess);
+						}
+
+						if (e.GetKeyCode() == GLFW_KEY_2)
+						{
+							m_GroundSpecular += 0.1f;
+							m_MainScene.GetObjects()[1]->m_MeshRenderer->GetMaterial()->SetSpecular(m_GroundSpecular);
+
+							CRTN_LOG_TRACE("Ground Specular set to: %f", m_GroundSpecular);
+						}
+
+						if (e.GetKeyCode() == GLFW_KEY_9)
+						{
+							m_GroundShininess /= 2;
+							m_MainScene.GetObjects()[1]->m_MeshRenderer->GetMaterial()->SetShininess(m_GroundShininess);
+
+							CRTN_LOG_TRACE("Ground Shininess set to: %f", m_GroundShininess);
+						}
+
+						if (e.GetKeyCode() == GLFW_KEY_0)
+						{
+							m_GroundSpecular -= 0.1f;
+							m_MainScene.GetObjects()[1]->m_MeshRenderer->GetMaterial()->SetSpecular(m_GroundSpecular);
+
+							CRTN_LOG_TRACE("Ground Specular set to: %f", m_GroundSpecular);
+						}
+					}
+
+					// DEFAULT CUBE
+					{
+						if (e.GetKeyCode() == GLFW_KEY_3)
+						{
+							m_CubeShininess *= 2;
+							m_MainScene.GetObjects()[2]->m_MeshRenderer->GetMaterial()->SetShininess(m_CubeShininess * 2);
+
+							CRTN_LOG_TRACE("Cube Shininess set to: %f", m_CubeShininess);
+						}
+
+						if (e.GetKeyCode() == GLFW_KEY_4)
+						{
+							m_CubeSpecular += 0.1f;
+							m_MainScene.GetObjects()[2]->m_MeshRenderer->GetMaterial()->SetSpecular(m_CubeSpecular);
+
+							CRTN_LOG_TRACE("Cube Specular set to: %f", m_CubeSpecular);
+						}
+
+						if (e.GetKeyCode() == GLFW_KEY_7)
+						{
+							m_CubeShininess / 2;
+							m_MainScene.GetObjects()[2]->m_MeshRenderer->GetMaterial()->SetShininess(m_CubeShininess);
+
+							CRTN_LOG_TRACE("Cube Shininess set to: %f", m_CubeShininess);
+						}
+
+						if (e.GetKeyCode() == GLFW_KEY_8)
+						{
+							m_CubeSpecular - 0.1f;
+							m_MainScene.GetObjects()[2]->m_MeshRenderer->GetMaterial()->SetSpecular(m_CubeSpecular);
+
+							CRTN_LOG_TRACE("Cube Specular set to: %f", m_CubeSpecular);
+						}
+					}
 					return false;
 				});
 
@@ -106,5 +193,12 @@ namespace Engine::Sandbox
 		glm::vec3 m_CameraRotationDirection;
 	private:
 		Engine::Sandbox::MainScene m_MainScene;
+	private:
+		// TESTS
+		float m_GroundShininess = 4.0f;
+		float m_CubeShininess = 4.0f;
+
+		float m_GroundSpecular = 0.2f;
+		float m_CubeSpecular = 0.2f;
 	};
 }

@@ -65,8 +65,8 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>Core.lib; Platform.lib; Rendering.lib; glfw3.lib; opengl32.lib; $(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(SolutionDir)bin\Core\$(Configuration)-$(Platform)\; $(SolutionDir)bin\Platform\$(Configuration)-$(Platform)\; $(SolutionDir)bin\Rendering\$(Configuration)-$(Platform)\; $(SolutionDir)vendor\GLFW\lib;</AdditionalLibraryDirectories>
+      <AdditionalDependencies>Core.lib; Platform.lib; Rendering.lib; Framework.lib; glfw3.lib; opengl32.lib; $(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)bin\Core\$(Configuration)-$(Platform)\;$(SolutionDir)bin\Platform\$(Configuration)-$(Platform)\;$(SolutionDir)bin\Rendering\$(Configuration)-$(Platform)\;$(SolutionDir)bin\Framework\$(Configuration)-$(Platform)\;$(SolutionDir)vendor\GLFW\lib</AdditionalLibraryDirectories>
     </Link>
     <PreBuildEvent>
       <Command>
@@ -93,7 +93,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>Core.lib; Platform.lib; Rendering.lib; glfw3.lib; opengl32.lib; $(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Core.lib; Platform.lib; Rendering.lib; Framework.lib; glfw3.lib; opengl32.lib; $(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(SolutionDir)bin\Core\$(Configuration)-$(Platform)\; $(SolutionDir)bin\Platform\$(Configuration)-$(Platform)\; $(SolutionDir)bin\Rendering\$(Configuration)-$(Platform)\; $(SolutionDir)vendor\GLFW\lib;</AdditionalLibraryDirectories>
     </Link>
     <PreBuildEvent>
@@ -106,8 +106,8 @@
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="include\Engine\Sandbox\MainScene.h" />
     <ClInclude Include="EntryPoint.h" />
+    <ClInclude Include="include\Engine\Sandbox\MainScene.h" />
     <ClInclude Include="include\Engine\Sandbox\SandboxLayer.h" />
     <ClInclude Include="include\Engine\Sandbox\SandboxApplication.h" />
   </ItemGroup>

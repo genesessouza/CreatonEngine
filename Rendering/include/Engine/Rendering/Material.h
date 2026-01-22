@@ -17,27 +17,65 @@ namespace Engine::Rendering
 
 		virtual ~Material() = default;
 
-		void Init()
+		inline void Init()
 		{
 			m_Shader = Engine::Rendering::Shader::CreateDefaultShader();
+			CRTN_CHECK_PTR(m_Shader);
+
 			Engine::Rendering::Renderer::InitSceneUniforms(m_Shader);
-
-			CRTN_CHECK_PTR(m_Shader);
 		}
 
-		inline void Bind() const 
+		inline void Bind() const
 		{
 			CRTN_CHECK_PTR(m_Shader);
-			m_Shader->Bind(); 
+			m_Shader->Bind();
 		}
 
-		void SetColor(const glm::vec4& color) 
+		inline void SetColor(const glm::vec4& color, const float intensity)
 		{
 			CRTN_CHECK_PTR(m_Shader);
-			m_Shader->DefineUniformVec4(m_Shader->GetUniformLocation(m_Shader->GetDefaultUniformNames(UniformType::Color)), glm::vec4(color.r, color.g, color.b, color.a));
+			
+			m_Shader->DefineUniformVec4(
+				m_Shader->GetUniformLocation(m_Shader->GetDefaultUniformNames(UniformType::Color)), 
+				glm::vec4(color.r, color.g, color.b, color.a) * intensity
+			);
 		}
 
-		const std::shared_ptr<Shader>& GetShader()
+		/// <summary>
+		/// Specular strength. Clamped between 0 - 1
+		/// </summary>
+		/// <param name="value"></param>
+		inline void SetSpecular(float value)
+		{
+			CRTN_CHECK_PTR(m_Shader);
+			
+			if (value < 0)
+				value = 0;
+			else if (value > 1)
+				value = 1;
+			else
+				m_Shader->DefineUniformFloat(m_Shader->GetUniformLocation("u_SpecularStrength"), value);
+		}
+
+		/// <summary>
+		/// Defines how sharp should specular reflection be.
+		/// Clamped between 8 and 128.
+		/// Incremented by multipliying or dividind by 2 fold
+		/// </summary>
+		/// <param name="value"></param>
+		inline void SetShininess(float value)
+		{
+			CRTN_CHECK_PTR(m_Shader);
+
+			if (value < 8)
+				value = 8;
+			else if (value > 128)
+				value = 128;
+			else
+				m_Shader->DefineUniformFloat(m_Shader->GetUniformLocation("u_Shininess"), value);
+		}
+
+		const std::shared_ptr<Shader>& GetShaderID() const
 		{
 			CRTN_CHECK_PTR(m_Shader);
 			return m_Shader;

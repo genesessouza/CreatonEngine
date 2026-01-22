@@ -28,39 +28,39 @@ namespace Engine::Sandbox
 				redLight->SetColor({ 1.0f, 0.0f, 0.0f, 1.0f });
 				redLight->SetIntensity(10.0f);
 
-				AddObject(redLight);
+				//AddObject(redLight);
 
 				auto greenLight = Engine::Framework::Lights::PointLight::Create();
 				greenLight->m_Transform.SetPosition({ 0.0f, 3.0f, 0.0f });
 				greenLight->SetColor({ 0.0f, 1.0f, 0.0f, 1.0f });
 				greenLight->SetIntensity(10.0f);
 
-				AddObject(greenLight);
+				//AddObject(greenLight);
 
 				auto blueLight = Engine::Framework::Lights::PointLight::Create();
 				blueLight->m_Transform.SetPosition({ 3.0f, 1.0f, 0.0f });
 				blueLight->SetColor({ 0.0f, 0.0f, 1.0f, 1.0f });
 				blueLight->SetIntensity(10.0f);
 
-				AddObject(blueLight);
+				//AddObject(blueLight);
 
 				auto purpleLight = Engine::Framework::Lights::PointLight::Create();
 				purpleLight->m_Transform.SetPosition({ 0.0f, 1.0f, -3.0f });
 				purpleLight->SetColor({ 0.5f, 0.0f, 0.5f, 1.0f });
 				purpleLight->SetIntensity(10.0f);
 
-				AddObject(purpleLight);
+				//AddObject(purpleLight);
 
 				auto cyanLight = Engine::Framework::Lights::PointLight::Create();
 				cyanLight->m_Transform.SetPosition({ 0.0f, 1.0f, 3.0f });
 				cyanLight->SetColor({ 0.0f, 0.5f, 0.5f, 1.0f });
 				cyanLight->SetIntensity(10.0f);
 
-				AddObject(cyanLight);
+				//AddObject(cyanLight);
 			}
 
 			m_SceneCamera->MoveCamera({ 0, 2, -9 });
-			//m_SceneCamera->MoveCamera({ 0, 0, -10 });
+			//m_SceneCamera->MoveCamera({ 0, 10, 0 });
 			//m_SceneCamera->RotateCamera({ 90, 0, 0 });
 
 			// GROUND
@@ -71,7 +71,7 @@ namespace Engine::Sandbox
 			m_GroundCube->m_Transform.SetScale({ 10.0f, 0.3f, 10.0f });
 
 			m_GroundCube->m_MeshRenderer->SetMesh(Engine::Framework::MeshLibrary::InstantiateCube());
-			m_GroundCube->m_MeshRenderer->GetMaterial()->SetColor(glm::vec4(0.2f, 0.2f, 0.2f, 1)); // Sets ground color to dark grey
+			m_GroundCube->m_MeshRenderer->GetMaterial()->SetColor(glm::vec4(0.2f, 0.2f, 0.2f, 1), 1.0f); // Sets ground color to dark grey
 
 			AddObject(m_GroundCube);
 
@@ -83,7 +83,7 @@ namespace Engine::Sandbox
 			m_DefaultCube->m_Transform.SetScale({ 1.0f, 1.0f, 1.0f });
 
 			m_DefaultCube->m_MeshRenderer->SetMesh(Engine::Framework::MeshLibrary::InstantiateCube());
-			m_DefaultCube->m_MeshRenderer->GetMaterial()->SetColor(glm::vec4(0.2f, 0.2f, 0.2f, 1.0f)); // Sets cube default color to red
+			m_DefaultCube->m_MeshRenderer->GetMaterial()->SetColor(glm::vec4(0.2f, 0.2f, 0.2f, 1.0f), 1.0f); // Sets cube default color to red
 
 			AddObject(m_DefaultCube);
 		}

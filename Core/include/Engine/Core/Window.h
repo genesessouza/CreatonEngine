@@ -13,6 +13,8 @@
 
 namespace Engine::Core
 {
+	class GLFWwindow;
+
 	class CORE_API Window
 	{
 	public:
@@ -61,6 +63,8 @@ namespace Engine::Core
 		const WindowProps& GetProps() const { return m_Props; }
 	
 		virtual bool ShouldClose() const = 0;
+
+		virtual void* GetNativeWindow() { return (GLFWwindow*)this; }
 	protected:
 		WindowProps m_Props;
 		bool m_VSync = false;

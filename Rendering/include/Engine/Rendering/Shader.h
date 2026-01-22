@@ -29,6 +29,7 @@ namespace Engine::Rendering
 	public:
 		struct SceneUniformLocations
 		{
+			int Normal;
 			int ViewProjection;
 			int ViewPos;
 
@@ -109,6 +110,5 @@ namespace Engine::Rendering
 		uint32_t m_RendererId;
 	private:
 		std::unordered_map<std::string, int> m_UniformLocationCache;
-
 	};
 }

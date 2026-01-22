@@ -54,5 +54,7 @@ namespace Engine::Rendering
         std::shared_ptr<Material> m_MeshMat;
 
         MeshUniformLocations m_MeshUniforms;
+    private:
+        bool m_UniformsInitialized = true;
     };
 }
