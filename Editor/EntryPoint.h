@@ -7,31 +7,6 @@
 
 Engine::Core::Application* CreateApplication();
 
-//#ifdef NDEBUG
-//constexpr auto RELEASE_BUILD = 1;
-//#else
-//	#ifdef _DEBUG
-//constexpr auto DEBUG_BUILD = 0;
-//	#endif	
-//#endif
-
-LONG WINAPI CrashHandler(EXCEPTION_POINTERS* ExceptionInfo) {
-	const char* errorType = "Unknown Exception";
-
-	switch (ExceptionInfo->ExceptionRecord->ExceptionCode) 
-	{
-		case EXCEPTION_ACCESS_VIOLATION: errorType = "ACCESS VIOLATION (Invalid Memory Read/Write)"; break;
-		case EXCEPTION_STACK_OVERFLOW:   errorType = "STACK OVERFLOW"; break;
-		case EXCEPTION_INT_DIVIDE_BY_ZERO: errorType = "INTEGER DIVIDE BY ZERO"; break;
-	}
-
-	void* faultingAddress = ExceptionInfo->ExceptionRecord->ExceptionAddress;
-
-	Engine::Core::Log::Logger::LogMessage(Engine::Core::Log::Logger::LogLevel::CRITICAL, "CRITICAL ENGINE CRASH: %s at address %p", errorType, faultingAddress);
-
-	return EXCEPTION_CONTINUE_SEARCH;
-}
-
 int main(int argc, char** argv)
 {
 	// Enable Log colors on build exe

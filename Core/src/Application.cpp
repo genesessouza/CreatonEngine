@@ -21,6 +21,8 @@ namespace Engine::Core
 		m_Window->SetVSync(false);
 
 		m_Running = true;
+
+		m_Framebuffer = Framebuffer::Create(m_Window->GetFramebufferSize().width, m_Window->GetFramebufferSize().height);
 	}
 
 	Application::~Application()
@@ -28,9 +30,15 @@ namespace Engine::Core
 		s_Instance = nullptr;
 	}
 
+	Application& Application::Get()
+	{
+		return *s_Instance;
+	}
+
 	void Application::PushLayer(Layer::Layer* layer)
 	{
 		m_LayerStack.PushLayer(layer);
+		layer->SetEventCallback(BIND_EVENT_FN(Application::OnEvent));
 	}
 
 	void Application::PushOverlay(Layer::Layer* layer)
@@ -59,8 +67,8 @@ namespace Engine::Core
 
 				char title[128];
 				snprintf(
-					title, sizeof(title), "CreationEngine - [%d x %d] | FPS: %.2f - %.3fms", 
-					m_Window->GetWindowSize().width, m_Window->GetWindowSize().height, fps, 
+					title, sizeof(title), "CreationEngine - [%d x %d] | FPS: %.2f - %.3fms",
+					m_Window->GetWindowSize().width, m_Window->GetWindowSize().height, fps,
 					(fpsTimer / frameCount) * 1000.0f
 				);
 				m_Window->SetTitle(title);
@@ -69,17 +77,46 @@ namespace Engine::Core
 				frameCount = 0;
 			}
 
-			OnUpdate(deltaTime);
-			m_Window->OnUpdate();
+			if (m_FramebufferState.Resized)
+			{
+				m_Framebuffer->Resize(m_FramebufferState.Width, m_FramebufferState.Height);
+				m_FramebufferState.Resized = false;
+			}
+
+			// SCENE RENDERING
+			m_Framebuffer->Bind();
+
+			RenderCommand::SetViewport(0, 0, m_Framebuffer->GetWidth(), m_Framebuffer->GetHeight());
 
 			for (Layer::Layer* layer : m_LayerStack)
-				layer->OnUpdate(deltaTime);
+			{
+				if (m_SceneState == SceneState::State::Play)
+					layer->OnUpdate(deltaTime);
+				else
+					layer->OnEditorUpdate(deltaTime);
+			}
+
+			m_Framebuffer->Unbind();
+
+			// UI RENDERING
+			auto [w, h] = m_Window->GetWindowSize();
+
+			RenderCommand::SetViewport(0, 0, w, h);
+			RenderCommand::ClearUI(); // Prevents scene viewport color from leaking to UI borders
+
+			RenderCommand::BeginGUI();
+			for (Layer::Layer* layer : m_LayerStack)
+				layer->OnGUIUpdate();
+			RenderCommand::EndGUI();
+
+			OnUpdate(deltaTime);
+			m_Window->OnUpdate();
 		}
 	}
 
-	Application& Application::Get()
+	void Application::Close()
 	{
-		return *s_Instance;
+		m_Running = false;
 	}
 
 	void Application::OnUpdate(float deltaTime)
@@ -171,8 +208,7 @@ namespace Engine::Core
 		m_FramebufferState.Height = e.GetHeight();
 
 		m_FramebufferState.Resized = true;
-
-		return false;
+		return true;
 	}
 
 	bool Application::OnWindowMove(Event::WindowMoveEvent& e)

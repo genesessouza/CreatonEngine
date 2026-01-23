@@ -1,3 +1,4 @@
+/*
 #pragma once
 
 #include <Engine/Core/Application.h>
@@ -10,3 +11,4 @@ namespace Engine::Sandbox
 		SandboxApplication();
 	};
 }
+*/

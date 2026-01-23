@@ -59,10 +59,14 @@ namespace Engine::Rendering
 		}
 	}
 
+	void Renderer::SetClearColor(const glm::vec4& color)
+	{
+		glClearColor(color.r, color.g, color.b, color.a);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	}
+
 	void Renderer::BeginScene(std::shared_ptr<Framework::Camera>& camera, const Engine::Framework::Scene& scene)
 	{
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
 		CRTN_CHECK_PTR(camera);
 
 		s_SceneData.ViewProjection = camera->GetViewProjectionMatrix();

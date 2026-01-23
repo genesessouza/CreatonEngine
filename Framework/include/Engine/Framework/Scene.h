@@ -15,12 +15,6 @@ namespace Engine::Framework
 	class Scene
 	{
 	public:
-		Scene()
-		{
-			glClearColor(0.3f, 0.7f, 0.9f, 1.0f);
-			CRTN_LOG_INFO("[SCENE]: Background color set to: <Sky Blue>\n");
-		}
-
 		virtual ~Scene() = default;
 
 		void Init()

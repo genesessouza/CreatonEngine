@@ -1,6 +1,6 @@
 #include "EntryPoint.h"
 
-namespace Engine::Sandbox
+namespace Engine::Editor
 {
 
 }

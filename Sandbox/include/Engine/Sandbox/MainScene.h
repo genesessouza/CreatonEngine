@@ -12,10 +12,7 @@ namespace Engine::Sandbox
 		: public Engine::Framework::Scene
 	{
 	public:
-		MainScene()
-			: Engine::Framework::Scene()
-		{
-		}
+		virtual ~MainScene() = default;
 
 		void Init()
 		{

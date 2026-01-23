@@ -93,6 +93,7 @@
     <ClInclude Include="include\Engine\Rendering\Array\Array.h" />
     <ClInclude Include="include\Engine\Rendering\Buffer\Buffer.h" />
     <ClInclude Include="include\Engine\Rendering\Buffer\VertexBufferLayout.h" />
+    <ClInclude Include="include\Engine\Rendering\GUIRenderer.h" />
     <ClInclude Include="include\Engine\Rendering\Material.h" />
     <ClInclude Include="include\Engine\Rendering\MeshRenderer.h" />
     <ClInclude Include="include\Engine\Rendering\Renderer.h" />
@@ -105,6 +106,7 @@
   <ItemGroup>
     <ClCompile Include="src\Array\Array.cpp" />
     <ClCompile Include="src\Buffer\Buffer.cpp" />
+    <ClCompile Include="src\GUIRenderer.cpp" />
     <ClCompile Include="src\MeshGPU.cpp" />
     <ClCompile Include="src\MeshRenderer.cpp" />
     <ClCompile Include="src\Renderer.cpp" />

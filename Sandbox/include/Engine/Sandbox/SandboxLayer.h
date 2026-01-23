@@ -2,9 +2,8 @@
 
 #include <Engine/Core/Layer/Layer.h>
 #include <Engine/Core/Event/KeyEvent.h>
-#include <Engine/Core/Event/WindowEvent.h>
 
-#include <Engine/Core/Event/FramebufferEvent.h>
+#include <Engine/Core/RenderCommand.h>
 
 #include <Engine/Framework/Scene.h>
 
@@ -20,15 +19,25 @@ namespace Engine::Sandbox
 	public:
 		SandboxLayer() : Layer("Sandbox"), m_CameraMovementDirection(0.0f), m_CameraRotationDirection(0.0f)
 		{
-			m_MainScene.Init();
+		}
+
+		virtual ~SandboxLayer()
+		{
+			CRTN_LOG_INFO("[SANDBOX LAYER]: Destroyed sandbox layer");
 		}
 
 		void OnAttach() override
 		{
+			Engine::Rendering::Renderer::SetClearColor(glm::vec4(0.529f, 0.808f, 0.922f, 1.0f));
+			CRTN_LOG_INFO("[SANDBOX LAYER]: Background color set to: <Sky Blue>\n");
+
+			m_MainScene.Init();
 		}
 
 		void OnUpdate(float deltaTime) override
 		{
+			Engine::Rendering::Renderer::SetClearColor({ 0.529f, 0.808f, 0.922f, 1.0f });
+
 			//CRTN_LOG_INFO("SandboxLayer update");
 
 			m_MainScene.m_SceneCamera->MoveCamera(m_CameraMovementDirection * m_CameraMovementSpeed * deltaTime);
@@ -58,6 +67,16 @@ namespace Engine::Sandbox
 
 			//auto& cameraPos = m_MainScene.m_SceneCamera->GetPosition();
 			//CRTN_LOG_DEBUG("Camera Pos: X [%.2f] | Y [%.2f] | Z [%.2f]", cameraPos.x, cameraPos.y, cameraPos.z);
+		}
+
+		void OnEditorUpdate(float deltaTime) override
+		{
+
+		}
+
+		void OnGUIUpdate() override
+		{
+			// LOGIC FOR WHEN GAME MENUS ARE IMPLEMENTED GOES HERE
 		}
 
 		void OnEvent(Engine::Core::Event::Event& e) override

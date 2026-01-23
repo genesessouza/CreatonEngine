@@ -13,7 +13,7 @@
 
 namespace Engine::Core
 {
-	class GLFWwindow;
+	struct GLFWwindow;
 
 	class CORE_API Window
 	{
@@ -21,8 +21,8 @@ namespace Engine::Core
 		struct WindowProps
 		{
 			std::string Title = "Creation Engine";
-			uint32_t Width = 800;
-			uint32_t Height = 600;
+			uint32_t Width = 1280;
+			uint32_t Height = 720;
 		};
 		struct WindowSize
 		{
@@ -63,8 +63,7 @@ namespace Engine::Core
 		const WindowProps& GetProps() const { return m_Props; }
 	
 		virtual bool ShouldClose() const = 0;
-
-		virtual void* GetNativeWindow() { return (GLFWwindow*)this; }
+		virtual void* GetNativeWindow() const = 0;
 	protected:
 		WindowProps m_Props;
 		bool m_VSync = false;

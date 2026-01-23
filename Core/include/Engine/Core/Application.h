@@ -2,6 +2,7 @@
 
 #include "Engine/Core/CoreAPI.h"
 #include "Engine/Core/Window.h"
+#include "Engine/Core/Framebuffer.h"
 
 #include "Engine/Core/Log/Logger.h"
 
@@ -14,6 +15,8 @@
 #include "Engine/Core/Event/WindowEvent.h"
 #include "Engine/Core/Event/FramebufferEvent.h"
 #include "Engine/Core/Event/InputState.h"
+
+#include "Engine/Core/SceneState.h"
 
 #include <memory>
 
@@ -28,16 +31,19 @@ namespace Engine::Core
 		void PushLayer(Layer::Layer* layer);
 		void PushOverlay(Layer::Layer* layer);
 
-		virtual void Run();
-
 		static Application& Get();
 
+		virtual void Run();
+		virtual void Close();
+
+		std::unique_ptr<Framebuffer>& GetFramebuffer() { return m_Framebuffer; }
+
 		Window& GetWindow() { return *m_Window; }
-		const Window& GetWindow() const { return *m_Window; }
+		void* GetNativeWindow() const { return m_Window->GetNativeWindow(); }
 	protected:
 		virtual void OnUpdate(float deltaTime);
 		virtual void OnEvent(Event::Event& e);
-		
+
 		void ProcessInput(float deltaTime);
 		void ProcessWindowChanges();
 
@@ -61,5 +67,9 @@ namespace Engine::Core
 		Event::State::MouseState m_MouseState;
 		Event::State::WindowState m_WindowState;
 		Event::State::FramebufferState m_FramebufferState;
+	private:
+		std::unique_ptr<Framebuffer> m_Framebuffer;
+	private:
+		SceneState::State m_SceneState = SceneState::State::Play;
 	};
 }

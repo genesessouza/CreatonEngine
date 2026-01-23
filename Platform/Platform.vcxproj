@@ -12,9 +12,11 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\Engine\Platform\Glfw\GlfwTimer.h" />
+    <ClInclude Include="include\Engine\Platform\ImGui\ImGuiRenderer.h" />
     <ClInclude Include="include\Engine\Platform\OpenGL\GraphicsContext.h" />
     <ClInclude Include="include\Engine\Platform\OpenGL\OpenGLArray.h" />
     <ClInclude Include="include\Engine\Platform\OpenGL\OpenGLBuffer.h" />
+    <ClInclude Include="include\Engine\Platform\OpenGL\OpenGLFramebuffer.h" />
     <ClInclude Include="include\Engine\Platform\OpenGL\OpenGLRendererAPI.h" />
     <ClInclude Include="include\Engine\Platform\Windows\WindowsWindow.h" />
     <ClInclude Include="include\Engine\Platform\Windows\WindowsWindowFactory.h" />
@@ -31,10 +33,12 @@
     <ClInclude Include="vendor\include\ImGui\imstb_truetype.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="include\Engine\Platform\Glfw\GlfwTimer.cpp" />
+    <ClCompile Include="src\Glfw\GlfwTimer.cpp" />
+    <ClCompile Include="src\ImGui\ImGuiRenderer.cpp" />
     <ClCompile Include="src\OpenGL\GraphicsContext.cpp" />
     <ClCompile Include="src\OpenGL\OpenGLArray.cpp" />
     <ClCompile Include="src\OpenGL\OpenGLBuffer.cpp" />
+    <ClCompile Include="src\OpenGL\OpenGLFramebuffer.cpp" />
     <ClCompile Include="src\OpenGL\OpenGLRendererAPI.cpp" />
     <ClCompile Include="src\Windows\WindowsWindow.cpp" />
     <ClCompile Include="src\Windows\WindowsWindowFactory.cpp" />

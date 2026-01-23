@@ -31,8 +31,10 @@ namespace Engine::Platform::Windows
 		bool IsVSync() const override;
 
         bool ShouldClose() const override;
+        virtual void* GetNativeWindow() const override { return m_Window; }
     private:
         GLFWwindow* m_Window = nullptr;
+
         Engine::Platform::GraphicsContext* m_Context;
 
         EventCallbackFn m_EventCallback;
