@@ -45,6 +45,7 @@ uniform int u_PointLightCount;
 uniform PointLight u_PointLights[8];
 
 uniform vec3 u_ViewPos;
+uniform float u_DiffuseStrength = 0.5;
 uniform float u_SpecularStrength = 1.0;
 uniform float u_Shininess = 16.0;
 
@@ -53,7 +54,7 @@ void main()
     vec3 norm = v_Normal;    
     vec3 viewDir = normalize(u_ViewPos - v_FragPos);
     
-    vec3 ambient = 0.2 * u_Color.rgb;
+    vec3 ambient = 0.5 * u_Color.rgb;
     vec3 totalDiffuse = vec3(0.0);
     vec3 totalSpecular = vec3(0.0);
 
@@ -62,7 +63,7 @@ void main()
         
         // Diffuse
         float diff = max(dot(norm, lightDir), 0.0);
-        totalDiffuse += diff * u_DirLightColor.rgb;
+        totalDiffuse += u_DiffuseStrength * diff * u_DirLightColor.rgb;
 
 	if(diff != 0.0f)
 	{
@@ -81,7 +82,7 @@ void main()
 
         // Diffuse
         float diff = max(dot(norm, lightDir), 0.0);
-        totalDiffuse += diff * u_PointLights[i].Color.rgb * attenuation;
+        totalDiffuse += u_DiffuseStrength * diff * u_PointLights[i].Color.rgb * attenuation;
 
 	if(diff != 0.0f)
 	{

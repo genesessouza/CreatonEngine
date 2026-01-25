@@ -25,55 +25,26 @@ namespace Engine::Rendering
 			Engine::Rendering::Renderer::InitSceneUniforms(m_Shader);
 		}
 
-		inline void Bind() const
+		inline void Bind() const 
 		{
-			CRTN_CHECK_PTR(m_Shader);
 			m_Shader->Bind();
+			m_Shader->DefineUniformVec4(m_Shader->GetUniformLocation(m_Shader->GetDefaultUniformNames(UniformType::Color)), m_Color);
+			m_Shader->DefineUniformFloat(m_Shader->GetUniformLocation(m_Shader->GetDefaultUniformNames(UniformType::Diffuse)), m_Diffuse);
+			m_Shader->DefineUniformFloat(m_Shader->GetUniformLocation(m_Shader->GetDefaultUniformNames(UniformType::Specular)), m_Specular);
+			m_Shader->DefineUniformFloat(m_Shader->GetUniformLocation(m_Shader->GetDefaultUniformNames(UniformType::Shininess)), m_Shininess);
 		}
 
-		inline void SetColor(const glm::vec4& color, const float intensity)
-		{
-			CRTN_CHECK_PTR(m_Shader);
-			
-			m_Shader->DefineUniformVec4(
-				m_Shader->GetUniformLocation(m_Shader->GetDefaultUniformNames(UniformType::Color)), 
-				glm::vec4(color.r, color.g, color.b, color.a) * intensity
-			);
-		}
+		void SetColor(const glm::vec4& color) { m_Color = color; }
+		const glm::vec4& GetColor() const { return m_Color; }
 
-		/// <summary>
-		/// Specular strength. Clamped between 0 - 1
-		/// </summary>
-		/// <param name="value"></param>
-		inline void SetSpecular(float value)
-		{
-			CRTN_CHECK_PTR(m_Shader);
-			
-			if (value < 0)
-				value = 0;
-			else if (value > 1)
-				value = 1;
-			else
-				m_Shader->DefineUniformFloat(m_Shader->GetUniformLocation("u_SpecularStrength"), value);
-		}
+		void SetDiffuse(float value) { m_Diffuse = glm::clamp(value, 0.0f, 1.0f); }
+		float GetDiffuse() const { return m_Diffuse; }
 
-		/// <summary>
-		/// Defines how sharp should specular reflection be.
-		/// Clamped between 8 and 128.
-		/// Incremented by multipliying or dividind by 2 fold
-		/// </summary>
-		/// <param name="value"></param>
-		inline void SetShininess(float value)
-		{
-			CRTN_CHECK_PTR(m_Shader);
+		void SetSpecular(float value) { m_Specular = glm::clamp(value, 0.0f, 1.0f); }
+		float GetSpecular() const { return m_Specular; }
 
-			if (value < 8)
-				value = 8;
-			else if (value > 128)
-				value = 128;
-			else
-				m_Shader->DefineUniformFloat(m_Shader->GetUniformLocation("u_Shininess"), value);
-		}
+		void SetShininess(float value) { m_Shininess = glm::clamp(value, 8.0f, 128.0f); }
+		float GetShininess() const { return m_Shininess; }
 
 		const std::shared_ptr<Shader>& GetShaderID() const
 		{
@@ -90,5 +61,10 @@ namespace Engine::Rendering
 		}
 	private:
 		std::shared_ptr<Shader> m_Shader;
+
+		glm::vec4 m_Color = { 1.0f, 1.0f, 1.0f, 1.0f };
+		float m_Diffuse = 0.5f;
+		float m_Specular = 0.5f;
+		float m_Shininess = 32.0f;
 	};
 }

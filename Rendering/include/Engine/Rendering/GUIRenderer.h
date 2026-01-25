@@ -14,6 +14,9 @@ namespace Engine::Rendering
 		virtual void Begin() = 0;
 		virtual void End() = 0;
 
-		static std::unique_ptr<GUIRenderer> Create();
+		static GUIRenderer* Create();
+		static GUIRenderer* Get() { return s_Instance; }
+	protected:
+		static GUIRenderer* s_Instance;
 	};
 }

@@ -1,13 +1,18 @@
 #pragma once
 
 #include <Engine/Core/Layer/Layer.h>
+
 #include <Engine/Core/Event/KeyEvent.h>
+
+#include "Engine/Sandbox/MainScene.h"
 
 #include <Engine/Core/RenderCommand.h>
 
 #include <Engine/Framework/Scene.h>
+#include <Engine/Framework/Raycast.h>
+#include <Engine/Framework/Debugging.h>
 
-#include "Engine/Sandbox/MainScene.h"
+#include <Engine/Editor/GUI/GUIUtils.h>
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
@@ -23,7 +28,7 @@ namespace Engine::Sandbox
 
 		virtual ~SandboxLayer()
 		{
-			CRTN_LOG_INFO("[SANDBOX LAYER]: Destroyed sandbox layer");
+			//CRTN_LOG_INFO("[SANDBOX LAYER]: Destroyed sandbox layer");
 		}
 
 		void OnAttach() override
@@ -31,7 +36,9 @@ namespace Engine::Sandbox
 			Engine::Rendering::Renderer::SetClearColor(glm::vec4(0.529f, 0.808f, 0.922f, 1.0f));
 			CRTN_LOG_INFO("[SANDBOX LAYER]: Background color set to: <Sky Blue>\n");
 
-			m_MainScene.Init();
+			m_MainScene = std::make_shared<MainScene>();
+			CRTN_CHECK_PTR(m_MainScene);
+			m_MainScene->Init();
 		}
 
 		void OnUpdate(float deltaTime) override
@@ -40,43 +47,27 @@ namespace Engine::Sandbox
 
 			//CRTN_LOG_INFO("SandboxLayer update");
 
-			m_MainScene.m_SceneCamera->MoveCamera(m_CameraMovementDirection * m_CameraMovementSpeed * deltaTime);
-			m_MainScene.m_SceneCamera->RotateCamera(m_CameraRotationDirection * m_CameraRotationSpeed * deltaTime);
+			glm::vec3 currentPos = m_MainScene->GetSceneCamera()->GetTransform().GetPosition();
+			glm::vec3 currentRot = m_MainScene->GetSceneCamera()->GetTransform().GetRotation();
 
-			m_MainScene.Render();
+			glm::vec3 deltaPos = m_CameraMovementDirection * deltaTime;
+			glm::vec3 deltaRot = m_CameraRotationDirection * deltaTime;
 
-			if (m_GroundSpecular < 0) 
-				m_GroundSpecular = 0;
-			if (m_GroundSpecular > 1)
-				m_GroundSpecular = 1;
+			m_MainScene->GetSceneCamera()->GetTransform().SetPosition(currentPos + deltaPos);
+			m_MainScene->GetSceneCamera()->GetTransform().SetRotation(currentRot + deltaRot);
 
-			if (m_GroundShininess < 8)
-				m_GroundShininess = 8;
-			if (m_GroundShininess > 128)
-				m_GroundShininess = 128;
+			m_MainScene->OnUpdateRuntime(deltaTime);
+			m_MainScene->OnRender(m_MainScene->GetSceneCamera());
 
-			if (m_CubeSpecular < 0)
-				m_CubeSpecular = 0;
-			if (m_CubeSpecular > 1)
-				m_CubeSpecular = 1;
-
-			if (m_CubeShininess < 8)
-				m_CubeShininess = 8;
-			if (m_CubeShininess > 128)
-				m_CubeShininess = 128;
-
-			//auto& cameraPos = m_MainScene.m_SceneCamera->GetPosition();
-			//CRTN_LOG_DEBUG("Camera Pos: X [%.2f] | Y [%.2f] | Z [%.2f]", cameraPos.x, cameraPos.y, cameraPos.z);
+			Engine::Framework::Debugging::Render(deltaTime, m_MainScene->GetSceneCamera()->GetViewMatrix(), m_MainScene->GetSceneCamera()->GetProjectionMatrix());
 		}
 
 		void OnEditorUpdate(float deltaTime) override
 		{
-
 		}
 
 		void OnGUIUpdate() override
 		{
-			// LOGIC FOR WHEN GAME MENUS ARE IMPLEMENTED GOES HERE
 		}
 
 		void OnEvent(Engine::Core::Event::Event& e) override
@@ -87,8 +78,24 @@ namespace Engine::Sandbox
 
 			dispatcher.Dispatch<Engine::Core::Event::FramebufferResizeEvent>([this](Engine::Core::Event::FramebufferResizeEvent& e)
 				{
-					m_MainScene.OnViewportResize(e.GetWidth(), e.GetHeight());
+					m_MainScene->OnViewportResize(e.GetWidth(), e.GetHeight());
 					return false;
+				});
+
+			dispatcher.Dispatch<Engine::Core::Event::MouseClickedEvent>([this](Engine::Core::Event::MouseClickedEvent& e)
+				{
+					if (e.GetMouseButton() == GLFW_MOUSE_BUTTON_LEFT)
+					{
+						Engine::Framework::Raycast::RayResult result = Engine::Framework::Raycast::MouseToWorldPos(m_MainScene->GetSceneCamera(), true);
+
+						if (result.Success)
+						{
+							m_SelectedEntity = result.HitEntity;
+							Engine::Editor::EditorGUI::Get().SelectEntity(m_SelectedEntity);
+						}
+
+						return false;
+					}
 				});
 
 			// KEY PRESSED
@@ -97,94 +104,25 @@ namespace Engine::Sandbox
 					float speed = 1.0f;
 
 					// MOVEMENT
-					if (e.GetKeyCode() == GLFW_KEY_W) m_CameraMovementDirection.z = speed;
-					if (e.GetKeyCode() == GLFW_KEY_S) m_CameraMovementDirection.z = -speed;
+					if (e.GetKeyCode() == GLFW_KEY_W) m_CameraMovementDirection.z = -speed * m_CameraMovementSpeed;
+					if (e.GetKeyCode() == GLFW_KEY_S) m_CameraMovementDirection.z = speed * m_CameraMovementSpeed;
 
-					if (e.GetKeyCode() == GLFW_KEY_A) m_CameraMovementDirection.x = -speed;
-					if (e.GetKeyCode() == GLFW_KEY_D) m_CameraMovementDirection.x = speed;
+					if (e.GetKeyCode() == GLFW_KEY_A) m_CameraMovementDirection.x = -speed * m_CameraMovementSpeed;
+					if (e.GetKeyCode() == GLFW_KEY_D) m_CameraMovementDirection.x = speed * m_CameraMovementSpeed;
 
-					if (e.GetKeyCode() == GLFW_KEY_SPACE) m_CameraMovementDirection.y = speed;
-					if (e.GetKeyCode() == GLFW_KEY_LEFT_SHIFT) m_CameraMovementDirection.y = -speed;
+					if (e.GetKeyCode() == GLFW_KEY_SPACE) m_CameraMovementDirection.y = speed * m_CameraMovementSpeed;
+					if (e.GetKeyCode() == GLFW_KEY_LEFT_SHIFT) m_CameraMovementDirection.y = -speed * m_CameraMovementSpeed;
 
 					// ROTATION
-					if (e.GetKeyCode() == GLFW_KEY_UP) m_CameraRotationDirection.x = -speed;
-					if (e.GetKeyCode() == GLFW_KEY_DOWN) m_CameraRotationDirection.x = speed;
+					if (e.GetKeyCode() == GLFW_KEY_UP) m_CameraRotationDirection.x = speed * m_CameraRotationSpeed;
+					if (e.GetKeyCode() == GLFW_KEY_DOWN) m_CameraRotationDirection.x = -speed * m_CameraRotationSpeed;
 
-					if (e.GetKeyCode() == GLFW_KEY_LEFT) m_CameraRotationDirection.y = -speed;
-					if (e.GetKeyCode() == GLFW_KEY_RIGHT) m_CameraRotationDirection.y = speed;
+					if (e.GetKeyCode() == GLFW_KEY_LEFT) m_CameraRotationDirection.y = speed * m_CameraRotationSpeed;
+					if (e.GetKeyCode() == GLFW_KEY_RIGHT) m_CameraRotationDirection.y = -speed * m_CameraRotationSpeed;
 
-					if (e.GetKeyCode() == GLFW_KEY_Q) m_CameraRotationDirection.z = -speed;
-					if (e.GetKeyCode() == GLFW_KEY_E) m_CameraRotationDirection.z = speed;
+					if (e.GetKeyCode() == GLFW_KEY_Q) m_CameraRotationDirection.z = speed * m_CameraRotationSpeed;
+					if (e.GetKeyCode() == GLFW_KEY_E) m_CameraRotationDirection.z = -speed * m_CameraRotationSpeed;
 
-					// GROUND
-					{
-						if (e.GetKeyCode() == GLFW_KEY_1)
-						{
-							m_GroundShininess *= 2;
-							m_MainScene.GetObjects()[1]->m_MeshRenderer->GetMaterial()->SetShininess(m_GroundShininess);
-
-							CRTN_LOG_TRACE("Ground Shininess set to: %f", m_GroundShininess);
-						}
-
-						if (e.GetKeyCode() == GLFW_KEY_2)
-						{
-							m_GroundSpecular += 0.1f;
-							m_MainScene.GetObjects()[1]->m_MeshRenderer->GetMaterial()->SetSpecular(m_GroundSpecular);
-
-							CRTN_LOG_TRACE("Ground Specular set to: %f", m_GroundSpecular);
-						}
-
-						if (e.GetKeyCode() == GLFW_KEY_9)
-						{
-							m_GroundShininess /= 2;
-							m_MainScene.GetObjects()[1]->m_MeshRenderer->GetMaterial()->SetShininess(m_GroundShininess);
-
-							CRTN_LOG_TRACE("Ground Shininess set to: %f", m_GroundShininess);
-						}
-
-						if (e.GetKeyCode() == GLFW_KEY_0)
-						{
-							m_GroundSpecular -= 0.1f;
-							m_MainScene.GetObjects()[1]->m_MeshRenderer->GetMaterial()->SetSpecular(m_GroundSpecular);
-
-							CRTN_LOG_TRACE("Ground Specular set to: %f", m_GroundSpecular);
-						}
-					}
-
-					// DEFAULT CUBE
-					{
-						if (e.GetKeyCode() == GLFW_KEY_3)
-						{
-							m_CubeShininess *= 2;
-							m_MainScene.GetObjects()[2]->m_MeshRenderer->GetMaterial()->SetShininess(m_CubeShininess * 2);
-
-							CRTN_LOG_TRACE("Cube Shininess set to: %f", m_CubeShininess);
-						}
-
-						if (e.GetKeyCode() == GLFW_KEY_4)
-						{
-							m_CubeSpecular += 0.1f;
-							m_MainScene.GetObjects()[2]->m_MeshRenderer->GetMaterial()->SetSpecular(m_CubeSpecular);
-
-							CRTN_LOG_TRACE("Cube Specular set to: %f", m_CubeSpecular);
-						}
-
-						if (e.GetKeyCode() == GLFW_KEY_7)
-						{
-							m_CubeShininess / 2;
-							m_MainScene.GetObjects()[2]->m_MeshRenderer->GetMaterial()->SetShininess(m_CubeShininess);
-
-							CRTN_LOG_TRACE("Cube Shininess set to: %f", m_CubeShininess);
-						}
-
-						if (e.GetKeyCode() == GLFW_KEY_8)
-						{
-							m_CubeSpecular - 0.1f;
-							m_MainScene.GetObjects()[2]->m_MeshRenderer->GetMaterial()->SetSpecular(m_CubeSpecular);
-
-							CRTN_LOG_TRACE("Cube Specular set to: %f", m_CubeSpecular);
-						}
-					}
 					return false;
 				});
 
@@ -205,19 +143,13 @@ namespace Engine::Sandbox
 				});
 		}
 	private:
-		const float m_CameraMovementSpeed = 10.0f;
-		const float m_CameraRotationSpeed = 90.0f;
+		float m_CameraMovementSpeed = 10.0f;
+		float m_CameraRotationSpeed = 90.0f;
 
 		glm::vec3 m_CameraMovementDirection;
 		glm::vec3 m_CameraRotationDirection;
 	private:
-		Engine::Sandbox::MainScene m_MainScene;
-	private:
-		// TESTS
-		float m_GroundShininess = 4.0f;
-		float m_CubeShininess = 4.0f;
-
-		float m_GroundSpecular = 0.2f;
-		float m_CubeSpecular = 0.2f;
+		std::shared_ptr<Engine::Sandbox::MainScene> m_MainScene;
+		std::shared_ptr<Engine::Framework::Entity> m_SelectedEntity = nullptr;
 	};
 }

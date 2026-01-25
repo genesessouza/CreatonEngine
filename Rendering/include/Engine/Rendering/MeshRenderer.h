@@ -12,49 +12,51 @@
 
 namespace Engine::Rendering
 {
-    class MeshRenderer
-    {
-    public:
-        struct MeshUniformLocations
-        {
-            int Model;
-            int Normal;
-        };
+	class MeshRenderer
+	{
+	public:
+		struct MeshUniformLocations
+		{
+			int Model;
+			int Normal;
+		};
 
-        MeshRenderer() : m_MeshMat(nullptr), m_MeshUniforms()
-        {
-        }
+		MeshRenderer() : m_MeshMat(nullptr), m_MeshUniforms()
+		{
+		}
 
-        virtual ~MeshRenderer() = default;
+		virtual ~MeshRenderer() = default;
 
-        void Init()
-        {
-            m_MeshMat = Engine::Rendering::Material::Create();
+		void Init()
+		{
+			m_MeshMat = Engine::Rendering::Material::Create();
 
-            if (m_MeshMat)
-                m_MeshMat->Init();
-        }
+			if (m_MeshMat)
+				m_MeshMat->Init();
+		}
 
-        void InitUniforms();
+		void InitUniforms();
 
-        void Draw(const Engine::Framework::Transform& transform) const;
+		void Draw(const Engine::Framework::Transform& transform) const;
 
-        const std::shared_ptr<Material> GetMaterial() const { return m_MeshMat; }
-        const void SetMesh(const std::shared_ptr<MeshGPU>& mesh) { m_Mesh = mesh; }
+		std::shared_ptr<Material>& GetMaterial() { return m_MeshMat; }
 
-        static std::shared_ptr<MeshRenderer> Create() 
-        { 
-            auto meshRenderer = std::make_shared<MeshRenderer>(); 
-            CRTN_CHECK_PTR(meshRenderer);
+		void SetMesh(const std::shared_ptr<Engine::Rendering::MeshGPU>& mesh) { m_Mesh = mesh; }
+		std::shared_ptr<Engine::Rendering::MeshGPU>& GetMesh() { return m_Mesh; }
 
-            return meshRenderer;
-        }
-    private:
-        std::shared_ptr<MeshGPU> m_Mesh;
-        std::shared_ptr<Material> m_MeshMat;
+		static std::shared_ptr<MeshRenderer> Create()
+		{
+			auto meshRenderer = std::make_shared<MeshRenderer>();
+			CRTN_CHECK_PTR(meshRenderer);
 
-        MeshUniformLocations m_MeshUniforms;
-    private:
-        bool m_UniformsInitialized = true;
-    };
+			return meshRenderer;
+		}
+	private:
+		std::shared_ptr<Engine::Rendering::MeshGPU> m_Mesh;
+		std::shared_ptr<Material> m_MeshMat;
+
+		MeshUniformLocations m_MeshUniforms;
+	private:
+		bool m_UniformsInitialized = true;
+	};
 }

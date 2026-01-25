@@ -70,16 +70,19 @@ namespace Engine::Rendering
 		CRTN_CHECK_PTR(camera);
 
 		s_SceneData.ViewProjection = camera->GetViewProjectionMatrix();
-		s_SceneData.ViewPos = camera->GetPosition();
+		s_SceneData.ViewPos = camera->GetTransform().GetPosition();
 		s_SceneData.CameraDirty = true;
 
 		s_SceneData.HasDirLight = false;
 
 		if (auto& dirLight = scene.GetDirectionalLight())
 		{
-			s_SceneData.DirLightDirection = dirLight->GetDirection();
-			s_SceneData.DirLightColor = dirLight->GetColor();
-			s_SceneData.HasDirLight = true;
+			if (dirLight->IsEnabled())
+			{
+				s_SceneData.DirLightDirection = dirLight->GetTransform().GetRotation();
+				s_SceneData.DirLightColor = dirLight->GetColor();
+				s_SceneData.HasDirLight = true;
+			}
 		}
 
 		s_SceneData.PointLights.clear();
@@ -89,8 +92,11 @@ namespace Engine::Rendering
 
 		for (size_t i = 0; i < count; ++i)
 		{
-			auto* light = pointLights[i];
-			s_SceneData.PointLights.push_back({ light->m_Transform.GetPosition(), light->GetColor(), light->GetIntensity() });
+			auto& light = pointLights[i];
+			if (!light) continue;
+
+			if (light->IsEnabled())
+				s_SceneData.PointLights.push_back({ light->GetTransform().GetPosition(), light->GetColor(), light->GetIntensity() });
 		}
 
 		s_SceneData.LightsDirty = true;

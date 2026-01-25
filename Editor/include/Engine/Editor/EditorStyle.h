@@ -11,7 +11,7 @@ namespace Engine::Editor
 
 		static void ApplyDarkTheme()
 		{
-			Engine::Platform::GUI::ImGuiRenderer::Get().ClearUI();
+			Engine::Platform::GUI::ImGuiRenderer::Get()->ClearUI();
 		}
 	};
 }

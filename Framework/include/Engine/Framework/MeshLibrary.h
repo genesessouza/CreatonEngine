@@ -23,6 +23,14 @@ namespace Engine::Framework
 			return cubeMesh;
 		}
 
+		static Engine::Framework::Geometry::Mesh GetCPUMeshQuad() {
+			return Geometry::Mesh::CreateQuad();
+		}
+
+		static Engine::Framework::Geometry::Mesh GetCPUMeshCube() {
+			return Geometry::Mesh::CreateCube();
+		}
+
 	private:
 		static MeshGPURef CreateQuad()
 		{

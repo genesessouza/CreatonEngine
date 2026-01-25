@@ -221,10 +221,60 @@ namespace Engine::Rendering
 	{
 		glUniform3f(loc, value.x, value.y, value.z);
 	}
-
-	// MAYBE...?
-	int Shader::GetUniformMat4(const std::string& uniformName)
+	
+	const glm::vec3& Shader::GetUniformVec3(const std::string& uniformName)
 	{
-		return GetUniformLocation(uniformName);
+		int loc = GetUniformLocation(uniformName);
+		glm::vec3 value;
+		glGetUniformfv(m_RendererId, loc, glm::value_ptr(value));
+		return value;
+	}
+
+	const glm::vec4& Shader::GetUniformVec4(const std::string& uniformName)
+	{
+		int loc = GetUniformLocation(uniformName);
+		glm::vec4 value;
+		glGetUniformfv(m_RendererId, loc, glm::value_ptr(value));
+		return value;
+	}
+
+	const glm::mat3& Shader::GetUniformMat3(const std::string& uniformName)
+	{
+		int loc = GetUniformLocation(uniformName);
+		glm::mat3 value;
+		glGetUniformfv(m_RendererId, loc, glm::value_ptr(value));
+		return value;
+	}
+
+	const glm::mat4& Shader::GetUniformMat4(const std::string& uniformName)
+	{
+		int loc = GetUniformLocation(uniformName);
+		glm::mat4 value;
+		glGetUniformfv(m_RendererId, loc, glm::value_ptr(value));
+		return value;
+	}
+
+	const int Shader::GetUniformInt(const std::string& uniformName)
+	{
+		int loc = GetUniformLocation(uniformName);
+		int value;
+		glGetUniformiv(m_RendererId, loc, &value);
+		return value;
+	}
+
+	const float Shader::GetUniformFloat(const std::string& uniformName)
+	{
+		int loc = GetUniformLocation(uniformName);
+		float value;
+		glGetUniformfv(m_RendererId, loc, &value);
+		return value;
+	}
+
+	const bool Shader::GetUniformBool(const std::string& uniformName)
+	{
+		int loc = GetUniformLocation(uniformName);
+		int value;
+		glGetUniformiv(m_RendererId, loc, &value);
+		return value != 0;
 	}
 }

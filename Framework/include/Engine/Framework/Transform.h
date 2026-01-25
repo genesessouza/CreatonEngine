@@ -7,7 +7,10 @@ namespace Engine::Framework
 	class Transform
 	{
 	public:
-		Transform() = default;
+		Transform() : m_Position(0), m_Rotation(0), m_Scale(1), m_Dirty(true)
+		{
+		}
+
 		virtual ~Transform() = default;
 
 		void SetPosition(const glm::vec3& position)
@@ -46,9 +49,9 @@ namespace Engine::Framework
 
 		glm::mat4 GetMatrix() const;
 	private:
-		glm::vec3 m_Position{ 0, 0, 0 };
-		glm::vec3 m_Rotation{ 0, 0, 0 };
-		glm::vec3 m_Scale{ 1, 1, 1 };
+		glm::vec3 m_Position;
+		glm::vec3 m_Rotation;
+		glm::vec3 m_Scale;
 
 		mutable glm::mat4 m_CachedMatrix = glm::mat4(1.0f);
 		mutable bool m_Dirty = false;

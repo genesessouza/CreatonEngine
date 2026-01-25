@@ -35,9 +35,9 @@ namespace Engine::Rendering
 			const glm::mat4& transformModel = transform.GetMatrix();
 			glm::mat3 transformNormal = glm::transpose(glm::inverse(glm::mat3(transformModel)));
 
-			shader->DefineUniformMat4(m_MeshUniforms.Model, transformModel);			
-			shader->DefineUniformMat3(glGetUniformLocation(shader->GetShader(), "u_NormalMatrix"), transformNormal);
-			
+			shader->DefineUniformMat4(m_MeshUniforms.Model, transformModel);
+			shader->DefineUniformMat3(glGetUniformLocation(shader->GetShader(), shader->GetDefaultUniformNames(UniformType::Normal).c_str()), transformNormal);
+
 			transform.ClearDirty();
 		}
 

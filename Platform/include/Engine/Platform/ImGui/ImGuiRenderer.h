@@ -14,7 +14,5 @@ namespace Engine::Platform::GUI
 
 		void Begin() override;
 		void End() override;
-
-		static ImGuiRenderer& Get();
 	};
 }

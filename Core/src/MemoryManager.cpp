@@ -54,7 +54,7 @@ namespace Engine::Core::Memory
 		}
 
 		if (!leaked)
-			printf("\033[38;5;14m[MEMORY MANAGER]: Zero memory leaks detected.\033[0m\n");
+			printf("\033[38;5;14m\n[MEMORY MANAGER]: Zero memory leaks detected.\033[0m\n");
 
 		printf("\033[38;5;14m[MEMORY MANAGER]: Total Allocated: %zu | Total Freed: %zu\033[0m\n", s_TotalAllocated, s_TotalFreed);
 	}

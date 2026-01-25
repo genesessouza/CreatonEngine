@@ -112,7 +112,7 @@
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
-      <AdditionalIncludeDirectories>$(ProjectDir)include; $(SolutionDir)Core\include; $(SolutionDir)Rendering\include; $(SolutionDir)Platform\include; $(SolutionDir)vendor\glad\include; $(SolutionDir)vendor\glm\include;</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)include;$(SolutionDir)Core\include;$(SolutionDir)Rendering\include;$(SolutionDir)Platform\include;$(SolutionDir)Editor\include;$(SolutionDir)vendor\glad\include;$(SolutionDir)vendor\glm\include</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
     </ClCompile>
     <Link>
@@ -130,7 +130,7 @@
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
-      <AdditionalIncludeDirectories>$(ProjectDir)include; $(SolutionDir)Core\include; $(SolutionDir)Rendering\include; $(SolutionDir)Platform\include; $(SolutionDir)vendor\glad\include; $(SolutionDir)vendor\glm\include;</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)include;$(SolutionDir)Core\include;$(SolutionDir)Rendering\include;$(SolutionDir)Platform\include;$(SolutionDir)Editor\include;$(SolutionDir)vendor\glad\include;$(SolutionDir)vendor\glm\include</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
     </ClCompile>
     <Link>
@@ -140,14 +140,24 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="include\Engine\Framework\Camera.h" />
+    <ClInclude Include="include\Engine\Framework\Component.h" />
+    <ClInclude Include="include\Engine\Framework\Physics\Collider.h" />
+    <ClInclude Include="include\Engine\Framework\Debugging.h" />
+    <ClInclude Include="include\Engine\Framework\Entity.h" />
     <ClInclude Include="include\Engine\Framework\GameObject.h" />
     <ClInclude Include="include\Engine\Framework\Light.h" />
     <ClInclude Include="include\Engine\Framework\Mesh.h" />
     <ClInclude Include="include\Engine\Framework\MeshLibrary.h" />
+    <ClInclude Include="include\Engine\Framework\Physics\Gravity.h" />
+    <ClInclude Include="include\Engine\Framework\Physics\PhysicsComponent.h" />
+    <ClInclude Include="include\Engine\Framework\Raycast.h" />
     <ClInclude Include="include\Engine\Framework\Scene.h" />
     <ClInclude Include="include\Engine\Framework\Transform.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\Physics\Collider.cpp" />
+    <ClCompile Include="src\Debugging.cpp" />
+    <ClCompile Include="src\Raycast.cpp" />
     <ClCompile Include="src\Camera.cpp" />
     <ClCompile Include="src\Scene.cpp" />
     <ClCompile Include="src\Transform.cpp">

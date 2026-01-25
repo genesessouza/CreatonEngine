@@ -21,7 +21,10 @@ namespace Engine::Rendering
 		Projection,
 		ViewProjection,
 		Normal,
-		Color
+		Color,
+		Diffuse,
+		Specular,
+		Shininess
 	};
 
 	class Shader
@@ -65,7 +68,17 @@ namespace Engine::Rendering
 		void DefineUniformFloat(int loc, const float value);
 		void DefineUniformFloat3(int loc, const glm::vec3& value);
 
-		int GetUniformMat4(const std::string& uniformName);
+		const glm::vec3& GetUniformVec3(const std::string& uniformName);
+		const glm::vec4& GetUniformVec4(const std::string& uniformName);
+
+		const glm::mat3& GetUniformMat3(const std::string& uniformName);
+		const glm::mat4& GetUniformMat4(const std::string& uniformName);
+		
+		const int GetUniformInt(const std::string& uniformName);
+
+		const float GetUniformFloat(const std::string& uniformName);
+
+		const bool GetUniformBool(const std::string& uniformName);
 
 		static std::shared_ptr<Shader> CreateDefaultShader();
 	public:
@@ -92,6 +105,15 @@ namespace Engine::Rendering
 					break;
 				case Color:
 					return "u_Color";
+					break;
+				case Diffuse:
+					return "u_DiffuseStrength";
+					break;
+				case Specular:
+					return "u_SpecularStrength";
+					break;
+				case Shininess:
+					return "u_Shininess";
 					break;
 				default:
 					return "Invalid uniform name!";

@@ -30,11 +30,6 @@ int main(int argc, char** argv)
 	delete app;
 	CRTN_ASSERT(true, "Application deletion failed!");
 
-	//#if RELEASE_BUILD 
-	//	::ShowWindow(::GetConsoleWindow(), SW_HIDE);
-	//	system("pause");
-	//#endif
-
 	Engine::Core::Memory::MemoryTracker::DumpLeaks();
 	return 0;
 }

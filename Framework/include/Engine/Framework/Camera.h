@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Engine/Framework/Transform.h"
+#include "Engine/Framework/Entity.h"
 
 #include <glm/ext/matrix_clip_space.hpp>
 
@@ -9,7 +9,7 @@
 
 namespace Engine::Framework
 {
-    class Camera
+    class Camera : public Entity
     {
     public:
         Camera();
@@ -25,25 +25,16 @@ namespace Engine::Framework
         const void SetNear(float newNearPlane) { m_NearPlane = newNearPlane; }
         const void SetFar(float newFarPlane) { m_FarPlane = newFarPlane; }
 
-        const void MoveCamera(const glm::vec3& position);
-        const void RotateCamera(const glm::vec3& rotation);
-    
-        const glm::vec3& GetPosition() const { return m_Transform.GetPosition(); }
-
-        bool IsDirty() const { return m_Dirty; }
-        void ClearDirty() { m_Dirty = false; }
+        bool IsDirty() const { return m_Transform.IsDirty(); }
+        void ClearDirty() { m_Transform.ClearDirty(); }
 
         static std::shared_ptr<Camera> Create() { return std::make_shared<Camera>(); }
     private:
-        float m_FOV = 60.0f;
-        float m_AspectRatio = 16.0f / 9.0f;
-        float m_NearPlane = 0.1f;
-        float m_FarPlane = 100.0f;
-
-        bool m_Dirty = false;
+        float m_FOV;
+        float m_AspectRatio;
+        float m_NearPlane;
+        float m_FarPlane;
     private:
-        Engine::Framework::Transform m_Transform;
-
         glm::mat4 m_ProjectionMatrix = glm::mat4(1.0f);
         glm::mat4 m_CachedViewMatrix = glm::mat4(1.0f);
     };

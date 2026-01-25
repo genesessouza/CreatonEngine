@@ -11,7 +11,7 @@ namespace Engine::Rendering
 		return API::OpenGL;
 	}
 
-	std::unique_ptr<RendererAPI> RendererAPI::Create()
+	RendererAPI* RendererAPI::Create()
 	{
 		//CRTN_LOG_DEBUG("[RENDERER API]: Initializing Renderer API");
 
@@ -19,7 +19,7 @@ namespace Engine::Rendering
 		{
 			case API::OpenGL:
 			{
-				return std::make_unique<Engine::Platform::OpenGL::OpenGLRendererAPI>();
+				return new Engine::Platform::OpenGL::OpenGLRendererAPI();
 				CRTN_LOG_DEBUG("[RENDERER API]: OpenGL context started");
 			}
 

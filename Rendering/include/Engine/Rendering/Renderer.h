@@ -48,6 +48,7 @@ namespace Engine::Rendering
 		static void MarkLightsDirty() { s_SceneData.LightsDirty = true; }
 
 		static void SetClearColor(const glm::vec4& color);
+
 		static void BeginScene(std::shared_ptr<Engine::Framework::Camera>& camera, const Engine::Framework::Scene& scene);
 		static void EndScene();
 

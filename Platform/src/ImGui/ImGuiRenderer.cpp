@@ -9,13 +9,6 @@
 
 namespace Engine::Platform::GUI
 {
-	static ImGuiRenderer* s_Instance = nullptr;
-
-	ImGuiRenderer& ImGuiRenderer::Get()
-	{
-		return *s_Instance;
-	}
-
 	ImGuiRenderer::ImGuiRenderer()
 	{
 		s_Instance = this;

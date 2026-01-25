@@ -8,8 +8,8 @@
 
 namespace Engine::Core
 {
-	static std::unique_ptr<Engine::Rendering::RendererAPI> s_RendererAPI = Engine::Rendering::RendererAPI::Create();
-	static std::unique_ptr<Engine::Rendering::GUIRenderer> s_GUIRenderer = Engine::Rendering::GUIRenderer::Create();
+	Engine::Rendering::RendererAPI* RenderCommand::s_RendererAPI = Engine::Rendering::RendererAPI::Create();
+	Engine::Rendering::GUIRenderer* RenderCommand::s_GUIRenderer = Engine::Rendering::GUIRenderer::Create();
 
 	void RenderCommand::SetViewport(uint32_t x, uint32_t y, uint32_t width, uint32_t height)
 	{

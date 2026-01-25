@@ -38,6 +38,17 @@ namespace Engine::Core
 
 		std::unique_ptr<Framebuffer>& GetFramebuffer() { return m_Framebuffer; }
 
+		struct MousePosition
+		{
+			float XPos;
+			float YPos;
+		};
+
+		MousePosition GetMousePosition() const
+		{
+			return MousePosition{ m_MouseState.Position.x, m_MouseState.Position.y };
+		}
+
 		Window& GetWindow() { return *m_Window; }
 		void* GetNativeWindow() const { return m_Window->GetNativeWindow(); }
 	protected:

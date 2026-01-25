@@ -4,8 +4,10 @@
 
 namespace Engine::Rendering
 {
-	std::unique_ptr<GUIRenderer> GUIRenderer::Create()
+	GUIRenderer* GUIRenderer::s_Instance = nullptr;
+
+	GUIRenderer* GUIRenderer::Create()
 	{
-		return std::make_unique<Engine::Platform::GUI::ImGuiRenderer>();
+		return new Engine::Platform::GUI::ImGuiRenderer();
 	}
 }

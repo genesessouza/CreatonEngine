@@ -6,22 +6,20 @@
 
 namespace Engine::Framework
 {
-	Camera::Camera()
+	Camera::Camera() 
+		: m_AspectRatio(16.0f / 9.0f), m_NearPlane(0.1f), m_FarPlane(100.0f), m_FOV(60.0f)
 	{
-		m_AspectRatio = 16.0f / 9.0f;
-
 		GetViewMatrix();
 		GetProjectionMatrix();
 	}
 
 	const glm::mat4 Camera::GetViewMatrix()
 	{
-		if (m_Dirty)
+		if (m_Transform.IsDirty())
 		{
 			m_CachedViewMatrix = glm::inverse(m_Transform.GetMatrix());
-			m_Dirty = false;
+			m_Transform.ClearDirty();
 		}
-
 		return m_CachedViewMatrix;
 	}
 
@@ -44,33 +42,17 @@ namespace Engine::Framework
 
 	void Camera::SetViewportSize(uint32_t width, uint32_t height)
 	{
-		m_AspectRatio = (float)width / (float)height;
+		if (width > 0 && height > 0)
+		{
+			m_AspectRatio = (float)width / (float)height;
 
-		m_ProjectionMatrix = glm::perspective(
-			glm::radians(m_FOV),
-			m_AspectRatio,
-			m_NearPlane,
-			m_FarPlane
-		);
-
-		m_Dirty = true;
-	}
-
-	const void Camera::MoveCamera(const glm::vec3& position)
-	{
-		glm::vec3 newPosition = m_Transform.GetPosition() + glm::vec3(position.x, position.y, -position.z);
-		m_Transform.SetPosition(newPosition);
-		m_Dirty = true;
-
-		GetViewMatrix();
-	}
-
-	const void Camera::RotateCamera(const glm::vec3& rotation)
-	{
-		glm::vec3 newRotation = m_Transform.GetRotation() + glm::vec3(-rotation.x, -rotation.y, rotation.z);
-		m_Transform.SetRotation(newRotation);
-		m_Dirty = true;
-
-		GetViewMatrix();
+			m_ProjectionMatrix = glm::perspective(
+				glm::radians(m_FOV),
+				m_AspectRatio,
+				m_NearPlane,
+				m_FarPlane
+			);
+		}
+		GetViewProjectionMatrix();
 	}
 }
