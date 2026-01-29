@@ -83,20 +83,26 @@ namespace Engine::Core
 				m_FramebufferState.Resized = false;
 			}
 
-			// SCENE RENDERING
-			m_Framebuffer->Bind();
+			static float timeAccumulator = 0.0f;
+			timeAccumulator += deltaTime;
 
-			RenderCommand::SetViewport(0, 0, m_Framebuffer->GetWidth(), m_Framebuffer->GetHeight());
-
-			for (Layer::Layer* layer : m_LayerStack)
+			if (timeAccumulator >= 0.016f)
 			{
-				if (m_SceneState == SceneState::State::Play)
-					layer->OnUpdate(deltaTime);
-				else
-					layer->OnEditorUpdate(deltaTime);
-			}
+				// SCENE RENDERING
+				m_Framebuffer->Bind();
 
-			m_Framebuffer->Unbind();
+				RenderCommand::SetViewport(0, 0, m_Framebuffer->GetWidth(), m_Framebuffer->GetHeight());
+
+				for (Layer::Layer* layer : m_LayerStack)
+				{
+					if (m_SceneState == SceneState::State::Play)
+						layer->OnUpdate(deltaTime);
+					else
+						layer->OnEditorUpdate(deltaTime);
+				}
+
+				m_Framebuffer->Unbind();
+			}
 
 			// UI RENDERING
 			auto [w, h] = m_Window->GetWindowSize();

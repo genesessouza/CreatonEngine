@@ -14,6 +14,8 @@ namespace Engine::Rendering
 
 		void Bind() const;
 
+		void Draw() const;
+
 		size_t GetIndexCount() 
 		{ 
 			CRTN_CHECK_PTR(m_MeshIBO);

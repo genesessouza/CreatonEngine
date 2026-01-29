@@ -150,11 +150,13 @@
     <ClInclude Include="include\Engine\Framework\MeshLibrary.h" />
     <ClInclude Include="include\Engine\Framework\Physics\Gravity.h" />
     <ClInclude Include="include\Engine\Framework\Physics\PhysicsComponent.h" />
+    <ClInclude Include="include\Engine\Framework\Physics\PhysicsSystem.h" />
     <ClInclude Include="include\Engine\Framework\Raycast.h" />
     <ClInclude Include="include\Engine\Framework\Scene.h" />
     <ClInclude Include="include\Engine\Framework\Transform.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\Light.cpp" />
     <ClCompile Include="src\Physics\Collider.cpp" />
     <ClCompile Include="src\Debugging.cpp" />
     <ClCompile Include="src\Raycast.cpp" />

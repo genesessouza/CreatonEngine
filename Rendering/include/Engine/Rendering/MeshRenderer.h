@@ -1,62 +1,64 @@
 #pragma once
 
-#include "Engine/Rendering/MeshGPU.h"
-#include "Engine/Rendering/Shader.h"
 #include "Engine/Rendering/Material.h"
 
-#include <Engine/Framework/Transform.h>
-#include <Engine/Framework/Camera.h>
-#include <Engine/Framework/MeshLibrary.h>
+#include <Engine/Framework/Component.h>
 
 #include <memory>
 
+namespace Engine::Framework
+{
+    class Transform;
+    class Scene;
+    class GameObject;
+}
+
 namespace Engine::Rendering
 {
-	class MeshRenderer
-	{
-	public:
-		struct MeshUniformLocations
-		{
-			int Model;
-			int Normal;
-		};
+    class Renderer;
+    class MeshGPU;
 
-		MeshRenderer() : m_MeshMat(nullptr), m_MeshUniforms()
-		{
-		}
+    class MeshRenderer : public Engine::Framework::Component
+    {
+    public:
+        struct MeshUniformLocations
+        {
+            int Model = -1;
+            int Normal = -1;
+        };
 
-		virtual ~MeshRenderer() = default;
+        MeshRenderer() = default;
+        virtual ~MeshRenderer() = default;
 
-		void Init()
-		{
-			m_MeshMat = Engine::Rendering::Material::Create();
+        void Init()
+        {
+            if (!m_MeshMat)
+            {
+                m_MeshMat = Engine::Rendering::Material::Create();
+                m_MeshMat->Init();
+            }
+        }
 
-			if (m_MeshMat)
-				m_MeshMat->Init();
-		}
+        void InitUniforms();
 
-		void InitUniforms();
+        void OnAddedToScene(Engine::Framework::Scene* scene) override;
+        void OnRemovedFromScene(Engine::Framework::Scene* scene) override;
 
-		void Draw(const Engine::Framework::Transform& transform) const;
+        void Draw(Engine::Framework::Transform& transform) const;
 
-		std::shared_ptr<Material>& GetMaterial() { return m_MeshMat; }
+        void SetMesh(const std::shared_ptr<Engine::Rendering::MeshGPU>& mesh)
+        {
+            m_Mesh = mesh;
+        }
 
-		void SetMesh(const std::shared_ptr<Engine::Rendering::MeshGPU>& mesh) { m_Mesh = mesh; }
-		std::shared_ptr<Engine::Rendering::MeshGPU>& GetMesh() { return m_Mesh; }
+        const std::shared_ptr<Engine::Rendering::MeshGPU>& GetMesh() const { return m_Mesh; }
 
-		static std::shared_ptr<MeshRenderer> Create()
-		{
-			auto meshRenderer = std::make_shared<MeshRenderer>();
-			CRTN_CHECK_PTR(meshRenderer);
+        const std::shared_ptr<Engine::Rendering::Material>& GetMaterial() const { return m_MeshMat; }
+    private:
+        std::shared_ptr<Engine::Rendering::MeshGPU> m_Mesh;
+        std::shared_ptr<Engine::Rendering::Material> m_MeshMat;
 
-			return meshRenderer;
-		}
-	private:
-		std::shared_ptr<Engine::Rendering::MeshGPU> m_Mesh;
-		std::shared_ptr<Material> m_MeshMat;
-
-		MeshUniformLocations m_MeshUniforms;
-	private:
-		bool m_UniformsInitialized = true;
-	};
+        MeshUniformLocations m_MeshUniforms;
+        bool m_UniformsInitialized = false;
+    };
 }

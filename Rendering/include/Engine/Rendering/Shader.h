@@ -80,7 +80,7 @@ namespace Engine::Rendering
 
 		const bool GetUniformBool(const std::string& uniformName);
 
-		static std::shared_ptr<Shader> CreateDefaultShader();
+		static std::shared_ptr<Shader> CreateDefaultShader(const std::string& shaderFilepath);
 	public:
 		inline uint32_t GetShader() const { return m_RendererId; }
 

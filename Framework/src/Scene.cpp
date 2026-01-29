@@ -1,184 +1,114 @@
 #include "Engine/Framework/Scene.h"
 
-#include "Engine/Framework/Physics/Collider.h"
-#include <Engine/Framework/Debugging.h>
+#include "Engine/Framework/Entity.h"
+#include "Engine/Framework/Light.h"
 
-#include <algorithm>
+#include "Engine/Framework/Physics/PhysicsSystem.h"
+#include "Engine/Framework/Physics/PhysicsComponent.h"
+#include "Engine/Framework/Physics/Collider.h"
+
+#include <Engine/Rendering/MeshRenderer.h>
+#include <Engine/Rendering/Renderer.h>
 
 namespace Engine::Framework
 {
-	Engine::Framework::Scene* Engine::Framework::Scene::s_ActiveScene = nullptr;
+	Scene* Scene::s_ActiveScene = nullptr;
 
-	const std::vector<std::shared_ptr<Lights::PointLight>> Scene::GetPointLights() const
+	void Scene::Init()
 	{
-		std::vector<std::shared_ptr<Lights::PointLight>> lights;
-		for (auto& e : m_Entities) {
-			if (auto l = std::dynamic_pointer_cast<Lights::PointLight>(e))
-				lights.push_back(l);
-		}
-		return lights;
+		auto mainCam = Camera::Create("[3D Camera] Main");
+		m_SceneCamera = mainCam.get();
+		AddEntity(std::move(mainCam));
+
+		auto dirLightGO = GameObject::Create("[Directional Light] Sun");
+		dirLightGO->AddComponent<Lights::DirectionalLight>();
+
+		auto dirLightComp = dirLightGO->GetComponent<Lights::DirectionalLight>();
+		dirLightComp->SetOwner(dirLightGO.get());
+
+		dirLightComp->Init();
+		m_DirectionalLight = dirLightComp;
+
+		SetDirectionalLight(m_DirectionalLight);
+		AddEntity(std::move(dirLightGO));
 	}
 
-	const std::shared_ptr<Lights::DirectionalLight> Scene::GetDirectionalLight() const
+	void Scene::AddEntity(std::unique_ptr<Engine::Framework::Entity> obj)
 	{
-		for (auto& e : m_Entities) {
-			if (auto dl = std::dynamic_pointer_cast<Lights::DirectionalLight>(e))
-				return dl;
-		}
-		return nullptr;
+		m_Entities.push_back(std::move(obj));
 	}
 
-	void Scene::OnUpdateRuntime(float ts)
+	void Scene::RemoveEntity(Entity* obj)
 	{
-		for (auto& e : m_Entities)
-		{
-			auto obj = std::dynamic_pointer_cast<GameObject>(e);
-			if (!obj || !obj->IsEnabled()) continue;
-
-			if (auto phys = obj->GetComponent<Physics::PhysicsComponent>())
-			{
-				if (phys->IsStatic() || !phys->IsEnabled()) continue;
-
-				phys->ApplyGravity(ts);
-
-				glm::vec3 currentPos = obj->GetTransform().GetPosition();
-				glm::vec3 velocity = phys->GetVelocity();
-
-				obj->GetTransform().SetPosition(currentPos + velocity * ts);
-				obj->GetTransform().SetRotation(phys->GetAngularVelocity() * ts);
-			}
-		}
-
-		for (size_t i = 0; i < m_Entities.size(); i++)
-		{
-			auto objA = std::dynamic_pointer_cast<GameObject>(m_Entities[i]);
-			if (!objA || !objA->IsEnabled()) continue;
-
-			for (size_t j = i + 1; j < m_Entities.size(); j++)
-			{
-				auto objB = std::dynamic_pointer_cast<GameObject>(m_Entities[j]);
-				if (!objB || !objB->IsEnabled()) continue;
-
-				auto colA = objA->GetComponent<Physics::Collider>();
-				auto colB = objB->GetComponent<Physics::Collider>();
-
-				if (colA && colB)
-				{
-					if (!colA->IsEnabled() || !colB->IsEnabled())
-						continue;
-
-					if (colA->IsStatic() && colB->IsStatic())
-						continue;
-
-					if (colA->IsTrigger() || colB->IsTrigger())
-						continue;
-
-					glm::vec3 overlap(0.0f);
-					glm::vec3 hitPoint(0.0f);
-
-					auto physA = objA->GetComponent<Physics::PhysicsComponent>();
-					auto physB = objB->GetComponent<Physics::PhysicsComponent>();
-
-					float dist = glm::distance(colA->GetOwner()->GetTransform().GetPosition(), colB->GetOwner()->GetTransform().GetPosition());
-					float radius =
-						glm::max(colA->GetOwner()->GetTransform().GetScale().x, colA->GetOwner()->GetTransform().GetScale().y) +
-						glm::max(colB->GetOwner()->GetTransform().GetScale().x, colB->GetOwner()->GetTransform().GetScale().y);
-
-					if (m_Collided && dist > radius)
-					{
-						m_Collided = false;
-						if (!physA->IsStatic())
-							physA->SetEnabled(true);
-						else if (!physB->IsStatic())
-							physB->SetEnabled(true);
-
-						//CRTN_LOG_INFO("COLLIDED BUT FAR AWAY. REACTIVATING PHYSICS.");
-					}
-
-					if (colA->CheckCollision(colB.get(), overlap, hitPoint) && !m_Collided)
-					{
-						//CRTN_LOG_WARNING("COLLIDED! CALLING RESOLVE NOW");
-
-						ResolveCollision(physA.get(), physB.get(), overlap, hitPoint);
-
-						//Engine::Framework::Debugging::AddHitPoint(hitPoint, 0.1f, { 1.0f, 0.0f, 0.0f, 1.0f }, 1.0f);
-						m_Collided = true;
-					}
-
-					if (dist < radius && m_Collided)
-					{
-						if (!physA->IsStatic())
-							physA->SetEnabled(false);
-						else if (!physB->IsStatic())
-							physB->SetEnabled(false);
-
-						//CRTN_LOG_ERROR("COLLIDED BUT TOO CLOSE. DEACTIVATING PHYSICS.");
-					}
-				}
-			}
-		}
+		m_Entities.erase(
+			std::remove_if(m_Entities.begin(), m_Entities.end(),
+				[obj](const std::unique_ptr<Entity>& e) { return e.get() == obj; }),
+			m_Entities.end()
+		);
 	}
 
-	void Scene::ResolveCollision(Physics::PhysicsComponent* a, Physics::PhysicsComponent* b, const glm::vec3& overlap, const glm::vec3& hitPoint)
+	void Scene::AddCollider(Physics::Collider* collider)
 	{
-		auto physA = a;
-		auto physB = b;
-
-		float invMassA = a->GetInverseMass();
-		float invMassB = b ? b->GetInverseMass() : 0.0f;
-		float totalInvMass = invMassA + invMassB;
-
-		if (totalInvMass == 0) return;
-
-		glm::vec3 normal = glm::normalize(overlap);
-
-		glm::vec3 dirToA = a->GetOwner()->GetTransform().GetPosition() - (b ? b->GetOwner()->GetTransform().GetPosition() : glm::vec3(0));
-		if (glm::dot(dirToA, normal) < 0) {
-			normal = -normal;
-		}
-
-		float penetration = glm::length(overlap);
-		glm::vec3 correction = normal * penetration;
-
-		if (!a->IsStatic()) {
-			glm::vec3 posA = a->GetOwner()->GetTransform().GetPosition();
-			a->GetOwner()->GetTransform().SetPosition(posA + correction * (invMassA / totalInvMass));
-		}
-
-		if (b && !b->IsStatic()) {
-			glm::vec3 posB = b->GetOwner()->GetTransform().GetPosition();
-			b->GetOwner()->GetTransform().SetPosition(posB - correction * (invMassB / totalInvMass));
-		}
-
-		if (!a->IsStatic())
-		{
-			a->SetVelocity(glm::vec3(0.0f));
-			a->SetAngularVelocity(glm::vec3(0.0f));
-		}
-
-		if (b && !b->IsStatic())
-		{
-			b->SetVelocity(glm::vec3(0.0f));
-			b->SetAngularVelocity(glm::vec3(0.0f));
-		}
+		m_Colliders.push_back(collider);
+	}
+	void Scene::AddPhysicsComponent(Physics::PhysicsComponent* physicsComp)
+	{
+		m_PhysicsComponents.push_back(physicsComp);
+	}
+	void Scene::AddRenderable(Engine::Rendering::MeshRenderer* renderable)
+	{
+		m_Renderables.push_back(renderable);
+	}
+	void Scene::AddPointLight(Lights::PointLight* pointLight)
+	{
+		m_PointLights.push_back(pointLight);
 	}
 
-	void Scene::OnRender(std::shared_ptr<Camera> camera)
+	void Scene::SetDirectionalLight(Lights::DirectionalLight* directionalLight)
 	{
-		std::vector<std::shared_ptr<Lights::PointLight>> lights;
+		//m_DirectionalLight = directionalLight;
+	}
 
-		for (auto& e : m_Entities)
+	// REMOVERS USED BY COMPONENTS
+	void Scene::RemoveCollider(Physics::Collider* collider)
+	{
+		m_Colliders.erase(std::remove(m_Colliders.begin(), m_Colliders.end(), collider), m_Colliders.end());
+	}
+	void Scene::RemovePhysicsComponent(Physics::PhysicsComponent* physicsComp)
+	{
+		m_PhysicsComponents.erase(std::remove(m_PhysicsComponents.begin(), m_PhysicsComponents.end(), physicsComp), m_PhysicsComponents.end());
+	}
+	void Scene::RemoveRenderable(Engine::Rendering::MeshRenderer* renderable)
+	{
+		m_Renderables.erase(std::remove(m_Renderables.begin(), m_Renderables.end(), renderable), m_Renderables.end());
+	}
+	void Scene::RemovePointLight(Lights::PointLight* pointLight)
+	{
+		m_PointLights.erase(std::remove(m_PointLights.begin(), m_PointLights.end(), pointLight), m_PointLights.end());
+	}
+
+	void Scene::DeleteDirectionalLight(Lights::DirectionalLight* directionalLight)
+	{
+		//directionalLight = nullptr;
+	}
+
+	void Scene::OnUpdateRuntime(float dt) const
+	{
+		for (auto& obj : m_Entities)
+			obj->OnUpdate();
+
+		Physics::PhysicsSystem::UpdateCaches(*this);
+		Physics::PhysicsSystem::Step(dt);
+	}
+
+	void Scene::OnRender()
+	{
+		Engine::Rendering::Renderer::BeginScene(*m_SceneCamera, *this);
+
+		for (auto& renderer : m_Renderables)
 		{
-			if (auto l = std::dynamic_pointer_cast<Lights::PointLight>(e))
-				if (l->IsEnabled()) lights.push_back(l);
-		}
-
-		Engine::Rendering::Renderer::BeginScene(camera, *this);
-
-		for (auto& e : m_Entities)
-		{
-			if (auto obj = std::dynamic_pointer_cast<GameObject>(e))
-				if (obj->IsEnabled()) obj->Draw();
+			auto& transform = renderer->GetOwner()->GetTransform();
+			renderer->Draw(transform);
 		}
 
 		Engine::Rendering::Renderer::EndScene();

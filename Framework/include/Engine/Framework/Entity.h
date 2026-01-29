@@ -6,25 +6,26 @@
 
 namespace Engine::Framework
 {
-    class Entity 
-    {
-    public:
-        Entity(const std::string& name = "Entity")
-            : m_Name(name), m_Enabled(true) {
-        }
+	class Entity
+	{
+	public:
+		Entity(const char* name = "Entity") : m_Name(name), m_IsEnabled(true) {}
+		virtual ~Entity() = default;
 
-        virtual ~Entity() = default;
+		virtual void OnUpdate() {}
 
-        void SetEnabled(bool enabled) { m_Enabled = enabled; }
-        bool IsEnabled() const { return m_Enabled; }
+		void SetEnabled(bool enabled) { m_IsEnabled = enabled; }
+		bool IsEnabled() const { return m_IsEnabled; }
 
-        const std::string& GetName() const { return m_Name; }
-        void SetName(const std::string& name) { m_Name = name; }
+		const std::string& GetName() const { return m_Name; }
+		void SetName(const std::string& name) { m_Name = name; }
 
-        Transform& GetTransform() { return m_Transform; }
-    protected:
-        std::string m_Name;
-        bool m_Enabled;
-        Transform m_Transform;
-    };
+		Transform& GetTransform() { return m_Transform; }
+		const Transform& GetTransform() const { return m_Transform; }
+	protected:
+		std::string m_Name;
+		bool m_IsEnabled;
+
+		Transform m_Transform;
+	};
 }

@@ -1,67 +1,79 @@
 #pragma once
 
-#include "Engine/Framework/Transform.h"
 #include "Engine/Framework/Entity.h"
 #include "Engine/Framework/Component.h"
+#include "Engine/Framework/Scene.h"
 
 #include <Engine/Rendering/MeshGPU.h>
 #include <Engine/Rendering/MeshRenderer.h>
 
 #include <memory>
+#include <string>
 
 namespace Engine::Framework
 {
-    class GameObject : public Entity 
+    class GameObject : public Entity
     {
     public:
-        GameObject(const std::string& name = "GameObject") : Entity(name)
+        GameObject(const char* name) 
+            : Entity(name) 
         {
-			m_Transform.SetPosition({0.0f, 0.0f, 0.0f});
-			m_Transform.SetRotation({ 0.0f, 0.0f, 0.0f });
-			m_Transform.SetScale({ 1.0f, 1.0f, 1.0f });
         }
 
-        void Init() 
+        virtual ~GameObject() = default;
+
+        void OnUpdate() override
         {
-            m_MeshRenderer = Engine::Rendering::MeshRenderer::Create();
-            m_MeshRenderer->Init();
+            for (auto& comp : m_Components)
+                comp->OnUpdate();
         }
 
-        void Draw() 
-        {
-            if (m_Enabled && m_MeshRenderer)
-                m_MeshRenderer->Draw(m_Transform);
-        }
+        const std::string& GetName() const { return m_Name; }
+        void SetName(const std::string& name) { m_Name = name; }
 
-        template<typename T, typename... Args>
-        std::shared_ptr<T> AddComponent(Args&&... args) 
-        {
-            auto comp = std::make_shared<T>(this, std::forward<Args>(args)...);
-            m_Components.push_back(comp);
-            return comp;
-        }
+        Engine::Framework::Transform& GetTransform() { return m_Transform; }
+        const Engine::Framework::Transform& GetTransform() const { return m_Transform; }
 
         template<typename T>
-        std::shared_ptr<T> GetComponent() 
+        T* GetComponent()
         {
-            for (auto& comp : m_Components) 
+            if constexpr (std::is_same_v<T, Transform>)
+                return &m_Transform;
+
+            for (auto& c : m_Components)
             {
-                auto casted = std::dynamic_pointer_cast<T>(comp);
-                if (casted) return casted;
+                if (auto casted = dynamic_cast<T*>(c.get()))
+                    return casted;
             }
+
             return nullptr;
         }
 
-        auto& GetMeshRenderer() { return m_MeshRenderer; }
+        template<typename T, typename... Args>
+        T* AddComponent(Args&&... args)
+        {
+            static_assert(std::is_base_of_v<Component, T>,
+                "T must derive from Component");
 
-        static std::shared_ptr<GameObject> Create(const std::string& name = "GameObject") 
-        { 
-            auto gameObject = std::make_shared<GameObject>(name); 
-            CRTN_CHECK_PTR(gameObject);
-            return gameObject;
-		}
+            static_assert(!std::is_abstract_v<T>,
+                "Cannot instantiate abstract Component");
+
+            auto comp = std::make_unique<T>(std::forward<Args>(args)...);
+            T* raw = comp.get();
+            raw->SetOwner(this);
+
+            m_Components.push_back(std::move(comp));
+
+            if (m_Scene)
+                raw->OnAddedToScene(m_Scene);
+
+            return raw;
+        }
+
+        static std::unique_ptr<GameObject> Create(const char* name) { return std::make_unique<GameObject>(name); }
     private:
-        std::shared_ptr<Engine::Rendering::MeshRenderer> m_MeshRenderer;
-        std::vector<std::shared_ptr<Component>> m_Components;
+        std::vector<std::unique_ptr<Engine::Framework::Component>> m_Components;
+
+        Engine::Framework::Scene* m_Scene = nullptr;
     };
 }

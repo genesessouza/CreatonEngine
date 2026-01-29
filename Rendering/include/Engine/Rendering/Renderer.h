@@ -1,18 +1,26 @@
 #pragma once
 
-#include "Engine/Rendering/Shader.h"
-
 #include <glm/glm.hpp>
 
 #include <memory>
 
-namespace Engine::Framework {
-	class Scene;
+namespace Engine::Framework
+{
 	class Camera;
+	class Scene;
+	class GameObject;
+}
+
+namespace Engine::Framework::Lights
+{
+	class PointLight;
+	class DirectionalLight;
 }
 
 namespace Engine::Rendering
 {
+	class Shader;
+
 	class Renderer
 	{
 	public:
@@ -34,7 +42,9 @@ namespace Engine::Rendering
 			bool HasDirLight = false;
 
 			// Point Lights
-			std::vector<PointLightData> PointLights;
+			static constexpr uint32_t MaxPointLights = 8;
+			uint32_t PointLightCount = 0;
+			PointLightData PointLights[MaxPointLights];
 
 			// Dirty flags
 			bool CameraDirty = true;
@@ -49,7 +59,7 @@ namespace Engine::Rendering
 
 		static void SetClearColor(const glm::vec4& color);
 
-		static void BeginScene(std::shared_ptr<Engine::Framework::Camera>& camera, const Engine::Framework::Scene& scene);
+		static void BeginScene(const Engine::Framework::Camera& camera, const Engine::Framework::Scene& scene);
 		static void EndScene();
 
 		static const SceneData& GetSceneData() { return s_SceneData; }

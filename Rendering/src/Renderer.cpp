@@ -1,7 +1,13 @@
 #include "Engine/Rendering/Renderer.h"
 
+#include "Engine/Rendering/Shader.h"
+
 #include <Engine/Framework/Camera.h>
 #include <Engine/Framework/Scene.h>
+#include <Engine/Framework/Light.h>
+#include <Engine/Framework/GameObject.h>
+
+#include <glad/glad.h>
 
 namespace Engine::Rendering
 {
@@ -30,31 +36,32 @@ namespace Engine::Rendering
 
 	void Renderer::UploadSceneUniforms(const std::shared_ptr<Engine::Rendering::Shader>& shader)
 	{
-		const auto& scene = s_SceneData;
+		const auto& s = s_SceneData;
 
-		if (s_SceneData.CameraDirty)
+		if (s.CameraDirty)
 		{
-			shader->DefineUniformMat4(shader->sceneUniforms.ViewProjection, scene.ViewProjection);
-			shader->DefineUniformVec3(shader->sceneUniforms.ViewPos, scene.ViewPos);
+			shader->DefineUniformMat4(shader->sceneUniforms.ViewProjection, s.ViewProjection);
+			shader->DefineUniformVec3(shader->sceneUniforms.ViewPos, s.ViewPos);
 		}
 
-		if (s_SceneData.LightsDirty)
+		if (s.LightsDirty)
 		{
-			shader->DefineUniformBool(shader->sceneUniforms.HasDirLight, scene.HasDirLight);
+			shader->DefineUniformBool(shader->sceneUniforms.HasDirLight, s.HasDirLight);
 
-			if (scene.HasDirLight)
+			if (s.HasDirLight)
 			{
-				shader->DefineUniformVec3(shader->sceneUniforms.DirLightDir, scene.DirLightDirection);
-				shader->DefineUniformVec4(shader->sceneUniforms.DirLightColor, scene.DirLightColor);
+				shader->DefineUniformVec3(shader->sceneUniforms.DirLightDir, s.DirLightDirection);
+				shader->DefineUniformVec4(shader->sceneUniforms.DirLightColor, s.DirLightColor);
 			}
 
-			shader->DefineUniformInt(shader->sceneUniforms.PointLightCount, scene.PointLights.size());
+			shader->DefineUniformInt(shader->sceneUniforms.PointLightCount, s.PointLightCount);
 
-			for (int i = 0; i < scene.PointLights.size(); i++)
+			for (uint32_t i = 0; i < s.PointLightCount; ++i)
 			{
-				shader->DefineUniformVec3(shader->sceneUniforms.PointLightPos[i], scene.PointLights[i].Position);
-				shader->DefineUniformVec4(shader->sceneUniforms.PointLightColor[i], scene.PointLights[i].Color);
-				shader->DefineUniformFloat(shader->sceneUniforms.PointLightIntensity[i], scene.PointLights[i].Intensity);
+				const auto& l = s.PointLights[i];
+				shader->DefineUniformVec3(shader->sceneUniforms.PointLightPos[i], l.Position);
+				shader->DefineUniformVec4(shader->sceneUniforms.PointLightColor[i], l.Color);
+				shader->DefineUniformFloat(shader->sceneUniforms.PointLightIntensity[i], l.Intensity);
 			}
 		}
 	}
@@ -65,41 +72,91 @@ namespace Engine::Rendering
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	}
 
-	void Renderer::BeginScene(std::shared_ptr<Framework::Camera>& camera, const Engine::Framework::Scene& scene)
+	void Renderer::BeginScene(const Framework::Camera& camera, const Engine::Framework::Scene& scene)
 	{
-		CRTN_CHECK_PTR(camera);
+		// --- CAMERA ---
+		const glm::vec3 camPos = camera.GetTransform().GetPosition();
+		const glm::mat4& vp = camera.GetViewProjectionMatrix();
 
-		s_SceneData.ViewProjection = camera->GetViewProjectionMatrix();
-		s_SceneData.ViewPos = camera->GetTransform().GetPosition();
-		s_SceneData.CameraDirty = true;
-
-		s_SceneData.HasDirLight = false;
-
-		if (auto& dirLight = scene.GetDirectionalLight())
+		if (s_SceneData.ViewPos != camPos)
 		{
-			if (dirLight->IsEnabled())
+			s_SceneData.ViewPos = camPos;
+			s_SceneData.CameraDirty = true;
+		}
+
+		if (camera.GetTransform().WasModifiedThisFrame())
+		{
+			s_SceneData.ViewProjection = vp;
+			s_SceneData.CameraDirty = true;
+		}
+
+		// --- DIRECTIONAL LIGHT ---
+		bool lightsChanged = false;
+
+		auto& dirLight = *scene.GetDirectionalLight();
+
+		if(&dirLight)
+		{
+			bool enabled = dirLight.IsEnabled();
+
+			if (s_SceneData.HasDirLight != enabled)
 			{
-				s_SceneData.DirLightDirection = dirLight->GetTransform().GetRotation();
-				s_SceneData.DirLightColor = dirLight->GetColor();
-				s_SceneData.HasDirLight = true;
+				s_SceneData.HasDirLight = enabled;
+				lightsChanged = true;
+			}
+
+			if (enabled)
+			{
+				glm::vec3 dir = dirLight.GetDirection();
+				glm::vec4 color = dirLight.GetColor();
+
+				if (s_SceneData.DirLightDirection != dir ||
+					s_SceneData.DirLightColor != color)
+				{
+					s_SceneData.DirLightDirection = dir;
+					s_SceneData.DirLightColor = color;
+					lightsChanged = true;
+				}
+			}
+		}
+		else if (s_SceneData.HasDirLight)
+		{
+			s_SceneData.HasDirLight = false;
+			lightsChanged = true;
+		}
+
+		// --- POINT LIGHTS ---
+		const auto& scenePointLights = scene.GetPointLights();
+		const uint32_t count = std::min<uint32_t>(scenePointLights.size(), SceneData::MaxPointLights);
+
+		if (s_SceneData.PointLightCount != count)
+		{
+			s_SceneData.PointLightCount = count;
+			lightsChanged = true;
+		}
+
+		for (uint32_t i = 0; i < count; ++i)
+		{
+			auto& src = scenePointLights[i];
+			auto& dst = s_SceneData.PointLights[i];
+
+			const glm::vec3 pos = src->GetOwner()->GetTransform().GetPosition();
+			const glm::vec4 col = src->GetColor();
+			const float intensity = src->GetIntensity();
+
+			if (dst.Position != pos ||
+				dst.Color != col ||
+				dst.Intensity != intensity)
+			{
+				dst.Position = pos;
+				dst.Color = col;
+				dst.Intensity = intensity;
+				lightsChanged = true;
 			}
 		}
 
-		s_SceneData.PointLights.clear();
-
-		const auto& pointLights = scene.GetPointLights();
-		const size_t count = std::min(pointLights.size(), size_t(8));
-
-		for (size_t i = 0; i < count; ++i)
-		{
-			auto& light = pointLights[i];
-			if (!light) continue;
-
-			if (light->IsEnabled())
-				s_SceneData.PointLights.push_back({ light->GetTransform().GetPosition(), light->GetColor(), light->GetIntensity() });
-		}
-
-		s_SceneData.LightsDirty = true;
+		if (lightsChanged)
+			s_SceneData.LightsDirty = true;
 	}
 
 	void Renderer::EndScene()

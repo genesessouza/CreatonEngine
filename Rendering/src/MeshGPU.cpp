@@ -26,4 +26,10 @@ namespace Engine::Rendering
 	{
 		m_MeshVAO->Bind();
 	}
+
+	void MeshGPU::Draw() const
+	{
+		CRTN_CHECK_PTR(m_MeshIBO);
+		glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(m_MeshIBO->GetCount()), GL_UNSIGNED_INT, nullptr);
+	}
 }

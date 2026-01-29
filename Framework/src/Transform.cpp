@@ -4,24 +4,29 @@
 
 namespace Engine::Framework
 {
-	glm::mat4 Transform::GetMatrix() const
+	void Transform::Recalculate() const
+	{
+		glm::mat4 position = glm::translate(glm::mat4(1.0f), m_Position);
+
+		glm::quat rotation = 
+			glm::rotate(glm::mat4(1.0f), m_Rotation.x, glm::vec3(1, 0, 0)) *
+			glm::rotate(glm::mat4(1.0f), m_Rotation.x, glm::vec3(1, 0, 0)) *
+			glm::rotate(glm::mat4(1.0f), m_Rotation.x, glm::vec3(1, 0, 0));
+
+		m_WorldMatrix = position * glm::mat4_cast(rotation) * glm::scale(glm::mat4(1.0f), m_Scale);
+	}
+
+	const glm::mat4& Transform::GetWorldMatrix() const
 	{
 		if (m_Dirty)
-		{
-			glm::mat4 modelMatrix(1.0f);
+			Recalculate();
 
-			modelMatrix = glm::translate(modelMatrix, m_Position);
+		return m_WorldMatrix;
+	}
 
-			modelMatrix = glm::rotate(modelMatrix, glm::radians(m_Rotation.x), { 1,0,0 });
-			modelMatrix = glm::rotate(modelMatrix, glm::radians(m_Rotation.y), { 0,1,0 });
-			modelMatrix = glm::rotate(modelMatrix, glm::radians(m_Rotation.z), { 0,0,1 });
-
-			modelMatrix = glm::scale(modelMatrix, m_Scale);
-				
-			m_CachedMatrix = modelMatrix;
-			m_Dirty = false;
-
-		}
-		return m_CachedMatrix;
+	void Transform::MarkDirty()
+	{
+		m_Dirty = true;
+		m_ModifiedThisFrame = true;
 	}
 }

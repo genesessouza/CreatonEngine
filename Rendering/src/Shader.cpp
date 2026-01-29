@@ -10,28 +10,12 @@
 #include <sstream>
 #include <fstream>
 
-#include <windows.h>
-#include <filesystem>
-
-inline static std::filesystem::path GetExecutableDir()
-{
-	wchar_t buffer[MAX_PATH];
-	GetModuleFileNameW(nullptr, buffer, MAX_PATH);
-
-	return std::filesystem::path(buffer).parent_path();
-}
-
 namespace Engine::Rendering
 {
-	inline static std::filesystem::path GetDefaultShaderPath()
-	{
-		return GetExecutableDir() / "Shaders/Default-Lit.cshader";
-	}
-
-	std::shared_ptr<Shader> Shader::CreateDefaultShader()
+	std::shared_ptr<Shader> Shader::CreateDefaultShader(const std::string& shaderFilepath)
 	{
 		//auto shader = std::make_shared<Shader>("D:/Dev/CreationEngine/_Assets/Shaders/Debug.cshader");
-		auto shader = std::make_shared<Shader>(GetDefaultShaderPath().string());
+		auto shader = std::make_shared<Shader>(shaderFilepath);
 		CRTN_CHECK_PTR(shader);
 
 		return shader;

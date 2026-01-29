@@ -2,9 +2,16 @@
 
 #include <Engine/Core/Application.h>
 
+#include <Engine/Framework/Camera.h>
 #include <Engine/Framework/Scene.h>
+#include <Engine/Framework/GameObject.h>
+#include <Engine/Framework/Light.h>
+#include <Engine/Framework/MeshLibrary.h>
 
 #include <Engine/Framework/Physics/Collider.h>
+#include <Engine/Framework/Physics/PhysicsComponent.h>
+
+#include <Engine/Rendering/MeshRenderer.h>
 
 #include <ImGui/imgui_impl_glfw.h>
 #include <ImGui/imgui_impl_opengl3.h>
@@ -69,10 +76,10 @@ namespace Engine::Editor
 				{
 					if (ImGui::MenuItem("Point Light"))
 					{
-						auto purpleLight = Engine::Framework::Scene::Get().CreateEntity<Engine::Framework::Lights::PointLight>("[Point Light] New Light");
-						purpleLight->GetTransform().SetPosition({ 0.0f, 1.0f, -3.0f });
-						purpleLight->SetColor({ 1.0f, 1.0f, 1.0f, 1.0f });
-						purpleLight->SetIntensity(10.0f);
+						//auto purpleLight = Engine::Framework::Lights::PointLight::Cre("[Point Light] New Light");
+						//purpleLight.GetTransform().SetPosition({ 0.0f, 1.0f, -3.0f });
+						//purpleLight.SetColor({ 1.0f, 1.0f, 1.0f, 1.0f });
+						//purpleLight.SetIntensity(10.0f);
 					}
 					ImGui::EndMenu();
 				}
@@ -81,16 +88,19 @@ namespace Engine::Editor
 				{
 					if (ImGui::MenuItem("3D Cube"))
 					{
-						auto newCube = Engine::Framework::Scene::Get().CreateEntity<Engine::Framework::GameObject>("[GameObject] New Cube");
-						newCube->AddComponent<Engine::Framework::Physics::CubeCollider>();
+						auto newCube = Engine::Framework::GameObject::Create("[GameObject] New Cube");
+
+						newCube->AddComponent<Engine::Rendering::MeshRenderer>();
+						newCube->GetComponent<Engine::Rendering::MeshRenderer>()->SetMesh(Engine::Framework::MeshLibrary::InstantiateCube());
+						newCube->GetComponent<Engine::Rendering::MeshRenderer>()->GetMaterial()->SetColor(glm::vec4(0.2f, 0.2f, 0.2f, 1));
+
+						newCube->AddComponent<Engine::Framework::Physics::CubeCollider>(glm::vec3(1.0f));
 						newCube->AddComponent<Engine::Framework::Physics::PhysicsComponent>();
+
 						newCube->GetTransform().SetPosition({ 0.0f, 1.0f, 0.0f });
 						newCube->GetTransform().SetScale({ 1.0f, 1.0f, 1.0f });
-
-						newCube->Init();
-
-						newCube->GetMeshRenderer()->SetMesh(Engine::Framework::MeshLibrary::InstantiateCube());
-						newCube->GetMeshRenderer()->GetMaterial()->SetColor(glm::vec4(0.2f, 0.2f, 0.2f, 1)); // Sets ground color to dark grey
+						
+						//newCube->Init();
 					}
 					ImGui::EndMenu();
 				}
@@ -110,13 +120,13 @@ namespace Engine::Editor
 		{
 			auto& entity = entities[i];
 
-			ImGuiTreeNodeFlags flags = ((m_SelectedEntity == entity) ? ImGuiTreeNodeFlags_Selected : 0);
+			ImGuiTreeNodeFlags flags = ((m_SelectedEntity == entity.get()) ? ImGuiTreeNodeFlags_Selected : 0);
 			flags |= ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_SpanAvailWidth | ImGuiTreeNodeFlags_Leaf;
 
 			bool opened = ImGui::TreeNodeEx((void*)(uintptr_t)i, flags, entity->GetName().c_str());
 
 			if (ImGui::IsItemClicked())
-				m_SelectedEntity = entity;
+				m_SelectedEntity = entity.get();
 
 			if (opened) ImGui::TreePop();
 		}
@@ -221,17 +231,17 @@ namespace Engine::Editor
 			if (ImGui::DragFloat3("Rotation", glm::value_ptr(rot), 0.1f))
 				transform.SetRotation(rot);
 
-			if (ImGui::DragFloat3("Scale", glm::value_ptr(scl), 0.1f))
+			if (ImGui::DragFloat3("Scale", glm::value_ptr(scl), 0.1f, 0.001f))
 				transform.SetScale(scl);
 		}
 
-		if (auto light = std::dynamic_pointer_cast<Engine::Framework::Lights::PointLight>(m_SelectedEntity))
+		if (auto light = dynamic_cast<Engine::Framework::Lights::PointLight*>(m_SelectedEntity))
 			DrawPointLightUI(light);
-		else if (auto dirLight = std::dynamic_pointer_cast<Engine::Framework::Lights::DirectionalLight>(m_SelectedEntity))
+		else if (auto dirLight = dynamic_cast<Engine::Framework::Lights::DirectionalLight*>(m_SelectedEntity))
 			DrawDirectionalLightUI(dirLight);
-		else if (auto gameObject = std::dynamic_pointer_cast<Engine::Framework::GameObject>(m_SelectedEntity))
+		else if (auto gameObject = dynamic_cast<Engine::Framework::GameObject*>(m_SelectedEntity))
 			DrawGameObjectUI(gameObject);
-		else if (auto camera = std::dynamic_pointer_cast<Engine::Framework::Camera>(m_SelectedEntity))
+		else if (auto camera = dynamic_cast<Engine::Framework::Camera*>(m_SelectedEntity))
 			DrawCameraUI(camera);
 
 		ImGui::End();
@@ -276,7 +286,7 @@ namespace Engine::Editor
 		ImGui::End(); // End DockSpace
 	}
 
-	void EditorGUI::DrawPointLightUI(std::shared_ptr<Engine::Framework::Lights::PointLight> light)
+	void EditorGUI::DrawPointLightUI(Engine::Framework::Lights::PointLight* light)
 	{
 		if (ImGui::CollapsingHeader("Point Light", ImGuiTreeNodeFlags_DefaultOpen))
 		{
@@ -291,32 +301,32 @@ namespace Engine::Editor
 		}
 	}
 
-	void EditorGUI::DrawDirectionalLightUI(std::shared_ptr<Engine::Framework::Lights::DirectionalLight> light)
+	void EditorGUI::DrawDirectionalLightUI(Engine::Framework::Lights::DirectionalLight* light)
 	{
 		if (ImGui::CollapsingHeader("Directional Light", ImGuiTreeNodeFlags_DefaultOpen))
 		{
-			glm::vec3 dir = light->GetTransform().GetRotation();
+			glm::vec3 dir = light->GetOwner()->GetTransform().GetRotation();
 			float intensity = light->GetIntensity();
 
 			if (ImGui::DragFloat3("Direction", glm::value_ptr(dir), 0.05f))
-				light->GetTransform().SetRotation(dir);
+				light->GetOwner()->GetTransform().SetRotation(dir);
 
 			if (ImGui::SliderFloat("Intensity", &intensity, 0.5f, 30.0f))
 				light->SetIntensity(intensity);
 		}
 	}
 
-	void EditorGUI::DrawGameObjectUI(std::shared_ptr<Engine::Framework::GameObject> obj)
+	void EditorGUI::DrawGameObjectUI(Engine::Framework::GameObject* obj)
 	{
-		auto& meshRenderer = obj->GetMeshRenderer();
-		if (!meshRenderer) return;
+		auto& meshRenderer = *obj->GetComponent<Engine::Rendering::MeshRenderer>();
+		if (!&meshRenderer) return;
 
 		if (ImGui::CollapsingHeader("Object Data", ImGuiTreeNodeFlags_DefaultOpen))
 		{
 			if (ImGui::TreeNodeEx("Mesh Renderer", ImGuiTreeNodeFlags_DefaultOpen))
 			{
-				auto& material = meshRenderer->GetMaterial();
-				auto& mesh = meshRenderer->GetMesh();
+				auto& material = meshRenderer.GetMaterial();
+				auto& mesh = meshRenderer.GetMesh();
 
 				if (mesh && ImGui::TreeNodeEx("Mesh", ImGuiTreeNodeFlags_DefaultOpen))
 				{
@@ -353,7 +363,7 @@ namespace Engine::Editor
 				auto phys = obj->GetComponent<Engine::Framework::Physics::PhysicsComponent>();
 				if (phys)
 				{
-					if (ImGui::TreeNodeEx("Physics", ImGuiTreeNodeFlags_Framed))
+					if (ImGui::TreeNodeEx("Physics", ImGuiTreeNodeFlags_DefaultOpen))
 					{
 						bool isStatic = phys->IsStatic();
 						if (ImGui::Checkbox("Static", &isStatic))
@@ -379,10 +389,10 @@ namespace Engine::Editor
 					}
 				}
 
-				auto col = obj->GetComponent<Engine::Framework::Physics::Collider>();
+				auto col = obj->GetComponent<Engine::Framework::Physics::CubeCollider>();
 				if (col)
 				{
-					if (ImGui::TreeNodeEx("Collider", ImGuiTreeNodeFlags_Framed))
+					if (ImGui::TreeNodeEx("Collider", ImGuiTreeNodeFlags_DefaultOpen))
 					{
 						bool enabled = col->IsEnabled();
 						bool isTrigger = col->IsTrigger();
@@ -397,12 +407,37 @@ namespace Engine::Editor
 					}
 				}
 
+				/*auto dirLight = obj->GetComponent<Engine::Framework::Lights::DirectionalLight>();
+				if (ImGui::TreeNodeEx("Directional Light", ImGuiTreeNodeFlags_DefaultOpen))
+				{
+					bool enabled = dirLight->IsEnabled();
+
+					if (ImGui::Checkbox("Enabled", &enabled))
+						col->SetEnabled(enabled);
+
+					glm::vec3 dir = dirLight->GetOwner()->GetTransform().GetRotation();
+					float intensity = dirLight->GetIntensity();
+
+					glm::vec4 color = dirLight->GetColor();
+
+					if (ImGui::ColorEdit4("Color", glm::value_ptr(color)))
+						dirLight->SetColor(color, intensity);
+
+					if (ImGui::DragFloat3("Direction", glm::value_ptr(dir), 0.05f))
+						dirLight->SetDirection(dir);
+
+					if (ImGui::SliderFloat("Intensity", &intensity, 0.5f, 30.0f))
+						dirLight->SetIntensity(intensity);
+
+					ImGui::TreePop();
+				}*/
+
 				ImGui::TreePop();
 			}
 		}
 	}
 
-	void EditorGUI::DrawCameraUI(std::shared_ptr<Engine::Framework::Camera> cam)
+	void EditorGUI::DrawCameraUI(Engine::Framework::Camera* cam)
 	{
 		if (ImGui::CollapsingHeader("Parameters", ImGuiTreeNodeFlags_DefaultOpen))
 		{

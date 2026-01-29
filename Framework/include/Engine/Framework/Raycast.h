@@ -19,12 +19,12 @@ namespace Engine::Framework
 		struct RayResult 
 		{
 			bool Success = false;
-			std::shared_ptr<Entity> HitEntity = nullptr;
+			Entity* HitEntity = nullptr;
 			
 			float Distance = 0.0f;
 			glm::vec3 HitPoint = glm::vec3(0.0f);
 		};
 
-		static RayResult MouseToWorldPos(std::shared_ptr<Camera> camera, bool debug);
+		static RayResult MouseToWorldPos(const Camera& camera, bool debug);
 	};
 }

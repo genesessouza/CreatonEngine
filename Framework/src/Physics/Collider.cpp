@@ -1,11 +1,40 @@
 #include "Engine/Framework/Physics/Collider.h"
 
+#include "Engine/Framework/GameObject.h"
+#include "Engine/Framework/Scene.h"
+
 namespace Engine::Framework::Physics
 {
-	// RAYCASTING
-	bool Collider::IntersectsOBB(const glm::vec3& rayOrigin, const glm::vec3& rayDir, Entity& entity, float& outDist)
+	void Collider::OnUpdate()
 	{
-		glm::mat4 modelMatrix = entity.GetTransform().GetMatrix();
+		glm::mat4 modelMatrix = GetOwner()->GetTransform().GetWorldMatrix();
+		m_OBB.NormalizedAxes[0] = glm::normalize(glm::vec3(modelMatrix[0]));
+		m_OBB.NormalizedAxes[1] = glm::normalize(glm::vec3(modelMatrix[1]));
+		m_OBB.NormalizedAxes[2] = glm::normalize(glm::vec3(modelMatrix[2]));
+		m_OBB.Center = GetOwner()->GetTransform().GetPosition();
+	
+		UpdateCacheIfNeeded();
+	}
+
+	bool Collider::MovedThisFrame() const
+	{
+		return m_Owner->GetTransform().WasModifiedThisFrame();
+	}
+
+	void Collider::OnAddedToScene(Engine::Framework::Scene* scene)
+	{
+		scene->AddCollider(this);
+	}
+
+	void Collider::OnRemovedFromScene(Engine::Framework::Scene* scene)
+	{
+		scene->RemoveCollider(this);
+	}
+
+	// RAYCASTING
+	bool Collider::IntersectsOBB(const glm::vec3& rayOrigin, const glm::vec3& rayDir, Engine::Framework::GameObject& entity, float& outDist)
+	{
+		glm::mat4 modelMatrix = entity.GetTransform().GetWorldMatrix();
 		glm::mat4 invModel = glm::inverse(modelMatrix);
 
 		glm::vec3 localRayOrigin = glm::vec3(invModel * glm::vec4(rayOrigin, 1.0f));
@@ -42,7 +71,7 @@ namespace Engine::Framework::Physics
 		return true;
 	}
 
-	bool Collider::IntersectsSphere(const glm::vec3& rayOrigin, const glm::vec3& rayDir, Entity& entity, float radius, float& outDist)
+	bool Collider::IntersectsSphere(const glm::vec3& rayOrigin, const glm::vec3& rayDir, Engine::Framework::GameObject& entity, float radius, float& outDist)
 	{
 		glm::vec3 oc = rayOrigin - entity.GetTransform().GetPosition();
 
@@ -58,7 +87,19 @@ namespace Engine::Framework::Physics
 		return outDist >= 0;
 	}
 
-	bool SphereCollider::CheckCollision(Collider* other, glm::vec3& outOverlap)
+
+
+	// ----------------------------------------------------------------------------------------------- //
+	// ----------------------------------------------------------------------------------------------- //
+	// ----------------------------------------------------------------------------------------------- //
+	// ------------------------------------- SPHERE COLLIDER ----------------------------------------- //
+	// ----------------------------------------------------------------------------------------------- //
+	// ----------------------------------------------------------------------------------------------- //
+	// ----------------------------------------------------------------------------------------------- //
+
+
+
+	bool SphereCollider::CheckCollisionImpl(Collider* other, glm::vec3& outOverlap)
 	{
 		SphereCollider* sphereOther = dynamic_cast<SphereCollider*>(other);
 		if (sphereOther)
@@ -76,11 +117,25 @@ namespace Engine::Framework::Physics
 		return false;
 	}
 
-	bool CubeCollider::CheckCollision(Collider* other, glm::vec3& outOverlap)
+	void SphereCollider::RebuildCache()
 	{
-		return false;
+		const auto& pos = m_Owner->GetTransform().GetPosition();
+
+		m_AABB.Min = pos - glm::vec3(m_Radius);
+		m_AABB.Max = pos + glm::vec3(m_Radius);
 	}
 
+
+
+	// ----------------------------------------------------------------------------------------------- //
+	// ----------------------------------------------------------------------------------------------- //
+	// ----------------------------------------------------------------------------------------------- //
+	// ------------------------------------- CUBE COLLIDER ------------------------------------------- //
+	// ----------------------------------------------------------------------------------------------- //
+	// ----------------------------------------------------------------------------------------------- //
+	// ----------------------------------------------------------------------------------------------- //
+
+	/*
 	bool CubeCollider::CheckCollision(Collider* other, glm::vec3& outOverlap, glm::vec3& outHitPoint)
 	{
 		bool collisionDetected = false;
@@ -109,5 +164,158 @@ namespace Engine::Framework::Physics
 			}
 		}
 		return collisionDetected;
+	}
+	*/
+
+	float CubeCollider::ProjectOBB(const OBB& obb, const glm::vec3& axis)
+	{
+		return 
+			std::abs(glm::dot(obb.NormalizedAxes[0] * obb.HalfSize.x, axis)) +
+			std::abs(glm::dot(obb.NormalizedAxes[1] * obb.HalfSize.y, axis)) +
+			std::abs(glm::dot(obb.NormalizedAxes[2] * obb.HalfSize.z, axis));
+	}
+
+	bool CubeCollider::SimpleSAT(const OBB& a, const OBB& b)
+	{
+		glm::vec3 axes[15] =
+		{
+			a.NormalizedAxes[0], a.NormalizedAxes[1], a.NormalizedAxes[2],
+			b.NormalizedAxes[0], b.NormalizedAxes[1], b.NormalizedAxes[2],
+
+			glm::cross(a.NormalizedAxes[0], b.NormalizedAxes[0]),
+			glm::cross(a.NormalizedAxes[0], b.NormalizedAxes[1]),
+			glm::cross(a.NormalizedAxes[0], b.NormalizedAxes[2]),
+			glm::cross(a.NormalizedAxes[1], b.NormalizedAxes[0]),
+			glm::cross(a.NormalizedAxes[1], b.NormalizedAxes[1]),
+			glm::cross(a.NormalizedAxes[1], b.NormalizedAxes[2]),
+			glm::cross(a.NormalizedAxes[2], b.NormalizedAxes[0]),
+			glm::cross(a.NormalizedAxes[2], b.NormalizedAxes[1]),
+			glm::cross(a.NormalizedAxes[2], b.NormalizedAxes[2])
+		};
+
+		glm::vec3 delta = b.Center - a.Center;
+
+		for (auto& axis : axes)
+		{
+			float len2 = glm::dot(axis, axis);
+			if (len2 < 1e-6f)
+				continue;
+
+			glm::vec3 n = axis / std::sqrt(len2);
+
+			float d = std::abs(glm::dot(delta, n));
+			float ra = ProjectOBB(a, n);
+			float rb = ProjectOBB(b, n);
+
+			if (d > ra + rb)
+				return false;
+		}
+
+		return true;
+	}
+
+	bool CubeCollider::FullSAT(const OBB& a, const OBB& b, ContactManifold& manifold)
+	{
+		manifold.isColliding = false;
+		manifold.depth = FLT_MAX;
+		glm::vec3 delta = b.Center - a.Center;
+
+		glm::vec3 axes[15] =
+		{
+			a.NormalizedAxes[0], a.NormalizedAxes[1], a.NormalizedAxes[2],
+			b.NormalizedAxes[0], b.NormalizedAxes[1], b.NormalizedAxes[2]
+		};
+
+		for (int i = 0; i < 15; i++)
+		{
+			glm::vec3 n = axes[i];
+			float len2 = glm::dot(n, n);
+			if (len2 < 1e-6f) continue;
+			n = n / std::sqrt(len2);
+
+			float ra = ProjectOBB(a, n);
+			float rb = ProjectOBB(b, n);
+			float distCentros = std::abs(glm::dot(delta, n));
+
+			float overlap = (ra + rb) - distCentros;
+
+			if (overlap <= 0.0f) 
+				return false;
+
+			if (overlap < manifold.depth)
+			{
+				manifold.depth = overlap;
+				manifold.normal = n;
+			}
+		}
+
+		manifold.isColliding = true;
+							
+		if (glm::dot(manifold.normal, delta) < 0.0f) {
+			manifold.normal = -manifold.normal;
+		}
+
+		manifold.contactPointA = GetSupportPoint(a, manifold.normal);
+		manifold.contactPointB = manifold.contactPointA - (manifold.normal * manifold.depth);
+
+		return true;
+	}
+
+	glm::vec3 CubeCollider::GetSupportPoint(const OBB& obb, const glm::vec3& worldDirection)
+	{
+		glm::vec3 localDir(
+			glm::dot(worldDirection, obb.NormalizedAxes[0]),
+			glm::dot(worldDirection, obb.NormalizedAxes[1]),
+			glm::dot(worldDirection, obb.NormalizedAxes[2])
+		);
+
+		// 2. No espaço local, o ponto extremo é fácil: é o sinal da direção * halfSize
+		glm::vec3 localContact(
+			(localDir.x > 0) ? obb.HalfSize.x : -obb.HalfSize.x,
+			(localDir.y > 0) ? obb.HalfSize.y : -obb.HalfSize.y,
+			(localDir.z > 0) ? obb.HalfSize.z : -obb.HalfSize.z
+		);
+
+		// 3. Transformar o ponto local de volta para o mundo
+		// worldPos = Centro + (eixoX * localX) + (eixoY * localY) + (eixoZ * localZ)
+		return obb.Center +
+			(obb.NormalizedAxes[0] * localContact.x) +
+			(obb.NormalizedAxes[1] * localContact.y) +
+			(obb.NormalizedAxes[2] * localContact.z);
+	}
+
+	bool CubeCollider::CheckCollisionManifoldImpl(Collider* other, ContactManifold& outManifold)
+	{
+		auto* cube = dynamic_cast<CubeCollider*>(other);
+		if (!cube) return false;
+
+		UpdateCacheIfNeeded();
+		cube->UpdateCacheIfNeeded();
+
+		return FullSAT(m_OBB, cube->m_OBB, outManifold);
+	}
+
+	void CubeCollider::RebuildCache()
+	{
+		const Engine::Framework::Transform& t = m_Owner->GetTransform();
+
+		const glm::mat4& M = const_cast<Engine::Framework::Transform&>(t).GetWorldMatrix();
+
+		m_OBB.Center = glm::vec3(M[3]);
+
+		m_OBB.NormalizedAxes[0] = glm::normalize(glm::vec3(M[0]));
+		m_OBB.NormalizedAxes[1] = glm::normalize(glm::vec3(M[1]));
+		m_OBB.NormalizedAxes[2] = glm::normalize(glm::vec3(M[2]));
+
+		m_OBB.HalfSize = m_HalfSize;
+
+		// AABB derived from OBB (for broadphase)
+		glm::vec3 extents =
+			glm::abs(m_OBB.NormalizedAxes[0]) * m_HalfSize.x +
+			glm::abs(m_OBB.NormalizedAxes[1]) * m_HalfSize.y +
+			glm::abs(m_OBB.NormalizedAxes[2]) * m_HalfSize.z;
+
+		m_AABB.Min = m_OBB.Center - extents;
+		m_AABB.Max = m_OBB.Center + extents;
 	}
 }

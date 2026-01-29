@@ -102,6 +102,7 @@ extern "C" {
 #ifndef WIN32_LEAN_AND_MEAN
 #define WIN32_LEAN_AND_MEAN 1
 #endif
+#define NOMINMAX
 #include <windows.h>
 #endif
 #ifndef APIENTRY
@@ -644,6 +645,7 @@ extern "C" {
 #ifndef WIN32_LEAN_AND_MEAN
 #define WIN32_LEAN_AND_MEAN 1
 #endif
+#define NOMINMAX
 #include <windows.h>
 
 static HMODULE libgl = NULL;

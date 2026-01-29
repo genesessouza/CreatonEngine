@@ -11,6 +11,7 @@
 #include <Engine/Framework/Scene.h>
 #include <Engine/Framework/Raycast.h>
 #include <Engine/Framework/Debugging.h>
+#include <Engine/Framework/Camera.h>
 
 #include <Engine/Editor/GUI/GUIUtils.h>
 
@@ -36,7 +37,7 @@ namespace Engine::Sandbox
 			Engine::Rendering::Renderer::SetClearColor(glm::vec4(0.529f, 0.808f, 0.922f, 1.0f));
 			CRTN_LOG_INFO("[SANDBOX LAYER]: Background color set to: <Sky Blue>\n");
 
-			m_MainScene = std::make_shared<MainScene>();
+			m_MainScene = std::make_unique<MainScene>();
 			CRTN_CHECK_PTR(m_MainScene);
 			m_MainScene->Init();
 		}
@@ -57,7 +58,7 @@ namespace Engine::Sandbox
 			m_MainScene->GetSceneCamera()->GetTransform().SetRotation(currentRot + deltaRot);
 
 			m_MainScene->OnUpdateRuntime(deltaTime);
-			m_MainScene->OnRender(m_MainScene->GetSceneCamera());
+			m_MainScene->OnRender();
 
 			Engine::Framework::Debugging::Render(deltaTime, m_MainScene->GetSceneCamera()->GetViewMatrix(), m_MainScene->GetSceneCamera()->GetProjectionMatrix());
 		}
@@ -86,12 +87,12 @@ namespace Engine::Sandbox
 				{
 					if (e.GetMouseButton() == GLFW_MOUSE_BUTTON_LEFT)
 					{
-						Engine::Framework::Raycast::RayResult result = Engine::Framework::Raycast::MouseToWorldPos(m_MainScene->GetSceneCamera(), true);
+						Engine::Framework::Raycast::RayResult result = Engine::Framework::Raycast::MouseToWorldPos(*m_MainScene->GetSceneCamera(), true);
 
 						if (result.Success)
 						{
 							m_SelectedEntity = result.HitEntity;
-							Engine::Editor::EditorGUI::Get().SelectEntity(m_SelectedEntity);
+							Engine::Editor::EditorGUI::Get().SelectEntity(*m_SelectedEntity);
 						}
 
 						return false;
@@ -102,6 +103,12 @@ namespace Engine::Sandbox
 			dispatcher.Dispatch<Engine::Core::Event::KeyPressedEvent>([this](Engine::Core::Event::KeyPressedEvent& e)
 				{
 					float speed = 1.0f;
+
+					if (e.GetKeyCode() == GLFW_KEY_SPACE)
+					{
+						auto cubePhysics = m_MainScene->GetPhysicsComponents()[1];
+						cubePhysics->SetAngularVelocity(glm::vec3(0, 3, 0));
+					}
 
 					// MOVEMENT
 					if (e.GetKeyCode() == GLFW_KEY_W) m_CameraMovementDirection.z = -speed * m_CameraMovementSpeed;
@@ -149,7 +156,7 @@ namespace Engine::Sandbox
 		glm::vec3 m_CameraMovementDirection;
 		glm::vec3 m_CameraRotationDirection;
 	private:
-		std::shared_ptr<Engine::Sandbox::MainScene> m_MainScene;
-		std::shared_ptr<Engine::Framework::Entity> m_SelectedEntity = nullptr;
+		std::unique_ptr<Engine::Sandbox::MainScene> m_MainScene;
+		Engine::Framework::Entity* m_SelectedEntity = nullptr;
 	};
 }

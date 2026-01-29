@@ -4,6 +4,7 @@
 #include "Engine/Editor/EditorStyle.h"
 
 #include <Engine/Core/Layer/Layer.h>
+#include <Engine/Core/Log/Logger.h>
 
 namespace Engine::Editor
 {

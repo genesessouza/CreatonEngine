@@ -1,5 +1,11 @@
 #include "Engine/Rendering/MeshRenderer.h"
+
 #include "Engine/Rendering/Renderer.h"
+#include "Engine/Rendering/MeshGPU.h"
+
+#include <Engine/Framework/Transform.h>
+#include <Engine/Framework/Scene.h>
+#include <Engine/Framework/GameObject.h>
 
 #include <Engine/Core/Log/Logger.h>
 
@@ -7,6 +13,9 @@ namespace Engine::Rendering
 {
 	void MeshRenderer::InitUniforms()
 	{
+		if (m_UniformsInitialized)
+			return;
+
 		auto& shader = m_MeshMat->GetShaderID();
 		shader->Bind();
 
@@ -16,33 +25,40 @@ namespace Engine::Rendering
 		m_UniformsInitialized = true;
 	}
 
-	void MeshRenderer::Draw(const Engine::Framework::Transform& transform) const
+    void MeshRenderer::OnAddedToScene(Engine::Framework::Scene* scene)
+    {
+        scene->AddRenderable(this);
+    }
+
+    void MeshRenderer::OnRemovedFromScene(Engine::Framework::Scene* scene)
+    {
+        scene->RemoveRenderable(this);
+    }
+
+	void MeshRenderer::Draw(Engine::Framework::Transform& transform) const
 	{
-		const auto& sceneData = Engine::Rendering::Renderer::GetSceneData();
+        if (!m_Mesh || !m_MeshMat)
+            return;
 
-		// PREVENTS INVALID/GARBAGE MESH MATRICES IN CASE INIT_UNIFORMS() WASN'T CALLED ANYWHERE
-		if (m_UniformsInitialized == false)
-			const_cast<MeshRenderer*>(this)->InitUniforms();
+        if (!m_UniformsInitialized)
+            const_cast<MeshRenderer*>(this)->InitUniforms();
 
-		m_MeshMat->Bind();
+        m_MeshMat->Bind();
 
-		auto& shader = m_MeshMat->GetShaderID();
+        auto& shader = m_MeshMat->GetShaderID();
 
-		Engine::Rendering::Renderer::UploadSceneUniforms(shader);
+        Engine::Rendering::Renderer::UploadSceneUniforms(shader);
 
-		if (transform.IsDirty())
-		{
-			const glm::mat4& transformModel = transform.GetMatrix();
-			glm::mat3 transformNormal = glm::transpose(glm::inverse(glm::mat3(transformModel)));
+        if (transform.WasModifiedThisFrame())
+        {
+            const glm::mat4& model = transform.GetWorldMatrix();
+            const glm::mat3 normal = glm::transpose(glm::inverse(glm::mat3(model)));
 
-			shader->DefineUniformMat4(m_MeshUniforms.Model, transformModel);
-			shader->DefineUniformMat3(glGetUniformLocation(shader->GetShader(), shader->GetDefaultUniformNames(UniformType::Normal).c_str()), transformNormal);
+            shader->DefineUniformMat4(m_MeshUniforms.Model, model);
+            shader->DefineUniformMat3(m_MeshUniforms.Normal, normal);
+        }
 
-			transform.ClearDirty();
-		}
-
-		m_Mesh->Bind();
-
-		glDrawElements(GL_TRIANGLES, m_Mesh->GetIndexCount(), GL_UNSIGNED_INT, nullptr);
+        m_Mesh->Bind();
+        m_Mesh->Draw();
 	}
 }

@@ -3,16 +3,30 @@
 #include <Engine/Core/SceneState.h>
 
 #include <Engine/Framework/Entity.h>
-#include <Engine/Framework/Light.h>
 
 #include <ImGui/imgui.h> // Full path ---> Engine/Platform/vendor/include/ImGui/ImGui.h
 
 #include <functional>
 
-namespace Engine::Editor
+namespace Engine::Framework
 {
 	class Scene;
+	class Camera;
+	class GameObject;
 
+	namespace Physics
+	{
+		class Collider;
+	}
+	namespace Lights
+	{
+		class DirectionalLight;
+		class PointLight;
+	}
+}
+
+namespace Engine::Editor
+{
 	class EditorGUI
 	{
 	public:
@@ -34,12 +48,12 @@ namespace Engine::Editor
 		void DrawConsole();
 		void DrawObjectInfo();
 
-		void SelectEntity(const std::shared_ptr<Engine::Framework::Entity>& entity) { m_SelectedEntity = entity; }
+		void SelectEntity(const Engine::Framework::Entity& entity) const { *m_SelectedEntity = entity; }
 
-		void DrawPointLightUI(std::shared_ptr<Engine::Framework::Lights::PointLight> light);
-		void DrawDirectionalLightUI(std::shared_ptr<Engine::Framework::Lights::DirectionalLight> light);
-		void DrawGameObjectUI(std::shared_ptr<Engine::Framework::GameObject> obj);
-		void DrawCameraUI(std::shared_ptr<Engine::Framework::Camera> obj);
+		void DrawPointLightUI(Engine::Framework::Lights::PointLight* light);
+		void DrawDirectionalLightUI(Engine::Framework::Lights::DirectionalLight* light);
+		void DrawGameObjectUI(Engine::Framework::GameObject* obj);
+		void DrawCameraUI(Engine::Framework::Camera* obj);
 
 		static EditorGUI& Get();
 	private:
@@ -53,6 +67,6 @@ namespace Engine::Editor
 
 		Engine::Core::SceneState::State m_SceneState = Engine::Core::SceneState::State::Edit;
 	private:
-		std::shared_ptr<Engine::Framework::Entity> m_SelectedEntity = nullptr;
+		Engine::Framework::Entity* m_SelectedEntity = nullptr;
 	};
 }

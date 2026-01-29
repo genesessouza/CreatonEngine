@@ -1233,6 +1233,7 @@ IMPLEMENTING SUPPORT for ImGuiBackendFlags_RendererHasTextures:
 #ifndef __MINGW32__
 #include <Windows.h>        // _wfopen, OpenClipboard
 #else
+#define NOMINMAX
 #include <windows.h>
 #endif
 #if defined(WINAPI_FAMILY) && ((defined(WINAPI_FAMILY_APP) && WINAPI_FAMILY == WINAPI_FAMILY_APP) || (defined(WINAPI_FAMILY_GAMES) && WINAPI_FAMILY == WINAPI_FAMILY_GAMES))

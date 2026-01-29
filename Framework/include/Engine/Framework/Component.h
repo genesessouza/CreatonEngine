@@ -1,25 +1,31 @@
 #pragma once
 
-#include "Engine/Framework/Entity.h"
-
 namespace Engine::Framework
 {
-    enum class ComponentType { Physics, MeshRenderer, Script, Collider };
+    class GameObject;
+    class Scene;
 
-    class Component 
+    class Component
     {
     public:
-        Component(Entity* owner) : m_Owner(owner) {}
+        Component() = default;
         virtual ~Component() = default;
 
-        virtual ComponentType GetType() const = 0;
+        virtual void Init() {}
 
-		Entity* GetOwner() const { return m_Owner; }
+        virtual void OnUpdate() {}
 
-		void SetEnabled(bool enabled) { m_Enabled = enabled; }
-		bool IsEnabled() const { return m_Enabled; }
+        bool IsEnabled() const { return m_IsEnabled; }
+        void SetEnabled(bool value) { m_IsEnabled = value; }
+
+        virtual void SetOwner(Engine::Framework::GameObject* owner) { m_Owner = owner; };
+        virtual Engine::Framework::GameObject* GetOwner() const { return m_Owner; };
+
+        virtual void OnAddedToScene(Engine::Framework::Scene* scene) {};
+        virtual void OnRemovedFromScene(Engine::Framework::Scene* scene) {};
     protected:
-        Entity* m_Owner;
-		bool m_Enabled = true;
+        Engine::Framework::GameObject* m_Owner = nullptr;
+
+        bool m_IsEnabled = true;
     };
 }
