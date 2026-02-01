@@ -16,8 +16,6 @@
 #include "Engine/Core/Event/FramebufferEvent.h"
 #include "Engine/Core/Event/InputState.h"
 
-#include "Engine/Core/SceneState.h"
-
 #include <memory>
 
 namespace Engine::Core
@@ -80,7 +78,5 @@ namespace Engine::Core
 		Event::State::FramebufferState m_FramebufferState;
 	private:
 		std::unique_ptr<Framebuffer> m_Framebuffer;
-	private:
-		SceneState::State m_SceneState = SceneState::State::Play;
 	};
 }

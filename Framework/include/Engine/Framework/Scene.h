@@ -34,6 +34,8 @@ namespace Engine::Framework
 	class Scene
 	{
 	public:
+		enum SceneState { Edit = 0, Play = 1, Pause = 2 };
+	public:
 		Scene() : m_DirectionalLight(nullptr), m_SceneCamera(nullptr)
 		{
 			if (!s_ActiveScene) s_ActiveScene = this;
@@ -60,6 +62,9 @@ namespace Engine::Framework
 		}
 
 		static void SetActiveScene(Scene* scene) { s_ActiveScene = scene; }
+
+		void SetSceneState(SceneState state) { m_SceneState = state; }
+		SceneState& GetSceneState() { return m_SceneState; }
 
 		void AddEntity(std::unique_ptr<Entity> obj);
 		void RemoveEntity(Entity* obj);
@@ -109,5 +114,8 @@ namespace Engine::Framework
 
 		static Scene* s_ActiveScene;
 		friend class Component;
+	private:
+
+		SceneState m_SceneState = SceneState::Edit;
 	};
 }

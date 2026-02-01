@@ -118,7 +118,7 @@ namespace Engine::Sandbox
 
 				auto defaultCubePhysics = m_DefaultCube->GetComponent<Engine::Framework::Physics::PhysicsComponent>();
 				defaultCubePhysics->SetMass(1.0f);
-				defaultCubePhysics->SetStatic(true);
+				//defaultCubePhysics->SetStatic(true);
 				AddPhysicsComponent(defaultCubePhysics);
 
 				AddEntity(std::move(m_DefaultCube));

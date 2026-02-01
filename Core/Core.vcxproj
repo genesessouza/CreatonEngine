@@ -110,7 +110,6 @@
     <ClInclude Include="include\Engine\Core\Paths.h" />
     <ClInclude Include="include\Engine\Core\Event\Event.h" />
     <ClInclude Include="include\Engine\Core\RenderCommand.h" />
-    <ClInclude Include="include\Engine\Core\SceneState.h" />
     <ClInclude Include="include\Engine\Core\Time\Time.h" />
     <ClInclude Include="include\Engine\Core\Window.h" />
   </ItemGroup>

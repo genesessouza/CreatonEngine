@@ -92,11 +92,14 @@ namespace Engine::Framework
 
 	void Scene::OnUpdateRuntime(float dt) const
 	{
-		//for (auto& obj : m_Entities)
-		//	obj->OnUpdate();
-
 		Physics::PhysicsSystem::UpdateCaches(*this);
-		Physics::PhysicsSystem::Step(dt);
+		if (m_SceneState == SceneState::Play)
+		{
+			for (auto& obj : m_Entities)
+				obj->OnUpdate();
+
+			Physics::PhysicsSystem::Step(dt);
+		}
 	}
 
 	void Scene::OnRender()

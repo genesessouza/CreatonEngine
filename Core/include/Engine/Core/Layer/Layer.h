@@ -25,7 +25,6 @@ namespace Engine::Core::Layer
         void SetEventCallback(const EventCallbackFn& callback) { m_EventCallback = callback; }
 
         virtual void OnUpdate(float deltaTime) = 0;
-        virtual void OnEditorUpdate(float deltaTime) = 0;
 
         virtual void OnGUIUpdate() = 0;
         

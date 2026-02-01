@@ -15,8 +15,12 @@
 
 #include <ImGui/imgui_impl_glfw.h>
 #include <ImGui/imgui_impl_opengl3.h>
+#include <ImGui/ImGuizmo.h>
 
 #include <glm/gtc/type_ptr.hpp>
+
+#define CRT_ENABLE_EXPERIMENTAL
+#include <glm/gtx/matrix_decompose.hpp>
 
 namespace Engine::Editor
 {
@@ -146,15 +150,22 @@ namespace Engine::Editor
 		float size = ImGui::GetFontSize() * 5.0f;
 		ImGui::SetCursorPosX((ImGui::GetWindowContentRegionMax().x * 0.5f) - (size * 0.5f));
 
-		if (m_SceneState == Engine::Core::SceneState::State::Edit)
+		auto& activeScene = Engine::Framework::Scene::Get();
+
+		if (activeScene.GetSceneState() == Engine::Framework::Scene::SceneState::Edit)
 		{
 			if (ImGui::Button("Play", ImVec2(size, 0)))
-				m_SceneState = Engine::Core::SceneState::State::Play;
+				activeScene.SetSceneState(Engine::Framework::Scene::Play);
+		}
+		else if(activeScene.GetSceneState() == Engine::Framework::Scene::SceneState::Play)
+		{
+			if (ImGui::Button("Pause", ImVec2(size, 0)))
+				activeScene.SetSceneState(Engine::Framework::Scene::Pause);
 		}
 		else
 		{
-			if (ImGui::Button("Stop", ImVec2(size, 0)))
-				m_SceneState = Engine::Core::SceneState::State::Edit;
+			if (ImGui::Button("Edit", ImVec2(size, 0)))
+				activeScene.SetSceneState(Engine::Framework::Scene::Edit);
 		}
 
 		ImVec2 viewportPanelSize = ImGui::GetContentRegionAvail();
@@ -180,6 +191,40 @@ namespace Engine::Editor
 
 			m_ViewportBounds[0] = { vMin.x, vMin.y };
 			m_ViewportBounds[1] = { vMax.x, vMax.y };
+		}
+
+		if (m_SelectedEntity) 
+		{
+			ImGuizmo::SetOrthographic(false);
+			ImGuizmo::SetDrawlist(ImGui::GetForegroundDrawList());
+
+			ImGuizmo::SetRect(m_ViewportBounds[0].x, m_ViewportBounds[0].y, m_ViewportSize.x, m_ViewportSize.y);
+
+			auto sceneCam = Engine::Framework::Scene::Get().GetSceneCamera();
+
+			const glm::mat4& view = sceneCam->GetViewMatrix();
+			const glm::mat4& proj = sceneCam->GetProjectionMatrix();
+
+			glm::mat4 modelMatrix = m_SelectedEntity->GetTransform().GetWorldMatrix();
+
+			ImGuizmo::Manipulate(glm::value_ptr(view), glm::value_ptr(proj), ImGuizmo::TRANSLATE, ImGuizmo::WORLD, glm::value_ptr(modelMatrix));
+
+			if (ImGuizmo::IsUsing()) 
+			{
+				glm::vec3 pos{}, rot{}, scl{};
+				glm::quat q{};
+
+				glm::vec3 skew;
+				glm::vec4 persp;
+
+				glm::decompose(modelMatrix, scl, q, pos, skew, persp);
+				rot = glm::eulerAngles(q);
+
+				auto& t = m_SelectedEntity->GetTransform();
+				t.SetPosition(pos);
+				t.SetRotation(glm::degrees(rot));
+				t.SetScale(scl);
+			}
 		}
 
 		ImGui::End();

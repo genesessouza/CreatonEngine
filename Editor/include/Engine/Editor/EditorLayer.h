@@ -39,11 +39,6 @@ namespace Engine::Editor
 		{
 		}
 
-		void OnEditorUpdate(float deltaTime) override
-		{
-
-		}
-
 		void OnGUIUpdate() override
 		{
 			m_EditorGUI->OnGUIRender();

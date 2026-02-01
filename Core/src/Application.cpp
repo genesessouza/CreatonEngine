@@ -94,12 +94,7 @@ namespace Engine::Core
 				RenderCommand::SetViewport(0, 0, m_Framebuffer->GetWidth(), m_Framebuffer->GetHeight());
 
 				for (Layer::Layer* layer : m_LayerStack)
-				{
-					if (m_SceneState == SceneState::State::Play)
-						layer->OnUpdate(deltaTime);
-					else
-						layer->OnEditorUpdate(deltaTime);
-				}
+					layer->OnUpdate(deltaTime);
 
 				m_Framebuffer->Unbind();
 			}

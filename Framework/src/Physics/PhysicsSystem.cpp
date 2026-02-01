@@ -37,9 +37,9 @@ namespace Engine::Framework::Physics
 	{
 		for (PhysicsComponent* phys : m_ScenePhysicsComps)
 		{
-			if (!phys->GetOwner()->IsEnabled() || phys->IsStatic()) continue;
+			if (!phys->GetOwner()->IsEnabled() || !phys->IsEnabled() || phys->IsStatic()) continue;
 
-			phys->UpdateInertiaTensorWorld();
+			//phys->UpdateInertiaTensorWorld();
 
 			auto collider = phys->GetOwner()->GetComponent<Collider>();
 			if (collider)
@@ -76,16 +76,16 @@ namespace Engine::Framework::Physics
 
 		for (PhysicsComponent* phys : m_ScenePhysicsComps)
 		{
-			if (!phys->GetOwner()->IsEnabled() || phys->IsStatic()) continue;
+			if (!phys->GetOwner()->IsEnabled() || !phys->IsEnabled() || phys->IsStatic()) continue;
 
 			auto& transform = phys->GetOwner()->GetTransform();
-			transform.SetPosition(transform.GetPosition() + phys->GetVelocity() * dt);
+			transform.Translate(phys->GetVelocity() * dt, false);
 
 			glm::vec3 w = phys->GetAngularVelocity();
 			glm::quat q = transform.GetOrientation();
 			glm::quat q_dot = 0.5f * glm::quat(0, w.x, w.y, w.z) * q;
 			glm::quat next_q = q + q_dot * dt;
-			transform.SetRotation(glm::normalize(glm::degrees(glm::eulerAngles(next_q))));
+			transform.Rotate(glm::normalize(glm::degrees(glm::eulerAngles(next_q))), true);
 		}
 	}
 

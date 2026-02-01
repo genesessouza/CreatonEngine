@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Engine/Core/SceneState.h>
+#include <Engine/Framework/Scene.h>
 
 #include <Engine/Framework/Entity.h>
 
@@ -49,6 +49,7 @@ namespace Engine::Editor
 		void DrawObjectInfo();
 
 		void SelectEntity(Engine::Framework::Entity* entity) { m_SelectedEntity = entity; }
+		Engine::Framework::Entity* GetSelectedEntity() const { return m_SelectedEntity; }
 
 		void DrawGameObjectUI(Engine::Framework::GameObject* obj);
 
@@ -61,8 +62,6 @@ namespace Engine::Editor
 	private:
 		bool m_ImGuiActive = false;
 		bool m_ViewportResizing = false;
-
-		Engine::Core::SceneState::State m_SceneState = Engine::Core::SceneState::State::Edit;
 	private:
 		Engine::Framework::Entity* m_SelectedEntity = nullptr;
 	};

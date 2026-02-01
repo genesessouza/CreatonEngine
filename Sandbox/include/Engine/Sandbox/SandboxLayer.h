@@ -18,6 +18,8 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
+#include <ImGui/ImGuizmo.h>
+
 namespace Engine::Sandbox
 {
 	class SandboxLayer : public Engine::Core::Layer::Layer
@@ -58,10 +60,6 @@ namespace Engine::Sandbox
 			Engine::Framework::Debugging::Render(deltaTime, m_MainScene->GetSceneCamera()->GetViewMatrix(), m_MainScene->GetSceneCamera()->GetProjectionMatrix());
 		}
 
-		void OnEditorUpdate(float deltaTime) override
-		{
-		}
-
 		void OnGUIUpdate() override
 		{
 		}
@@ -84,16 +82,22 @@ namespace Engine::Sandbox
 					{
 						if (Engine::Editor::GUI::GUIUtils::IsMouseInsideViewport())
 						{
+							if (ImGuizmo::IsOver())
+								return true;
+
+							auto& app = Engine::Core::Application::Get();
+							m_LastMousePos = glm::vec2(app.GetMousePosition().XPos, app.GetMousePosition().YPos);
 							m_IsDragging = true;
-							m_LastMousePos = 
-								glm::vec2(Engine::Core::Application::Get().GetMousePosition().XPos, 
-								Engine::Core::Application::Get().GetMousePosition().YPos);
 
-							Engine::Framework::Raycast::RayResult result = Engine::Framework::Raycast::MouseToWorldPos(*m_MainScene->GetSceneCamera(), true);
-
+							Engine::Framework::Raycast::RayResult result = Engine::Framework::Raycast::MouseToWorldPos(*m_MainScene->GetSceneCamera(), false);
 							if (result.Success)
 							{
 								m_SelectedEntity = result.HitEntity;
+								Engine::Editor::EditorGUI::Get().SelectEntity(m_SelectedEntity);
+							}
+							else
+							{
+								m_SelectedEntity = nullptr;
 								Engine::Editor::EditorGUI::Get().SelectEntity(m_SelectedEntity);
 							}
 						}
@@ -111,7 +115,8 @@ namespace Engine::Sandbox
 
 			dispatcher.Dispatch<Engine::Core::Event::MouseMovedEvent>([this](Engine::Core::Event::MouseMovedEvent& e)
 				{
-					if (!m_IsDragging) return false;
+					if (ImGuizmo::IsUsing() || !m_IsDragging)
+						return false;
 
 					glm::vec2 currentMousePos = { e.GetX(), e.GetY() };
 					glm::vec2 delta = currentMousePos - m_LastMousePos;

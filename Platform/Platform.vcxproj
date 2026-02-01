@@ -22,12 +22,18 @@
     <ClInclude Include="include\Engine\Platform\Windows\WindowsWindowFactory.h" />
     <ClInclude Include="include\Glad\include\glad\glad.h" />
     <ClInclude Include="include\Glad\include\KHR\khrplatform.h" />
+    <ClInclude Include="vendor\include\ImGui\GraphEditor.h" />
     <ClInclude Include="vendor\include\ImGui\imconfig.h" />
+    <ClInclude Include="vendor\include\ImGui\ImCurveEdit.h" />
+    <ClInclude Include="vendor\include\ImGui\ImGradient.h" />
     <ClInclude Include="vendor\include\ImGui\imgui.h" />
+    <ClInclude Include="vendor\include\ImGui\ImGuizmo.h" />
     <ClInclude Include="vendor\include\ImGui\imgui_impl_glfw.h" />
     <ClInclude Include="vendor\include\ImGui\imgui_impl_opengl3.h" />
     <ClInclude Include="vendor\include\ImGui\imgui_impl_opengl3_loader.h" />
     <ClInclude Include="vendor\include\ImGui\imgui_internal.h" />
+    <ClInclude Include="vendor\include\ImGui\ImLightRig.h" />
+    <ClInclude Include="vendor\include\ImGui\ImSequencer.h" />
     <ClInclude Include="vendor\include\ImGui\imstb_rectpack.h" />
     <ClInclude Include="vendor\include\ImGui\imstb_textedit.h" />
     <ClInclude Include="vendor\include\ImGui\imstb_truetype.h" />
@@ -43,12 +49,17 @@
     <ClCompile Include="src\Windows\WindowsWindow.cpp" />
     <ClCompile Include="src\Windows\WindowsWindowFactory.cpp" />
     <ClCompile Include="vendor\src\glad\glad.c" />
+    <ClCompile Include="vendor\src\ImGui\GraphEditor.cpp" />
+    <ClCompile Include="vendor\src\ImGui\ImCurveEdit.cpp" />
+    <ClCompile Include="vendor\src\ImGui\ImGradient.cpp" />
     <ClCompile Include="vendor\src\ImGui\imgui.cpp" />
+    <ClCompile Include="vendor\src\ImGui\ImGuizmo.cpp" />
     <ClCompile Include="vendor\src\ImGui\imgui_draw.cpp" />
     <ClCompile Include="vendor\src\ImGui\imgui_impl_glfw.cpp" />
     <ClCompile Include="vendor\src\ImGui\imgui_impl_opengl3.cpp" />
     <ClCompile Include="vendor\src\ImGui\imgui_tables.cpp" />
     <ClCompile Include="vendor\src\ImGui\imgui_widgets.cpp" />
+    <ClCompile Include="vendor\src\ImGui\ImSequencer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Core\Core.vcxproj">
