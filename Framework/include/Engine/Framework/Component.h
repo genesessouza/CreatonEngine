@@ -20,9 +20,6 @@ namespace Engine::Framework
         virtual Entity* GetOwner() const { return m_Owner; }
 
         virtual void OnUpdate() {}
-
-        virtual void OnAddedToScene(Scene* scene) {};
-        virtual void OnRemovedFromScene(Scene* scene) {};
     protected:
         Entity* m_Owner = nullptr;
 

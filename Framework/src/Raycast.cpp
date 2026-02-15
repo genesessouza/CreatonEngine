@@ -1,4 +1,5 @@
 #include "Engine/Framework/Raycast.h"
+
 #include "Engine/Framework/Entity.h"
 #include "Engine/Framework/Camera.h"
 #include "Engine/Framework/Debugging.h"
@@ -54,10 +55,10 @@ namespace Engine::Framework
 		if (debug)
 		{
 			glm::vec3 debugEndPoint = result.Success ? result.HitPoint : rayOrigin + (rayDir * 50.0f);
-			Debugging::AddLine(rayOrigin, debugEndPoint, { 1.0f, 0.0f, 0.0f, 1.0f }, 3.0f);
+			Debugging::AddLine(rayOrigin, debugEndPoint, glm::vec4(1.0f, 0.0f, 0.0f, 1.0f), 3.0f);
 
 			if (result.Success)
-				Debugging::AddHitPoint(result.HitPoint, 0.05f, { 0.0f, 1.0f, 0.0f, 1.0f }, 3.0f);
+				Debugging::AddHitPoint(result.HitPoint, 0.05f, glm::vec4(0.0f, 1.0f, 0.0f, 1.0f), 3.0f);
 		}
 
 		return result;

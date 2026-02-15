@@ -20,7 +20,7 @@ namespace Engine::Framework::Physics
 	class PhysicsComponent : public Component
 	{
 	public:
-		PhysicsComponent() = default;
+		PhysicsComponent() : Component(), m_InvInertiaTensorWorld(0.0f) {}
 		virtual ~PhysicsComponent() = default;
 
 		void SetMass(float mass) { m_Mass = (mass <= 0.0f) ? 0.1f : mass; }

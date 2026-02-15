@@ -116,10 +116,12 @@
   <ItemGroup>
     <None Include="Assets\Shaders\Billboard.shader" />
     <None Include="Assets\Shaders\Debug.shader" />
-    <None Include="Assets\Shaders\Default-Lit.shader">
+    <None Include="Assets\Shaders\Lit.shader">
       <FileType>Document</FileType>
     </None>
     <None Include="Assets\Shaders\Dummy.shader" />
+    <None Include="Assets\Shaders\Unlit.shader" />
+    <None Include="Assets\Shaders\Wireframe.shader" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -8,25 +8,8 @@
 
 #include <Engine/Core/Log/Logger.h>
 
-#define NOMINMAX
-#include <windows.h>
-#include <filesystem>
-
-inline static std::filesystem::path GetExecutableDir()
-{
-	wchar_t buffer[MAX_PATH];
-	GetModuleFileNameW(nullptr, buffer, MAX_PATH);
-
-	return std::filesystem::path(buffer).parent_path();
-}
-
 namespace Engine::Rendering
 {
-	inline static std::filesystem::path GetDefaultShaderPath()
-	{
-		return GetExecutableDir() / "Shaders/Default-Lit.shader";
-	}
-
 	class Material
 	{
 	public:
@@ -39,7 +22,7 @@ namespace Engine::Rendering
 
 		inline void Init()
 		{
-			m_Shader = Shader::CreateDefaultShader(GetDefaultShaderPath().string());
+			m_Shader = Shader::CreateLitShader();
 			CRTN_CHECK_PTR(m_Shader);
 
 			Renderer::InitSceneUniforms(m_Shader);

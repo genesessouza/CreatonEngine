@@ -1,7 +1,9 @@
 #pragma once
 
-#include <Engine/Platform/OpenGL/OpenGLArray.h>
-#include <Engine/Platform/OpenGL/OpenGLBuffer.h>
+#include <Engine/Core/Log/Logger.h>
+
+#include <Engine/Rendering/Array/Array.h>
+#include <Engine/Rendering/Buffer/Buffer.h>
 
 #include <Engine/Framework/Mesh.h>
 

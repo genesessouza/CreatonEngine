@@ -41,9 +41,6 @@ namespace Engine::Rendering
 
         void InitUniforms();
 
-        void OnAddedToScene(Engine::Framework::Scene* scene) override;
-        void OnRemovedFromScene(Engine::Framework::Scene* scene) override;
-
         void Draw(Engine::Framework::Transform& transform) const;
 
         void SetMesh(const std::shared_ptr<MeshGPU>& mesh)

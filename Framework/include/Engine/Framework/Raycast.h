@@ -20,6 +20,9 @@ namespace Engine::Framework
 	class Raycast
 	{
 	public:
+		Raycast() = default;
+		virtual ~Raycast() = default;
+	
 		struct RayResult 
 		{
 			bool Success = false;

@@ -25,16 +25,6 @@ namespace Engine::Rendering
 		m_UniformsInitialized = true;
 	}
 
-    void MeshRenderer::OnAddedToScene(Engine::Framework::Scene* scene)
-    {
-        scene->AddRenderer(this);
-    }
-
-    void MeshRenderer::OnRemovedFromScene(Engine::Framework::Scene* scene)
-    {
-        scene->RemoveRenderer(this);
-    }
-
 	void MeshRenderer::Draw(Engine::Framework::Transform& transform) const
 	{
         if (!m_Mesh || !m_MeshMat)

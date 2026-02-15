@@ -62,7 +62,7 @@ void main()
     vec3 totalSpecular = vec3(0.0);
 
     if (u_HasDirLight) {
-        vec3 lightDir = normalize(-u_DirLightDir);
+        vec3 lightDir = normalize(u_DirLightDir);
         
         // Diffuse
         float diff = max(dot(norm, lightDir), 0.0);

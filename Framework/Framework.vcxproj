@@ -139,6 +139,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="include\Engine\Framework\Billboard.h" />
     <ClInclude Include="include\Engine\Framework\Camera.h" />
     <ClInclude Include="include\Engine\Framework\Component.h" />
     <ClInclude Include="include\Engine\Framework\Physics\Collider.h" />
@@ -155,6 +156,7 @@
     <ClInclude Include="include\Engine\Framework\Transform.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\Billboard.cpp" />
     <ClCompile Include="src\Entity.cpp" />
     <ClCompile Include="src\Light.cpp" />
     <ClCompile Include="src\Physics\Collider.cpp" />

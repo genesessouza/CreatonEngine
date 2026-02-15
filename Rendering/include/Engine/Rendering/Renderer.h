@@ -34,8 +34,9 @@ namespace Engine::Rendering
 		struct SceneData
 		{
 			glm::mat4 ViewProjection;
-			glm::vec3 ViewPos;
 
+			glm::vec3 ViewPos;
+			
 			// Directional Light
 			glm::vec3 DirLightDirection;
 			glm::vec4 DirLightColor;

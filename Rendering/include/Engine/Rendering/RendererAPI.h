@@ -9,6 +9,8 @@
 
 namespace Engine::Rendering
 {
+	class Shader;
+
 	class RendererAPI
 	{
 	public:

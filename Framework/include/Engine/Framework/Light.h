@@ -18,7 +18,7 @@ namespace Engine::Framework::Lights
 	class Light : public Component
 	{
 	public:
-		Light() : m_Color(1.0f), m_Intensity(1.0f), m_Direction(1.0f) {}
+		Light() : Component(), m_Color(1.0f), m_Intensity(1.0f), m_Direction(1.0f) {}
 		virtual ~Light() = default;
 
 		virtual void Init() {}
@@ -31,9 +31,6 @@ namespace Engine::Framework::Lights
 
 		virtual glm::vec3 GetDirection() const { return m_Direction; }
 		virtual void SetDirection(const glm::vec3& dir) { m_Direction = dir; }
-
-		virtual void OnAddedToScene(Scene* scene) {}
-		virtual void OnRemovedFromScene(Scene* scene) {}
 	protected:
 		glm::vec4 m_Color;
 		float m_Intensity;
@@ -44,13 +41,10 @@ namespace Engine::Framework::Lights
 	class DirectionalLight : public Light
 	{
 	public:
-		DirectionalLight() = default;
+		DirectionalLight() : Light() {}
 		virtual ~DirectionalLight() = default;
 
 		void Init() override;
-
-		void OnAddedToScene(Scene* scene) override;
-		void OnRemovedFromScene(Scene* scene) override;
 
 		static std::unique_ptr<DirectionalLight> Create() { return std::make_unique<DirectionalLight>(); }
 	};
@@ -58,13 +52,10 @@ namespace Engine::Framework::Lights
 	class PointLight : public Light
 	{
 	public:
-		PointLight() = default;
+		PointLight() : Light() {}
 		virtual ~PointLight() = default;
 
 		void Init() override;
-
-		void OnAddedToScene(Scene* scene) override;
-		void OnRemovedFromScene(Scene* scene) override;
 
 		static std::unique_ptr<PointLight> Create() { return std::make_unique<PointLight>(); }
 	};

@@ -21,9 +21,6 @@ namespace Engine::Framework
 
 		void Init() override;
 
-		void OnAddedToScene(Scene* scene) override;
-		void OnRemovedFromScene(Scene* scene) override;
-
 		const glm::mat4& GetViewMatrix() const;
 		const glm::mat4& GetProjectionMatrix() const;
 		glm::mat4 GetViewProjectionMatrix() const;

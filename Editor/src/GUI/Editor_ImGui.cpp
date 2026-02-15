@@ -202,7 +202,7 @@ namespace Engine::Editor
 
 			glm::mat4 modelMatrix = m_SelectedEntity->GetTransform().GetWorldMatrix();
 
-			ImGuizmo::Manipulate(glm::value_ptr(view), glm::value_ptr(proj), ImGuizmo::TRANSLATE, ImGuizmo::WORLD, glm::value_ptr(modelMatrix));
+			ImGuizmo::Manipulate(glm::value_ptr(view), glm::value_ptr(proj), ImGuizmo::TRANSLATE, ImGuizmo::LOCAL, glm::value_ptr(modelMatrix));
 
 			if (ImGuizmo::IsUsing()) 
 			{
@@ -451,9 +451,36 @@ namespace Engine::Editor
 					if (ImGui::SliderFloat("Intensity", &intensity, 0.5f, 30.0f))
 						light->SetIntensity(intensity);
 
+					auto billboard = obj->GetComponent<Engine::Framework::Billboard>();
+					if (billboard)
+					{
+						bool enabled = billboard->IsEnabled();
+
+						if (ImGui::TreeNodeEx("Billboard", ImGuiTreeNodeFlags_DefaultOpen))
+						{
+							if (ImGui::Checkbox("Enabled", &enabled))
+								billboard->SetEnabled(enabled);
+
+							glm::vec3 pos = billboard->GetOwner()->GetTransform().GetPosition();
+							glm::vec4 color = billboard->GetColor();
+							float size = billboard->GetSize();
+
+							if (ImGui::DragFloat3("Position", glm::value_ptr(pos), 0.05f))
+								billboard->GetOwner()->GetTransform().SetPosition(pos);
+
+							if (ImGui::ColorEdit4("Color", glm::value_ptr(color)))
+								billboard->SetColor(color);
+
+							if (ImGui::SliderFloat("Size", &size, 0.01f, 30.0f))
+								billboard->SetSize(size);
+
+							ImGui::TreePop();
+						}
+					}
 					ImGui::TreePop();
 				}
 			}
+
 			auto cam = obj->GetComponent<Engine::Framework::Camera>();
 			if (cam)
 			{
@@ -472,6 +499,32 @@ namespace Engine::Editor
 					if (ImGui::SliderFloat("Far Plane", &camFar, 30.0f, 1000.0f))
 						cam->SetFar(camFar);
 
+					auto billboard = obj->GetComponent<Engine::Framework::Billboard>();
+					if (billboard)
+					{
+						bool enabled = billboard->IsEnabled();
+
+						if (ImGui::TreeNodeEx("Billboard", ImGuiTreeNodeFlags_DefaultOpen))
+						{
+							if (ImGui::Checkbox("Enabled", &enabled))
+								billboard->SetEnabled(enabled);
+
+							glm::vec3 pos = billboard->GetOwner()->GetTransform().GetPosition();
+							glm::vec4 color = billboard->GetColor();
+							float size = billboard->GetSize();
+
+							if (ImGui::DragFloat3("Position", glm::value_ptr(pos), 0.05f))
+								billboard->GetOwner()->GetTransform().SetPosition(pos);
+
+							if (ImGui::ColorEdit4("Color", glm::value_ptr(color)))
+								billboard->SetColor(color);
+
+							if (ImGui::SliderFloat("Size", &size, 0.01f, 30.0f))
+								billboard->SetSize(size);
+
+							ImGui::TreePop();
+						}
+					}
 					ImGui::TreePop();
 				}
 			}

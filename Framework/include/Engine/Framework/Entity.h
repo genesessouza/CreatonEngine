@@ -4,6 +4,7 @@
 #include "Engine/Framework/Component.h"
 #include "Engine/Framework/Scene.h"
 #include "Engine/Framework/MeshLibrary.h"
+#include "Engine/Framework/Billboard.h"
 
 #include "Engine/Framework/Physics/Collider.h"
 #include "Engine/Framework/Physics/PhysicsComponent.h"
@@ -84,15 +85,24 @@ namespace Engine::Framework
 
 			m_Components.push_back(std::move(comp));
 
-			if (m_Scene)
-				raw->OnAddedToScene(m_Scene);
-
 			return raw;
 		}
 
 		static std::unique_ptr<Entity> CreateEmpty(const char* name)
 		{
 			return std::make_unique<Entity>(name);
+		}
+
+		static std::unique_ptr<Entity> CreateBillboard(const char* name, float size, const glm::vec4& color)
+		{
+			auto entity = std::make_unique<Entity>(name);
+
+			auto billboard = entity->AddComponent<Billboard>();
+			billboard->Init();
+			billboard->SetSize(size);
+			billboard->SetColor(color);
+
+			return entity;
 		}
 
 		static std::unique_ptr<Entity> CreateWithRenderer(const char* name, const std::shared_ptr<Engine::Rendering::MeshGPU>& mesh)

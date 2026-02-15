@@ -17,14 +17,6 @@ namespace Engine::Framework
 		GetProjectionMatrix();
 	}
 
-	void Camera::OnAddedToScene(Scene* scene)
-	{
-	}
-
-	void Camera::OnRemovedFromScene(Scene* scene)
-	{
-	}
-
 	const glm::mat4& Camera::GetViewMatrix() const
 	{
 		m_CachedViewMatrix = glm::inverse(m_Owner->GetTransform().GetWorldMatrix());

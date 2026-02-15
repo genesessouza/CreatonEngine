@@ -80,17 +80,17 @@ namespace Engine::Rendering
 		const glm::vec3 camPos = camera.GetOwner()->GetTransform().GetPosition();
 		const glm::mat4& vp = camera.GetViewProjectionMatrix();
 
-		//if (s_SceneData.ViewPos != camPos)
-		//{
+		if (s_SceneData.ViewPos != camPos)
+		{
 			s_SceneData.ViewPos = camPos;
-			//s_SceneData.CameraDirty = true;
-		//}
+			s_SceneData.CameraDirty = true;
+		}
 
-		//if (camera.GetOwner()->GetTransform().WasModifiedThisFrame())
-		//{
+		if (camera.GetOwner()->GetTransform().WasModifiedThisFrame())
+		{
 			s_SceneData.ViewProjection = vp;
 			s_SceneData.CameraDirty = true;
-		//}
+		}
 
 		// --- DIRECTIONAL LIGHT ---
 		bool lightsChanged = false;

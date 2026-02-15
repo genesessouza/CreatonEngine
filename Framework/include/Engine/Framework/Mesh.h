@@ -2,6 +2,8 @@
 
 #include <Engine/Rendering/Buffer/VertexBufferLayout.h>
 
+#include <Engine/Core/Log/Logger.h>
+
 #include <glad/glad.h>
 
 #include <glm/glm.hpp>
@@ -24,6 +26,15 @@ namespace Engine::Framework::Geometry
 			layout.Add(0, 3, GL_FLOAT, false); // position
 			layout.Add(1, 3, GL_FLOAT, false); // normal
 			layout.Add(2, 2, GL_FLOAT, false); // uv
+
+			return layout;
+		}
+
+		static Engine::Rendering::Buffer::VertexBufferLayout GetBillboardLayout()
+		{
+			Engine::Rendering::Buffer::VertexBufferLayout layout;
+
+			layout.Add(0, 3, GL_FLOAT, false); // offset
 
 			return layout;
 		}

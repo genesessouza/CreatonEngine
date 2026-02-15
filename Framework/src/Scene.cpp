@@ -16,40 +16,50 @@ namespace Engine::Framework
 
 	void Scene::Init()
 	{
-		auto mainCamGO = Entity::CreateEmpty("[Entity] Main Camera");
-		auto mainCam = mainCamGO->AddComponent<Camera>();
-		mainCam->Init();
-		m_SceneCamera = mainCam;
-		AddEntity(std::move(mainCamGO));
+		// MAIN CAMERA
+		{
+			auto mainCamGO = Entity::CreateBillboard("[Entity] Main Camera", 1.0f, glm::vec4(1.0f));
 
-		auto dirLightGO = Entity::CreateEmpty("[Entity] Directional Light");
-		auto dirLight = dirLightGO->AddComponent<Lights::DirectionalLight>();
-		dirLight->Init();
-		m_DirectionalLight = dirLight;
+			auto mainCam = mainCamGO->AddComponent<Camera>();
+			mainCam->Init();
 
-		SetDirectionalLight(m_DirectionalLight);
-		AddEntity(std::move(dirLightGO));
+			m_SceneCamera = mainCam;
+			AddEntity(std::move(mainCamGO));
+		}
+
+		// DIRECTIONAL LIGHT
+		{
+			auto dirLightGO = Entity::CreateBillboard("[Entity] Directional Light", 1.0f, glm::vec4(1.0f));
+
+			auto dirLight = dirLightGO->AddComponent<Lights::DirectionalLight>();
+			dirLight->Init();
+
+			m_DirectionalLight = dirLight;
+
+			SetDirectionalLight(m_DirectionalLight);
+			AddEntity(std::move(dirLightGO));
+		}
 	}
 
 	void Scene::AddEntity(std::unique_ptr<Entity> entity)
 	{
+		if (auto* dirLight = entity->GetComponent<Lights::DirectionalLight>())
+			SetDirectionalLight(dirLight);
+
+		for (auto* pointLight : entity->GetComponents<Lights::PointLight>())
+			AddPointLight(pointLight);
+
+		for (auto* billboard : entity->GetComponents<Billboard>())
+			AddBillboard(billboard);
+
 		for (auto* renderable : entity->GetComponents<Engine::Rendering::MeshRenderer>())
-		{
 			AddRenderer(renderable);
-			CRTN_LOG_TRACE("Entity: %s - added renderer", renderable->GetOwner()->GetName().c_str());
-		}
 
 		for (auto* collider : entity->GetComponents<Physics::Collider>())
-		{
 			AddCollider(collider);
-			CRTN_LOG_TRACE("Entity: %s - added collider", collider->GetOwner()->GetName().c_str());
-		}
 
 		for (auto* physics : entity->GetComponents<Physics::PhysicsComponent>())
-		{
 			AddPhysicsComponent(physics);
-			CRTN_LOG_TRACE("Entity: %s - added physics", physics->GetOwner()->GetName().c_str());
-		}
 
 		m_Entities.push_back(std::move(entity));
 	}
@@ -65,11 +75,7 @@ namespace Engine::Framework
 		for (auto* physics : entity->GetComponents<Physics::PhysicsComponent>())
 			RemovePhysicsComponent(physics);
 
-		m_Entities.erase(
-			std::remove_if(m_Entities.begin(), m_Entities.end(),
-				[entity](const std::unique_ptr<Entity>& e) { return e.get() == entity; }),
-			m_Entities.end()
-		);
+		m_Entities.erase(std::remove_if(m_Entities.begin(), m_Entities.end(), [entity](const std::unique_ptr<Entity>& e) { return e.get() == entity; }), m_Entities.end());
 	}
 	void Scene::AddRenderer(Engine::Rendering::MeshRenderer* renderer)
 	{
@@ -88,10 +94,15 @@ namespace Engine::Framework
 	{
 		m_PointLights.push_back(pointLight);
 	}
-
-	void Scene::SetDirectionalLight(Lights::DirectionalLight* light)
+	void Scene::AddBillboard(Billboard* billboard)
 	{
-		//m_DirectionalLight = directionalLight;
+		m_Billboards.push_back(billboard);
+
+	}
+
+	void Scene::SetDirectionalLight(Lights::DirectionalLight* directionalLight)
+	{
+		m_DirectionalLight = directionalLight;
 	}
 
 	// REMOVERS USED BY COMPONENTS
@@ -110,6 +121,10 @@ namespace Engine::Framework
 	void Scene::RemovePointLight(Lights::PointLight* pointLight)
 	{
 		m_PointLights.erase(std::remove(m_PointLights.begin(), m_PointLights.end(), pointLight), m_PointLights.end());
+	}
+	void Scene::RemoveBillboard(Billboard* billboard)
+	{
+		m_Billboards.erase(std::remove(m_Billboards.begin(), m_Billboards.end(), billboard), m_Billboards.end());
 	}
 
 	void Scene::DeleteDirectionalLight(Lights::DirectionalLight* directionalLight)
@@ -139,6 +154,12 @@ namespace Engine::Framework
 
 			if (!renderer->IsEnabled() || !renderer->GetOwner()->IsEnabled()) continue;
 			renderer->Draw(transform);
+		}
+
+		for (auto& billboard : m_Billboards)
+		{
+			auto& transform = billboard->GetOwner()->GetTransform();
+			billboard->Draw(transform, *m_SceneCamera);
 		}
 
 		Engine::Rendering::Renderer::EndScene();

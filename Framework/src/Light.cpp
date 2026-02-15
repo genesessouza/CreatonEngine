@@ -15,17 +15,6 @@ namespace Engine::Framework::Lights
 		GetOwner()->GetTransform().SetScale(glm::vec3(1.0f));
 	}
 
-	void DirectionalLight::OnAddedToScene(Scene* scene)
-	{
-		//scene->AddLight(this);
-		scene->SetDirectionalLight(this);
-	}
-
-	void DirectionalLight::OnRemovedFromScene(Scene* scene)
-	{
-		scene->DeleteDirectionalLight(this);
-	}
-
 	void PointLight::Init()
 	{
 		m_Color = glm::vec4(1.0f);
@@ -33,15 +22,5 @@ namespace Engine::Framework::Lights
 
 		GetOwner()->GetTransform().SetPosition({ 0.0f, 3.0f, 0.0f });
 		GetOwner()->GetTransform().SetScale(glm::vec3(1.0f));
-	}
-
-	void PointLight::OnAddedToScene(Scene* scene)
-	{
-		scene->AddPointLight(this);
-	}
-
-	void PointLight::OnRemovedFromScene(Scene* scene)
-	{
-		scene->RemovePointLight(this);
 	}
 }

@@ -3,6 +3,7 @@
 #include "Engine/Framework/Component.h"
 #include "Engine/Framework/Camera.h"
 #include "Engine/Framework/Light.h"
+#include "Engine/Framework/Billboard.h"
 
 #include <Engine/Core/Log/Logger.h>
 
@@ -76,15 +77,19 @@ namespace Engine::Framework
 		// ADDERS USED BY COMPONENTS
 		void AddCollider(Physics::Collider* collider);
 		void AddPhysicsComponent(Physics::PhysicsComponent* physicsComp);
-		void AddRenderer(Engine::Rendering::MeshRenderer* renderable);
+		void AddRenderer(Engine::Rendering::MeshRenderer* renderer);
 		void AddPointLight(Lights::PointLight* light);
+		void AddBillboard(Billboard* billboard);
+
 		void SetDirectionalLight(Lights::DirectionalLight* directionalLight);
 
 		// REMOVERS USED BY COMPONENTS
 		void RemoveCollider(Physics::Collider* collider);
 		void RemovePhysicsComponent(Physics::PhysicsComponent* collider);
-		void RemoveRenderer(Engine::Rendering::MeshRenderer* renderable);
+		void RemoveRenderer(Engine::Rendering::MeshRenderer* renderer);
 		void RemovePointLight(Lights::PointLight* pointLight);
+		void RemoveBillboard(Billboard* billboard);
+
 		void DeleteDirectionalLight(Lights::DirectionalLight* directionalLight);
 
 		// GETTERS FOR OTHER CLASSES
@@ -93,6 +98,7 @@ namespace Engine::Framework
 		const std::vector<Physics::PhysicsComponent*> GetPhysicsComponents() const { return m_PhysicsComponents; }
 		const std::vector<Engine::Rendering::MeshRenderer*> GetRenderers() const { return m_Renderers; }
 		const std::vector<Lights::PointLight*> GetPointLights() const { return m_PointLights; }
+		const std::vector<Billboard*> GetBillboards() const { return m_Billboards; }
 
 		Lights::DirectionalLight* GetDirectionalLight() { return m_DirectionalLight; }
 		const Lights::DirectionalLight* GetDirectionalLight() const { return m_DirectionalLight; }
@@ -107,6 +113,7 @@ namespace Engine::Framework
 		std::vector<Physics::PhysicsComponent*> m_PhysicsComponents;
 		std::vector<Engine::Rendering::MeshRenderer*> m_Renderers;
 		std::vector<Lights::PointLight*> m_PointLights;
+		std::vector<Billboard*> m_Billboards;
 
 		Lights::DirectionalLight* m_DirectionalLight;
 		Camera* m_SceneCamera;

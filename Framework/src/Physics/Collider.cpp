@@ -21,16 +21,6 @@ namespace Engine::Framework::Physics
 		return m_Owner->GetTransform().WasModifiedThisFrame();
 	}
 
-	void Collider::OnAddedToScene(Scene* scene)
-	{
-		scene->AddCollider(this);
-	}
-
-	void Collider::OnRemovedFromScene(Scene* scene)
-	{
-		scene->RemoveCollider(this);
-	}
-
 	// RAYCASTING
 	bool Collider::IntersectsOBB(const glm::vec3& rayOrigin, const glm::vec3& rayDir, Entity& entity, float& outDist)
 	{

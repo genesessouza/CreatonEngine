@@ -69,9 +69,6 @@ namespace Engine::Framework::Physics
 			return m_OBB;
 		}
 
-		virtual void OnAddedToScene(Scene* scene) override;
-		virtual void OnRemovedFromScene(Scene* scene) override;
-
 		// FOR RAYCASTING
 		static bool IntersectsOBB(const glm::vec3& rayOrigin, const glm::vec3& rayDir, Entity& entity, float& outDist);
 		static bool IntersectsSphere(const glm::vec3& rayOrigin, const glm::vec3& rayDir, Entity& entity, float radius, float& outDist);

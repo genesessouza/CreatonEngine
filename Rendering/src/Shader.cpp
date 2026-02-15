@@ -10,16 +10,70 @@
 #include <sstream>
 #include <fstream>
 
+#define NOMINMAX
+#include <windows.h>
+#include <filesystem>
+
+inline static std::filesystem::path GetExecutableDir()
+{
+	wchar_t buffer[MAX_PATH];
+	GetModuleFileNameW(nullptr, buffer, MAX_PATH);
+
+	return std::filesystem::path(buffer).parent_path();
+}
+
 namespace Engine::Rendering
 {
-	std::shared_ptr<Shader> Shader::CreateDefaultShader(const std::string& shaderFilepath)
+	std::shared_ptr<Shader> Shader::CreateLitShader()
 	{
-		//auto shader = std::make_shared<Shader>("D:/Dev/CreationEngine/_Assets/Shaders/Debug.cshader");
+		const std::string& shaderFilepath = (GetExecutableDir() / "Shaders/Lit.shader").string();
+
 		auto shader = std::make_shared<Shader>(shaderFilepath);
 		CRTN_CHECK_PTR(shader);
 
 		return shader;
 	}
+
+	std::shared_ptr<Shader> Shader::CreateUnlitShader()
+	{
+		const std::string& shaderFilepath = (GetExecutableDir() / "Shaders/Unlit.shader").string();
+
+		auto shader = std::make_shared<Shader>(shaderFilepath);
+		CRTN_CHECK_PTR(shader);
+
+		return shader;
+	}
+
+	std::shared_ptr<Shader> Shader::CreateBillboardShader()
+	{
+		const std::string& shaderFilepath = (GetExecutableDir() / "Shaders/Billboard.shader").string();
+
+		auto shader = std::make_shared<Shader>(shaderFilepath);
+		CRTN_CHECK_PTR(shader);
+
+		return shader;
+	}
+
+	std::shared_ptr<Shader> Shader::CreateWireframeShader()
+	{
+		const std::string& shaderFilepath = (GetExecutableDir() / "Shaders/Wireframe.shader").string();
+
+		auto shader = std::make_shared<Shader>(shaderFilepath);
+		CRTN_CHECK_PTR(shader);
+
+		return shader;
+	}
+
+	std::shared_ptr<Shader> Shader::CreateDebugShader()
+	{
+		const std::string& shaderFilepath = (GetExecutableDir() / "Shaders/Debug.shader").string();
+
+		auto shader = std::make_shared<Shader>(shaderFilepath);
+		CRTN_CHECK_PTR(shader);
+
+		return shader;
+	}
+
 
 	Shader::Shader(const std::string& shaderFilepath)
 		: m_ShaderFilepath(shaderFilepath)
@@ -166,7 +220,7 @@ namespace Engine::Rendering
 			return it->second;
 
 		int loc = glGetUniformLocation(m_RendererId, name.c_str());
-		
+
 		// ERROR HANDLING
 		if (loc == -1)
 		{
@@ -186,7 +240,7 @@ namespace Engine::Rendering
 	{
 		glUniformMatrix3fv(loc, 1, GL_FALSE, &matrix[0][0]);
 	}
-	
+
 	void Shader::DefineUniformMat4(int loc, const glm::mat4& matrix)
 	{
 		glUniformMatrix4fv(loc, 1, GL_FALSE, &matrix[0][0]);
@@ -221,7 +275,7 @@ namespace Engine::Rendering
 	{
 		glUniform3f(loc, value.x, value.y, value.z);
 	}
-	
+
 	const glm::vec3& Shader::GetUniformVec3(const std::string& uniformName)
 	{
 		int loc = GetUniformLocation(uniformName);
