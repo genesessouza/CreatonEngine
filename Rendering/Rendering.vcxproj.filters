@@ -51,6 +51,12 @@
     <ClInclude Include="include\Engine\Rendering\GUIRenderer.h">
       <Filter>Arquivos de Cabeçalho</Filter>
     </ClInclude>
+    <ClInclude Include="include\Engine\Rendering\RenderPass.h">
+      <Filter>Arquivos de Cabeçalho</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Engine\Rendering\RenderCommand.h">
+      <Filter>Arquivos de Cabeçalho</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Shader.cpp">
@@ -77,6 +83,9 @@
     <ClCompile Include="src\GUIRenderer.cpp">
       <Filter>Arquivos de Origem</Filter>
     </ClCompile>
+    <ClCompile Include="src\RenderPass.cpp">
+      <Filter>Arquivos de Origem</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\Shaders\Billboard.shader" />
@@ -85,5 +94,7 @@
     <None Include="Assets\Shaders\Lit.shader" />
     <None Include="Assets\Shaders\Unlit.shader" />
     <None Include="Assets\Shaders\Wireframe.shader" />
+    <None Include="Assets\Shaders\Tonemapping.shader" />
+    <None Include="Assets\Shaders\ShadowMapping.shader" />
   </ItemGroup>
 </Project>

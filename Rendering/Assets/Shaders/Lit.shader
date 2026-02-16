@@ -7,9 +7,11 @@ layout(location = 1) in vec3 a_Normal;
 uniform mat4 u_ModelMatrix;
 uniform mat3 u_NormalMatrix;
 uniform mat4 u_ViewProjectionMatrix;
+uniform mat4 u_LightSpaceMatrix;
 
 out vec3 v_Normal;
 out vec3 v_FragPos;
+out vec4 v_FragPosLightSpace;
 
 void main()
 {
@@ -19,9 +21,10 @@ void main()
     
     v_Normal = normalize(u_NormalMatrix * a_Normal);
 
+    v_FragPosLightSpace = u_LightSpaceMatrix * worldPos;
+    
     gl_Position = u_ViewProjectionMatrix * worldPos;
 };
-
 
 #shader fragment
 #version 450 core
@@ -36,6 +39,7 @@ struct PointLight {
 
 in vec3 v_Normal;
 in vec3 v_FragPos;
+in vec4 v_FragPosLightSpace;
 out vec4 fragColor;
 
 uniform vec4 u_Color; // Material color
@@ -51,6 +55,28 @@ uniform vec3 u_ViewPos;
 uniform float u_DiffuseStrength = 0.5;
 uniform float u_SpecularStrength = 1.0;
 uniform float u_Shininess = 16.0;
+uniform vec4 u_SpecularColor;
+
+uniform sampler2D u_ShadowMap;
+
+float ShadowCalculation(vec4 fragPosLightSpace)
+{
+    vec3 projCoords = fragPosLightSpace.xyz / fragPosLightSpace.w;
+
+    projCoords = projCoords * 0.5 + 0.5;
+
+    float closestDepth = texture(u_ShadowMap, projCoords.xy).r;
+    float currentDepth = projCoords.z;
+
+    float bias = 0.005;
+
+    float shadow = currentDepth - bias > closestDepth ? 1.0 : 0.0;
+
+    if (projCoords.z > 1.0)
+        shadow = 0.0;
+
+    return shadow;
+}
 
 void main()
 {
@@ -62,18 +88,18 @@ void main()
     vec3 totalSpecular = vec3(0.0);
 
     if (u_HasDirLight) {
-        vec3 lightDir = normalize(u_DirLightDir);
+        vec3 lightDir = normalize(-u_DirLightDir);
         
         // Diffuse
         float diff = max(dot(norm, lightDir), 0.0);
         totalDiffuse += u_DiffuseStrength * diff * u_DirLightColor.rgb * u_LightIntensity;
 
-	    if(diff != 0.0f)
+	    if(diff > 0.0f)
 	    {
             // Specular (Blinn-Phong)
             vec3 halfwayDir = normalize(lightDir + viewDir);
             float spec = pow(max(dot(norm, halfwayDir), 0.0), u_Shininess);
-            totalSpecular += u_SpecularStrength * spec * u_DirLightColor.rgb;
+            totalSpecular += u_SpecularStrength * spec * u_DirLightColor.rgb * u_LightIntensity;
 	    }
     }
 
@@ -81,23 +107,24 @@ void main()
         vec3 lightDir = normalize(u_PointLights[i].Position - v_FragPos);
         
         float dist = length(u_PointLights[i].Position - v_FragPos);
-        float attenuation = u_PointLights[i].Intensity / (dist + 1.0);
+        float attenuation = 1.0 / (dist * dist + 1.0);
 
         // Diffuse
         float diff = max(dot(norm, lightDir), 0.0);
-        totalDiffuse += u_DiffuseStrength * diff * u_PointLights[i].Color.rgb * attenuation;
+        totalDiffuse += u_DiffuseStrength * diff * u_PointLights[i].Color.rgb * u_PointLights[i].Intensity * attenuation;
 
-	    if(diff != 0.0f)
+	    if(diff > 0.0f)
 	    {
             // Specular (Blinn-Phong)
             vec3 halfwayDir = normalize(lightDir + viewDir);            
             float spec = pow(max(dot(norm, halfwayDir), 0.0), u_Shininess);
-	        totalSpecular += u_SpecularStrength * spec * u_PointLights[i].Color.rgb * attenuation;
+	        totalSpecular += u_SpecularStrength * spec * u_PointLights[i].Color.rgb * u_PointLights[i].Intensity * attenuation * u_SpecularColor.rgb;
 	    }
     }
 
-    vec3 result = (ambient + totalDiffuse) * u_Color.rgb + totalSpecular;    
-    result = pow(result, vec3(1.0 / 2.2));
+    float shadow = ShadowCalculation(v_FragPosLightSpace);
+
+    vec3 lighting = (1.0 - shadow) * (totalDiffuse * u_Color.rgb + totalSpecular);
     // fragColor = vec4(normalize(v_Normal) * 0.5 + 0.5, 1.0);
-    fragColor = vec4(result, u_Color.a);
+    fragColor = vec4(lighting, u_Color.a);
 }

@@ -39,6 +39,8 @@ namespace Engine::Framework
 			SetDirectionalLight(m_DirectionalLight);
 			AddEntity(std::move(dirLightGO));
 		}
+
+		Engine::Rendering::Renderer::Init();
 	}
 
 	void Scene::AddEntity(std::unique_ptr<Entity> entity)
@@ -159,6 +161,8 @@ namespace Engine::Framework
 		for (auto& billboard : m_Billboards)
 		{
 			auto& transform = billboard->GetOwner()->GetTransform();
+
+			if (!billboard->IsEnabled() || billboard->GetOwner()->IsEnabled()) continue;
 			billboard->Draw(transform, *m_SceneCamera);
 		}
 

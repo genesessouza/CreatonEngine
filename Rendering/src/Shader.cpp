@@ -24,26 +24,6 @@ inline static std::filesystem::path GetExecutableDir()
 
 namespace Engine::Rendering
 {
-	std::shared_ptr<Shader> Shader::CreateLitShader()
-	{
-		const std::string& shaderFilepath = (GetExecutableDir() / "Shaders/Lit.shader").string();
-
-		auto shader = std::make_shared<Shader>(shaderFilepath);
-		CRTN_CHECK_PTR(shader);
-
-		return shader;
-	}
-
-	std::shared_ptr<Shader> Shader::CreateUnlitShader()
-	{
-		const std::string& shaderFilepath = (GetExecutableDir() / "Shaders/Unlit.shader").string();
-
-		auto shader = std::make_shared<Shader>(shaderFilepath);
-		CRTN_CHECK_PTR(shader);
-
-		return shader;
-	}
-
 	std::shared_ptr<Shader> Shader::CreateBillboardShader()
 	{
 		const std::string& shaderFilepath = (GetExecutableDir() / "Shaders/Billboard.shader").string();
@@ -74,6 +54,45 @@ namespace Engine::Rendering
 		return shader;
 	}
 
+	std::shared_ptr<Shader> Shader::CreateUnlitShader()
+	{
+		const std::string& shaderFilepath = (GetExecutableDir() / "Shaders/Unlit.shader").string();
+
+		auto shader = std::make_shared<Shader>(shaderFilepath);
+		CRTN_CHECK_PTR(shader);
+
+		return shader;
+	}
+
+	std::shared_ptr<Shader> Shader::CreateLitShader()
+	{
+		const std::string& shaderFilepath = (GetExecutableDir() / "Shaders/Lit.shader").string();
+
+		auto shader = std::make_shared<Shader>(shaderFilepath);
+		CRTN_CHECK_PTR(shader);
+
+		return shader;
+	}
+
+	std::shared_ptr<Shader> Shader::CreateTonemappingShader()
+	{
+		const std::string& shaderFilepath = (GetExecutableDir() / "Shaders/Tonemapping.shader").string();
+
+		auto shader = std::make_shared<Shader>(shaderFilepath);
+		CRTN_CHECK_PTR(shader);
+
+		return shader;
+	}
+
+	std::shared_ptr<Shader> Shader::CreateDepthShader()
+	{
+		const std::string& shaderFilepath = (GetExecutableDir() / "Shaders/ShadowMapping.shader").string();
+
+		auto shader = std::make_shared<Shader>(shaderFilepath);
+		CRTN_CHECK_PTR(shader);
+
+		return shader;
+	}
 
 	Shader::Shader(const std::string& shaderFilepath)
 		: m_ShaderFilepath(shaderFilepath)

@@ -2,8 +2,8 @@
 
 #include <Engine/Core/Log/Logger.h>
 
-#include <Engine/Rendering/Array/Array.h>
-#include <Engine/Rendering/Buffer/Buffer.h>
+#include "Engine/Rendering/Array/Array.h"
+#include "Engine/Rendering/Buffer/Buffer.h"
 
 #include <Engine/Framework/Mesh.h>
 
@@ -24,7 +24,28 @@ namespace Engine::Rendering
 			return m_MeshIBO->GetCount(); 
 		}
 
+		static Buffer::VertexBufferLayout GetLayout()
+		{
+			Buffer::VertexBufferLayout layout;
+
+			layout.Add(0, 3, GL_FLOAT, false); // position
+			layout.Add(1, 3, GL_FLOAT, false); // normal
+			layout.Add(2, 2, GL_FLOAT, false); // uv
+
+			return layout;
+		}
+
+		static Buffer::VertexBufferLayout GetBillboardLayout()
+		{
+			Engine::Rendering::Buffer::VertexBufferLayout layout;
+
+			layout.Add(0, 3, GL_FLOAT, false); // offset
+
+			return layout;
+		}
+
 		const Engine::Framework::Geometry::Mesh& GetMeshCPU() const { return m_MeshCPU; }
+		Engine::Framework::Geometry::Mesh GetMeshCPU() { return m_MeshCPU; }
 	private:
 		Engine::Framework::Geometry::Mesh m_MeshCPU;
 

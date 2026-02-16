@@ -33,10 +33,15 @@ namespace Engine::Rendering
 	public:
 		struct SceneUniformLocations
 		{
+			int LightSpaceMatrix;
+			int ShadowMapTexture;
+
 			int ViewProjection;
 
 			int ViewPos;
 			int Normal;
+
+			int SpecularColor;
 
 			int HasDirLight;
 			int DirLightDir;
@@ -83,12 +88,13 @@ namespace Engine::Rendering
 
 		const bool GetUniformBool(const std::string& uniformName);
 
-		static std::shared_ptr<Shader> CreateLitShader(); // Blinn Phong + Shadows
-		static std::shared_ptr<Shader> CreateUnlitShader(); // Ambient only
 		static std::shared_ptr<Shader> CreateBillboardShader(); // Textures only. For camera, lights, particles
 		static std::shared_ptr<Shader> CreateWireframeShader(); // Collider Rendering
 		static std::shared_ptr<Shader> CreateDebugShader(); // View Modes: Normals, Diffuse, Specular, Polygon
-
+		static std::shared_ptr<Shader> CreateUnlitShader(); // Ambient only
+		static std::shared_ptr<Shader> CreateLitShader(); // Blinn Phong + Shadows
+		static std::shared_ptr<Shader> CreateTonemappingShader(); // For HDR
+		static std::shared_ptr<Shader> CreateDepthShader(); // For shadowMapping
 	public:
 		inline uint32_t GetShader() const { return m_RendererId; }
 

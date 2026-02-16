@@ -1,11 +1,12 @@
 #include "Engine/Framework/Billboard.h"
 
 #include "Engine/Framework/Camera.h"
-#include "Engine/Framework/Mesh.h"
 #include "Engine/Framework/Entity.h"
+#include "Engine/Framework/Mesh.h"
 
 #include <Engine/Rendering/Array/Array.h>
 #include <Engine/Rendering/Buffer/Buffer.h>
+#include <Engine/Rendering/Buffer/VertexBufferLayout.h>
 #include <Engine/Rendering/Shader.h>
 #include <Engine/Rendering/Renderer.h>
 
@@ -31,7 +32,7 @@ namespace Engine::Framework
 		m_VBO = Engine::Rendering::Buffer::VertexBuffer::Create(quad, sizeof(quad));
 		m_IBO = Engine::Rendering::Buffer::IndexBuffer::Create(indices, 6);
 
-		m_VAO->AddVertexBuffer(m_VBO, Geometry::Vertex::GetBillboardLayout());
+		m_VAO->AddVertexBuffer(m_VBO, Engine::Rendering::MeshGPU::GetBillboardLayout());
 		m_VAO->SetIndexBuffer(m_IBO);
 
 		m_VAO->Unbind();

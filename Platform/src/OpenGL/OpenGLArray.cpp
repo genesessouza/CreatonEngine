@@ -1,5 +1,7 @@
 #include "Engine/Platform/OpenGL/OpenGLArray.h"
 
+#include <Engine/Rendering/Buffer/VertexBufferLayout.h>
+
 #include <Engine/Core/Log/Logger.h>
 
 #include <glad/glad.h>

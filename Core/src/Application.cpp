@@ -22,7 +22,17 @@ namespace Engine::Core
 
 		m_Running = true;
 
-		m_Framebuffer = Framebuffer::Create(m_Window->GetFramebufferSize().width, m_Window->GetFramebufferSize().height);
+		Engine::Core::Framebuffer::FramebufferSpec spec;
+		
+		spec.DepthOnly = false;
+		spec.HasColor = true;
+		spec.HasDepth = true;
+		spec.HDR = true;
+		
+		spec.Width = m_Window->GetWindowSize().width;
+		spec.Height = m_Window->GetWindowSize().height;
+
+		m_Framebuffer = Framebuffer::Create(spec);
 	}
 
 	Application::~Application()

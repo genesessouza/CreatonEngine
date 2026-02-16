@@ -87,8 +87,6 @@ namespace Engine::Framework::Physics
 	// ----------------------------------------------------------------------------------------------- //
 	// ----------------------------------------------------------------------------------------------- //
 
-
-
 	bool SphereCollider::CheckCollisionImpl(Collider* other, glm::vec3& outOverlap)
 	{
 		SphereCollider* sphereOther = dynamic_cast<SphereCollider*>(other);

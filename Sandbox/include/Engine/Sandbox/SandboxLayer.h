@@ -8,6 +8,8 @@
 
 #include <Engine/Core/RenderCommand.h>
 
+#include <Engine/Rendering/Renderer.h>
+
 #include <Engine/Framework/Scene.h>
 #include <Engine/Framework/Raycast.h>
 #include <Engine/Framework/Debugging.h>

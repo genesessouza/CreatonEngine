@@ -4,7 +4,11 @@
 
 #include <Engine/Rendering/Array/Array.h>
 #include <Engine/Rendering/Buffer/Buffer.h>
-#include <Engine/Rendering/Buffer/VertexBufferLayout.h>
+
+namespace Engine::Rendering::Buffer
+{
+	class VertexBufferLayout;
+}
 
 namespace Engine::Platform::OpenGL
 {

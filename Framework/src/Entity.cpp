@@ -1,6 +1,5 @@
 #include "Engine/Framework/Entity.h"
 
-#include <Engine/Rendering/MeshGPU.h>
 #include <Engine/Rendering/MeshRenderer.h>
 
 namespace Engine::Framework

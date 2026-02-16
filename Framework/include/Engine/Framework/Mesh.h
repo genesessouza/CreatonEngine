@@ -1,7 +1,5 @@
 #pragma once
 
-#include <Engine/Rendering/Buffer/VertexBufferLayout.h>
-
 #include <Engine/Core/Log/Logger.h>
 
 #include <glad/glad.h>
@@ -17,27 +15,7 @@ namespace Engine::Framework::Geometry
 	{
 		glm::vec3 position;
 		glm::vec3 normal;
-		glm::vec2 uv;
-
-		static Engine::Rendering::Buffer::VertexBufferLayout GetLayout()
-		{
-			Engine::Rendering::Buffer::VertexBufferLayout layout;
-
-			layout.Add(0, 3, GL_FLOAT, false); // position
-			layout.Add(1, 3, GL_FLOAT, false); // normal
-			layout.Add(2, 2, GL_FLOAT, false); // uv
-
-			return layout;
-		}
-
-		static Engine::Rendering::Buffer::VertexBufferLayout GetBillboardLayout()
-		{
-			Engine::Rendering::Buffer::VertexBufferLayout layout;
-
-			layout.Add(0, 3, GL_FLOAT, false); // offset
-
-			return layout;
-		}
+		glm::vec2 uv;	
 	};
 
 	class Mesh
@@ -170,12 +148,12 @@ namespace Engine::Framework::Geometry
 					uint32_t second = first + segments + 1;
 
 					mesh.m_Indices.push_back(first);
-					mesh.m_Indices.push_back(second);
 					mesh.m_Indices.push_back(first + 1);
+					mesh.m_Indices.push_back(second);
 
 					mesh.m_Indices.push_back(second);
-					mesh.m_Indices.push_back(second + 1);
 					mesh.m_Indices.push_back(first + 1);
+					mesh.m_Indices.push_back(second + 1);
 				}
 			}
 
@@ -186,10 +164,24 @@ namespace Engine::Framework::Geometry
 		const std::vector<Vertex>& GetVertices() const { return m_Vertices; }
 		const std::vector<uint32_t>& GetIndices() const { return m_Indices; }
 		MeshType GetMeshType() const { return m_MeshType; }
+
 	private:
 		std::vector<Vertex> m_Vertices;
 		std::vector<uint32_t> m_Indices;
 
 		MeshType m_MeshType = NONE;
+	public:
+		const char* MeshTypeToString()
+		{
+			switch (m_MeshType)
+			{
+				case NONE:     return "NONE";
+				case TRIANGLE: return "TRIANGLE";
+				case QUAD:     return "QUAD";
+				case CUBE:     return "CUBE";
+				case SPHERE:   return "SPHERE";
+				default:       return "UNKNOWN";
+			}
+		}
 	};
 }

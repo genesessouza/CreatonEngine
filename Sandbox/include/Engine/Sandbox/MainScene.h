@@ -23,38 +23,17 @@ namespace Engine::Sandbox
 		{
 			Scene::Init();
 
-			// POINT LIGHTS 
-			/*{
-				auto redLightGo = Engine::Framework::Entity::CreateEmpty("[Entity] Red Light");
-				redLightGo->GetTransform().SetPosition({ 0.0f, 1.0f, -3.0f });
+			// SCENE LIGHTS
+			{
+				auto cyanLightGO = Engine::Framework::Entity::CreateBillboard("[Point Light] New Light", 1.0f, glm::vec4(1.0f));
+				cyanLightGO->GetTransform().SetPosition({ 0.0f, 2.0f, 0.0f });
 
-				auto redLight = redLightGo->AddComponent<Engine::Framework::Lights::PointLight>();
-				redLight->SetIntensity(10.0f);
-				redLight->SetColor({ 1.0f, 0.0f, 0.0f, 1.0f });
-
-				AddPointLight(redLight);
-				AddEntity(std::move(redLightGo));
-
-				auto greenLightGo = Engine::Framework::Entity::CreateEmpty("[Entity] Green Light");
-				greenLightGo->GetTransform().SetPosition({ -3.0f, 1.0f, 0.0f });
-
-				auto greenLight = greenLightGo->AddComponent<Engine::Framework::Lights::PointLight>();
-				greenLight->SetIntensity(10.0f);
-				greenLight->SetColor({ 0.0f, 1.0f, 0.0f, 1.0f });
-
-				AddPointLight(greenLight);
-				AddEntity(std::move(greenLightGo));
-
-				auto blueLightGo = Engine::Framework::Entity::CreateEmpty("[Entity] Blue Light");
-				blueLightGo->GetTransform().SetPosition({ 3.0f, 1.0f, 0.0f });
-
-				auto blueLight = blueLightGo->AddComponent<Engine::Framework::Lights::PointLight>();
-				blueLight->SetIntensity(10.0f);
-				blueLight->SetColor({ 0.0f, 0.0f, 1.0f, 1.0f });
-
-				AddPointLight(blueLight);
-				AddEntity(std::move(blueLightGo));
-			}*/
+				auto newLight = cyanLightGO->AddComponent<Engine::Framework::Lights::PointLight>();
+				newLight->SetIntensity(10.0f);
+				newLight->SetColor({ 0.0f, 0.9f, 0.9f, 1.0f }); // cyan
+			
+				AddEntity(std::move(cyanLightGO));
+			}
 
 			// SCENE OBJECTS
 			{

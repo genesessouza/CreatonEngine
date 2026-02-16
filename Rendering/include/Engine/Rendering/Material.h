@@ -1,7 +1,6 @@
 #pragma once
 
 #include "Engine/Rendering/Shader.h"
-#include "Engine/Rendering/Renderer.h"
 #include "Engine/Framework/Entity.h"
 
 #include <glm/ext/vector_float3.hpp>
@@ -13,7 +12,7 @@ namespace Engine::Rendering
 	class Material
 	{
 	public:
-		Material() 
+		Material()
 			: m_Shader(nullptr), m_ColorLoc(-1), m_DiffuseLoc(-1), m_SpecularLoc(-1), m_ShininessLoc(-1)
 		{
 		}
@@ -25,11 +24,10 @@ namespace Engine::Rendering
 			m_Shader = Shader::CreateLitShader();
 			CRTN_CHECK_PTR(m_Shader);
 
-			Renderer::InitSceneUniforms(m_Shader);
 			CacheUniforms();
 		}
 
-		inline void Bind() const 
+		inline void Bind() const
 		{
 			m_Shader->Bind();
 
@@ -47,6 +45,9 @@ namespace Engine::Rendering
 
 		void SetSpecular(float value) { m_Specular = glm::clamp(value, 0.0f, 1.0f); }
 		float GetSpecular() const { return m_Specular; }
+
+		void SetSpecularColor(const glm::vec4& color) { m_SpecularColor = color; }
+		const glm::vec4& GetSpecularColor() const { return m_SpecularColor; }
 
 		void SetShininess(float value) { m_Shininess = glm::clamp(value, 8.0f, 128.0f); }
 		float GetShininess() const { return m_Shininess; }
@@ -70,16 +71,21 @@ namespace Engine::Rendering
 			m_ColorLoc = m_Shader->GetUniformLocation("u_Color");
 			m_DiffuseLoc = m_Shader->GetUniformLocation("u_DiffuseStrength");
 			m_SpecularLoc = m_Shader->GetUniformLocation("u_SpecularStrength");
+			m_SpecularColorLoc = m_Shader->GetUniformLocation("u_SpecularColor");
+			m_LightSpaceMatrixLoc = m_Shader->GetUniformLocation("u_LightSpaceMatrix");
+			m_ShadowMapTextureLoc = m_Shader->GetUniformLocation("u_ShadowMap");
 			m_ShininessLoc = m_Shader->GetUniformLocation("u_Shininess");
 		}
 
-		int m_ColorLoc, m_DiffuseLoc, m_SpecularLoc, m_ShininessLoc;
+		int m_ColorLoc, m_DiffuseLoc, m_SpecularLoc, m_SpecularColorLoc, m_ShininessLoc, m_LightSpaceMatrixLoc, m_ShadowMapTextureLoc;
 	private:
 		std::shared_ptr<Shader> m_Shader;
 
 		glm::vec4 m_Color{ 1.0f };
 		float m_Diffuse = 0.5f;
+
 		float m_Specular = 0.5f;
+		glm::vec4 m_SpecularColor{ 1.0f };
 		float m_Shininess = 32.0f;
 	};
 }

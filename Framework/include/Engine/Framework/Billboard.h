@@ -11,7 +11,7 @@ namespace Engine::Rendering
 	class Shader;
 
 	namespace Array { class VertexArray; }
-	namespace Buffer { class VertexBuffer; class IndexBuffer; }
+	namespace Buffer { class VertexBuffer; class IndexBuffer; class VertexBufferLayout; }
 }
 namespace Engine::Framework
 {

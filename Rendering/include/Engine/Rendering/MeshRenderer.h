@@ -1,7 +1,6 @@
 #pragma once
 
 #include "Engine/Rendering/Material.h"
-
 #include <Engine/Framework/Component.h>
 
 #include <memory>
@@ -11,13 +10,11 @@ namespace Engine::Framework
     class Transform;
     class Scene;
     class Entity;
+    class Mesh;
 }
 
 namespace Engine::Rendering
 {
-    class Renderer;
-    class MeshGPU;
-
     class MeshRenderer : public Engine::Framework::Component
     {
     public:

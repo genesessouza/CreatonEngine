@@ -80,14 +80,13 @@ namespace Engine::Editor
 				{
 					if (ImGui::MenuItem("Point Light"))
 					{
-						auto newLightGo = Engine::Framework::Entity::CreateEmpty("[Point Light] New Light");
+						auto newLightGo = Engine::Framework::Entity::CreateBillboard("[Point Light] New Light", 1.0f, glm::vec4(1.0f));
 						newLightGo->GetTransform().SetPosition({ 0.0f, 1.0f, -3.0f });
 
 						auto newLight = newLightGo->AddComponent<Engine::Framework::Lights::PointLight>();
 						newLight->SetIntensity(10.0f);
 						newLight->SetColor({ 1.0f, 1.0f, 1.0f, 1.0f });
 
-						Engine::Framework::Scene::Get().AddPointLight(newLight);
 						Engine::Framework::Scene::Get().AddEntity(std::move(newLightGo));
 					}
 					ImGui::EndMenu();
@@ -97,7 +96,7 @@ namespace Engine::Editor
 				{
 					if (ImGui::MenuItem("3D Cube"))
 					{
-						auto newCube = Engine::Framework::Entity::CreateEmpty("[Entity] New Cube");
+						auto newCube = Engine::Framework::Entity::CreateWithCollider("[Entity] New Cube", Engine::Framework::MeshLibrary::InstantiateCube());
 						newCube->GetTransform().SetPosition({ 0.0f, 1.0f, 0.0f });
 						newCube->GetTransform().SetScale({ 1.0f, 1.0f, 1.0f });
 						newCube->GetComponent<Engine::Rendering::MeshRenderer>()->GetMaterial()->SetColor(glm::vec4(0.2f, 0.2f, 0.2f, 1));
@@ -152,7 +151,7 @@ namespace Engine::Editor
 			if (ImGui::Button("Play", ImVec2(size, 0)))
 				activeScene.SetSceneState(Engine::Framework::Scene::Play);
 		}
-		else if(activeScene.GetSceneState() == Engine::Framework::Scene::SceneState::Play)
+		else if (activeScene.GetSceneState() == Engine::Framework::Scene::SceneState::Play)
 		{
 			if (ImGui::Button("Pause", ImVec2(size, 0)))
 				activeScene.SetSceneState(Engine::Framework::Scene::Pause);
@@ -188,7 +187,7 @@ namespace Engine::Editor
 			m_ViewportBounds[1] = { vMax.x, vMax.y };
 		}
 
-		if (m_SelectedEntity) 
+		if (m_SelectedEntity)
 		{
 			ImGuizmo::SetOrthographic(false);
 			ImGuizmo::SetDrawlist(ImGui::GetForegroundDrawList());
@@ -204,7 +203,7 @@ namespace Engine::Editor
 
 			ImGuizmo::Manipulate(glm::value_ptr(view), glm::value_ptr(proj), ImGuizmo::TRANSLATE, ImGuizmo::LOCAL, glm::value_ptr(modelMatrix));
 
-			if (ImGuizmo::IsUsing()) 
+			if (ImGuizmo::IsUsing())
 			{
 				glm::vec3 pos{}, rot{}, scl{};
 				glm::quat q{};
@@ -340,20 +339,24 @@ namespace Engine::Editor
 			{
 				if (ImGui::TreeNodeEx("Mesh Renderer", ImGuiTreeNodeFlags_DefaultOpen))
 				{
-					auto& material = meshRenderer.GetMaterial();
 					auto& mesh = meshRenderer.GetMesh();
 
 					if (mesh && ImGui::TreeNodeEx("Mesh", ImGuiTreeNodeFlags_DefaultOpen))
 					{
-						ImGui::Text("[Not yet] Mesh Type: ");
-						ImGui::TreePop();
+						auto meshType = mesh->GetMeshCPU().MeshTypeToString();
+
+						ImGui::Text("Mesh Type: %s", meshType);
 					}
+					ImGui::TreePop();
+
+					auto& material = meshRenderer.GetMaterial();
 					if (material && ImGui::TreeNodeEx("Material", ImGuiTreeNodeFlags_DefaultOpen))
 					{
 						glm::vec4 color = material->GetColor();
 
 						float diff = material->GetDiffuse();
 						float spec = material->GetSpecular();
+						glm::vec4 specColor = material->GetSpecularColor();
 						float shin = material->GetShininess();
 
 						if (ImGui::ColorEdit4("Albedo", glm::value_ptr(color)))
@@ -364,6 +367,9 @@ namespace Engine::Editor
 
 						if (ImGui::SliderFloat("Specular", &spec, 0.0f, 1.0f))
 							material->SetSpecular(spec);
+
+						if (ImGui::ColorEdit4("Specular Color", glm::value_ptr(specColor)))
+							material->SetSpecularColor(color);
 
 						if (ImGui::SliderFloat("Shininess", &shin, 8.0f, 128.0f))
 							material->SetShininess(shin);
@@ -386,7 +392,7 @@ namespace Engine::Editor
 					if (ImGui::Checkbox("Static", &isStatic))
 						phys->SetStatic(isStatic);
 
-					bool isEnabled = phys->IsEnabled();
+					bool isEnabled = phys->IsEnabled() && m_SelectedEntity->IsEnabled();
 					if (ImGui::Checkbox("Enabled", &isEnabled))
 						phys->SetEnabled(isEnabled);
 
@@ -411,7 +417,7 @@ namespace Engine::Editor
 			{
 				if (ImGui::TreeNodeEx("Collider", ImGuiTreeNodeFlags_DefaultOpen))
 				{
-					bool enabled = col->IsEnabled();
+					bool enabled = col->IsEnabled() && m_SelectedEntity->IsEnabled();
 					bool isTrigger = col->IsTrigger();
 
 					if (ImGui::Checkbox("Enabled", &enabled))
@@ -429,10 +435,10 @@ namespace Engine::Editor
 			{
 				if (ImGui::TreeNodeEx("Light", ImGuiTreeNodeFlags_DefaultOpen))
 				{
-					bool enabled = light->IsEnabled();
+					bool enabled = light->IsEnabled() && m_SelectedEntity->IsEnabled();
 
 					if (ImGui::Checkbox("Enabled", &enabled))
-						col->SetEnabled(enabled);
+						light->SetEnabled(enabled);
 
 					glm::vec3 dir = light->GetDirection();
 					float intensity = light->GetIntensity();
@@ -448,7 +454,7 @@ namespace Engine::Editor
 						light->GetOwner()->GetTransform().SetRotation(dir);
 					}
 
-					if (ImGui::SliderFloat("Intensity", &intensity, 0.5f, 30.0f))
+					if (ImGui::SliderFloat("Intensity", &intensity, 0.0f, 30.0f))
 						light->SetIntensity(intensity);
 
 					auto billboard = obj->GetComponent<Engine::Framework::Billboard>();
@@ -502,7 +508,7 @@ namespace Engine::Editor
 					auto billboard = obj->GetComponent<Engine::Framework::Billboard>();
 					if (billboard)
 					{
-						bool enabled = billboard->IsEnabled();
+						bool enabled = billboard->IsEnabled() && m_SelectedEntity->IsEnabled();
 
 						if (ImGui::TreeNodeEx("Billboard", ImGuiTreeNodeFlags_DefaultOpen))
 						{

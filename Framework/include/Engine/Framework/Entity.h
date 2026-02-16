@@ -14,7 +14,6 @@
 
 namespace Engine::Rendering
 {
-	class MeshGPU;
 	class MeshRenderer;
 }
 

@@ -1,7 +1,5 @@
 #pragma once
 
-#include "Engine/Framework/Mesh.h"
-
 #include <Engine/Rendering/MeshGPU.h>
 
 namespace Engine::Framework

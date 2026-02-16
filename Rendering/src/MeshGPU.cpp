@@ -1,6 +1,6 @@
 #include "Engine/Rendering/MeshGPU.h"
 
-#include <Engine/Framework/Mesh.h>
+#include "Engine/Rendering/Buffer/VertexBufferLayout.h"
 
 #include <Engine/Core/Log/Logger.h>
 
@@ -14,7 +14,7 @@ namespace Engine::Rendering
 		m_MeshVBO = Buffer::VertexBuffer::Create(mesh.GetVertices().data(), mesh.GetVertices().size() * sizeof(Engine::Framework::Geometry::Vertex));
 		m_MeshIBO = Buffer::IndexBuffer::Create(mesh.GetIndices().data(), mesh.GetIndices().size() * sizeof(uint32_t));
 
-		m_MeshVAO->AddVertexBuffer(m_MeshVBO, Engine::Framework::Geometry::Vertex::GetLayout());
+		m_MeshVAO->AddVertexBuffer(m_MeshVBO, GetLayout());
 		m_MeshVAO->SetIndexBuffer(m_MeshIBO);
 
 		m_MeshVAO->Unbind();
