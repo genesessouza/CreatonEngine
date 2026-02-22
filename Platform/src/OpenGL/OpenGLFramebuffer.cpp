@@ -3,6 +3,7 @@
 #include <Engine/Core/Log/Logger.h>
 
 #include <glad/glad.h>
+#include "../../../Editor/include/Engine/Editor/GUI/GUIUtils.h"
 
 namespace Engine::Platform::OpenGL
 {
@@ -10,6 +11,7 @@ namespace Engine::Platform::OpenGL
 		: Framebuffer()
 	{
 		m_Spec = spec;
+
 		Invalidate();
 	}
 
@@ -94,15 +96,15 @@ namespace Engine::Platform::OpenGL
 			}
 
 			CRTN_ASSERT(glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE, "Framebuffer incomplete!");
-
-			glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		}
 	}
 
 	void OpenGLFramebuffer::Bind()
 	{
+		//Unbind(); // Clear previous framebuffer to force OpenGL to use correct one
+		
 		glBindFramebuffer(GL_FRAMEBUFFER, m_RendererID);
-		glViewport(0, 0, m_Spec.Width, m_Spec.Height); // Fills up the entire framebuffer
+		glViewport(0, 0, m_Spec.Width, m_Spec.Height);
 	}
 
 	void OpenGLFramebuffer::Unbind()

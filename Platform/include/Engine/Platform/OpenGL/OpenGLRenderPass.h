@@ -15,10 +15,11 @@ namespace Engine::Platform::OpenGL
 		OpenGLRenderPass() : RenderPass() {}
 		virtual ~OpenGLRenderPass() = default;
 
-		void Init() override;
 		void Begin() override;
 		void End() override;
 
+		void Init() override {}
+		void Init(uint32_t width, uint32_t height) override;
 	private:
 		void Render(uint32_t texture) override {}
 	};
@@ -29,9 +30,13 @@ namespace Engine::Platform::OpenGL
 		OpenGLShadowPass() : ShadowPass() {}
 		virtual ~OpenGLShadowPass() = default;
 
-		void Init(uint32_t width, uint32_t height) override;
 		void Begin() override;
 		void End() override;
+
+		void Init() override {}
+		void Init(uint32_t width, uint32_t height) override;
+
+		void CalculateDirectionalLightSpaceMatrix(glm::vec3 lightDir, glm::vec3 cameraPos, float cameraNear, float cameraFar) override;
 
 		void Render(const Engine::Rendering::RenderCommand& cmd) override;
 	private:
@@ -47,7 +52,9 @@ namespace Engine::Platform::OpenGL
 		void Begin() override;
 		void End() override;
 
+		void Init() override {}
 		void Init(uint32_t width, uint32_t height) override;
+
 		void Render(uint32_t texture) override;
 	};
 }

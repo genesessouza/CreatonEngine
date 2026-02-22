@@ -121,7 +121,6 @@ namespace Engine::Framework
 		static Scene* s_ActiveScene;
 		friend class Component;
 	private:
-
 		SceneState m_SceneState = SceneState::Edit;
 	};
 }

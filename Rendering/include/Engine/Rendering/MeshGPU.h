@@ -18,6 +18,10 @@ namespace Engine::Rendering
 
 		void Draw() const;
 
+		Array::VertexArray* GetVAO() const { return m_MeshVAO.get(); }
+		Buffer::VertexBuffer* GetVBO() const { return m_MeshVBO.get(); }
+		Buffer::IndexBuffer* GetIBO() const { return m_MeshIBO.get(); }
+
 		size_t GetIndexCount() 
 		{ 
 			CRTN_CHECK_PTR(m_MeshIBO);

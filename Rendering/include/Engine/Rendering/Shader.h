@@ -23,6 +23,7 @@ namespace Engine::Rendering
 		Normal,
 		Color,
 		Intensity,
+		Ambient,
 		Diffuse,
 		Specular,
 		Shininess
@@ -35,6 +36,10 @@ namespace Engine::Rendering
 		{
 			int LightSpaceMatrix;
 			int ShadowMapTexture;
+			int ShadowType;
+			int ShadowBias;
+			int ShadowStrength;
+			int LightSize;
 
 			int ViewProjection;
 
@@ -123,6 +128,9 @@ namespace Engine::Rendering
 				case Intensity:
 					return "u_LightIntensity";
 					break;
+				case Ambient:
+					return "u_AmbientStrength";
+					break;
 				case Diffuse:
 					return "u_DiffuseStrength";
 					break;
@@ -137,6 +145,8 @@ namespace Engine::Rendering
 					break;
 			}
 		}
+
+		bool SceneUniformsInitialized = false;
 	private:
 		enum class ShaderType { None = -1, Vertex = 0, Fragment = 1 };
 	private:

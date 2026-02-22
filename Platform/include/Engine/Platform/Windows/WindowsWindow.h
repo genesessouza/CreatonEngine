@@ -16,8 +16,6 @@ namespace Engine::Platform::Windows
 
         void SetEventCallback(const EventCallbackFn& callback) override;
 
-        FramebufferSize GetFramebufferSize() override;
-
 		void Init(const Window::WindowProps props) override;
 
         void OnUpdate() override;

@@ -1,5 +1,7 @@
 #include "Engine/Platform/OpenGL/OpenGLRendererAPI.h"
 
+#include <Engine/Rendering/Renderer.h>
+
 #include <GLFW/glfw3.h>
 #include <glad/glad.h>
 

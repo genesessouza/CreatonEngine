@@ -21,18 +21,6 @@ namespace Engine::Core
 		m_Window->SetVSync(false);
 
 		m_Running = true;
-
-		Engine::Core::Framebuffer::FramebufferSpec spec;
-		
-		spec.DepthOnly = false;
-		spec.HasColor = true;
-		spec.HasDepth = true;
-		spec.HDR = true;
-		
-		spec.Width = m_Window->GetWindowSize().width;
-		spec.Height = m_Window->GetWindowSize().height;
-
-		m_Framebuffer = Framebuffer::Create(spec);
 	}
 
 	Application::~Application()
@@ -87,33 +75,12 @@ namespace Engine::Core
 				frameCount = 0;
 			}
 
-			if (m_FramebufferState.Resized)
-			{
-				m_Framebuffer->Resize(m_FramebufferState.Width, m_FramebufferState.Height);
-				m_FramebufferState.Resized = false;
-			}
-
 			static float timeAccumulator = 0.0f;
 			timeAccumulator += deltaTime;
 
-			if (timeAccumulator >= 0.016f)
-			{
-				// SCENE RENDERING
-				m_Framebuffer->Bind();
-
-				RenderCommand::SetViewport(0, 0, m_Framebuffer->GetWidth(), m_Framebuffer->GetHeight());
-
-				for (Layer::Layer* layer : m_LayerStack)
-					layer->OnUpdate(deltaTime);
-
-				m_Framebuffer->Unbind();
-			}
-
-			// UI RENDERING
-			auto [w, h] = m_Window->GetWindowSize();
-
-			RenderCommand::SetViewport(0, 0, w, h);
-			RenderCommand::ClearUI(); // Prevents scene viewport color from leaking to UI borders
+			// SCENE RENDERING
+			for (Layer::Layer* layer : m_LayerStack)
+				layer->OnUpdate(deltaTime);
 
 			RenderCommand::BeginGUI();
 			for (Layer::Layer* layer : m_LayerStack)
@@ -122,6 +89,8 @@ namespace Engine::Core
 
 			OnUpdate(deltaTime);
 			m_Window->OnUpdate();
+
+			timeAccumulator = 0.0f;
 		}
 	}
 
@@ -134,19 +103,6 @@ namespace Engine::Core
 	{
 		ProcessInput(deltaTime);
 		ProcessWindowChanges();
-
-		if (m_FramebufferState.Resized)
-		{
-			RenderCommand::SetViewport(
-				0, 0,
-				m_FramebufferState.Width,
-				m_FramebufferState.Height
-			);
-
-			//RenderCommand::SetViewport(0, 0, m_Window->GetWindowSize().width, m_Window->GetWindowSize().height);
-			RenderCommand::MarkFramebufferDirty();
-			m_FramebufferState.Resized = false;
-		}
 	}
 
 	void Application::OnEvent(Event::Event& e)
@@ -157,7 +113,7 @@ namespace Engine::Core
 		dispatcher.Dispatch<Event::WindowResizeEvent>(BIND_EVENT_FN(Application::OnWindowResize));
 		dispatcher.Dispatch<Event::WindowMoveEvent>(BIND_EVENT_FN(Application::OnWindowMove));
 
-		dispatcher.Dispatch<Event::FramebufferResizeEvent>(BIND_EVENT_FN(Application::OnFramebufferResize));
+		//dispatcher.Dispatch<Event::FramebufferResizeEvent>(BIND_EVENT_FN(Application::OnFramebufferResize));
 
 		dispatcher.Dispatch<Event::MouseMovedEvent>(BIND_EVENT_FN(Application::OnMouseMove));
 		dispatcher.Dispatch<Event::MouseScrolledEvent>(BIND_EVENT_FN(Application::OnMouseScroll));
@@ -205,18 +161,6 @@ namespace Engine::Core
 		m_MouseState.Scrolled = true;
 
 		return false;
-	}
-
-	bool Application::OnFramebufferResize(Event::FramebufferResizeEvent e)
-	{
-		if (e.GetWidth() == 0 || e.GetHeight() == 0)
-			return false;
-
-		m_FramebufferState.Width = e.GetWidth();
-		m_FramebufferState.Height = e.GetHeight();
-		m_FramebufferState.Resized = true;
-
-		return true;
 	}
 
 	bool Application::OnWindowMove(Event::WindowMoveEvent& e)
