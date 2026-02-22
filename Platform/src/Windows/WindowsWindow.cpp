@@ -30,14 +30,6 @@ namespace Engine::Platform::Windows
 		m_EventCallback = callback;
 	}
 
-	Engine::Core::Window::FramebufferSize WindowsWindow::GetFramebufferSize()
-	{
-		int width, height;
-		glfwGetFramebufferSize(m_Window, &width, &height);
-
-		return { width, height };
-	}
-
 	void WindowsWindow::Init(const Window::WindowProps props)
 	{
 		int status = glfwInit();

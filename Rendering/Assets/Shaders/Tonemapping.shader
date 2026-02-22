@@ -19,21 +19,16 @@ out vec4 FragColor;
 in vec2 TexCoords;
 
 uniform sampler2D u_HDRBuffer;
-uniform float u_Exposure;
+uniform float u_Exposure = 1.0;
 
 void main()
 {
     vec3 hdrColor = texture(u_HDRBuffer, TexCoords).rgb;
 
-    // Reinhard tone mapping
-    vec3 mapped = hdrColor / (hdrColor + vec3(1.0));
-
-    // Exponential
-    mapped = vec3(1.0) - exp(-hdrColor * u_Exposure);
+    vec3 mapped = vec3(1.0) - exp(-hdrColor * u_Exposure);
 
     // Gamma correction
     mapped = pow(mapped, vec3(1.0 / 2.2));
 
     FragColor = vec4(mapped, 1.0);
 }
-

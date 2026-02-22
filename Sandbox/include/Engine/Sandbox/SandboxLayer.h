@@ -38,8 +38,7 @@ namespace Engine::Sandbox
 
 		void OnAttach() override
 		{
-			Engine::Rendering::Renderer::SetClearColor(glm::vec4(0.529f, 0.808f, 0.922f, 1.0f));
-			CRTN_LOG_INFO("[SANDBOX LAYER]: Background color set to: <Sky Blue>\n");
+			CRTN_LOG_INFO("[SANDBOX LAYER]: Background color set to: <Light Blue>: [R = 0.529, G = 0.808, B = 0.922, A = 1.0] \n");
 
 			m_MainScene = std::make_unique<MainScene>();
 			CRTN_CHECK_PTR(m_MainScene);
@@ -48,8 +47,6 @@ namespace Engine::Sandbox
 
 		void OnUpdate(float deltaTime) override
 		{
-			Engine::Rendering::Renderer::SetClearColor({ 0.529f, 0.808f, 0.922f, 1.0f });
-
 			//CRTN_LOG_INFO("SandboxLayer update");
 
 			glm::vec3 deltaPos = m_CameraMovementDirection * deltaTime;
@@ -91,16 +88,18 @@ namespace Engine::Sandbox
 								m_IsDragging = true;
 							}
 
-							Engine::Framework::Raycast::RayResult result = Engine::Framework::Raycast::MouseToWorldPos(*m_MainScene->GetSceneCamera(), false);
+							Engine::Framework::Raycast::RayResult result = Engine::Framework::Raycast::MouseToWorldPos(*m_MainScene->GetSceneCamera(), true);
 							if (result.Success)
 							{
 								m_SelectedEntity = result.HitEntity;
-								Engine::Editor::EditorGUI::Get().SelectEntity(m_SelectedEntity);
+								auto& editor = *Engine::Editor::EditorGUI::Get();
+								editor.SelectEntity(m_SelectedEntity);
 							}
 							else
 							{
 								m_SelectedEntity = nullptr;
-								Engine::Editor::EditorGUI::Get().SelectEntity(m_SelectedEntity);
+								auto& editor = *Engine::Editor::EditorGUI::Get();
+								editor.SelectEntity(m_SelectedEntity);
 							}
 						}
 					}

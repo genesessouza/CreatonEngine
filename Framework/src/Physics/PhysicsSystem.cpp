@@ -39,7 +39,7 @@ namespace Engine::Framework::Physics
 		{
 			if (!phys->GetOwner()->IsEnabled() || !phys->IsEnabled() || phys->IsStatic()) continue;
 
-			//phys->UpdateInertiaTensorWorld();
+			phys->UpdateInertiaTensorWorld();
 
 			auto collider = phys->GetOwner()->GetComponent<Collider>();
 			if (collider)

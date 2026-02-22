@@ -1,8 +1,9 @@
 #include "Engine/Editor/EditorApplication.h"
 #include "Engine/Editor/EditorLayer.h"
 
-#include <Engine/Platform/Windows/WindowsWindowFactory.h>
+#include <Engine/Core/Event/FramebufferEvent.h>
 
+#include <Engine/Platform/Windows/WindowsWindowFactory.h>
 #include <Engine/Platform/Glfw/GlfwTimer.h>
 
 #include <Engine/Sandbox/SandboxLayer.h>
@@ -14,13 +15,13 @@ Engine::Core::Application* CreateApplication()
 
 	auto* app = new Engine::Editor::EditorApplication();
 	
-	auto* editorLayer = new Engine::Editor::EditorLayer();
-	app->PushLayer(editorLayer);
-
 	auto* sandboxLayer = new Engine::Sandbox::SandboxLayer();
 	app->PushLayer(sandboxLayer);
 
-	auto [w, h] = Engine::Core::Application::Get().GetWindow().GetFramebufferSize();
+	auto* editorLayer = new Engine::Editor::EditorLayer();
+	app->PushLayer(editorLayer);
+
+	auto [w, h] = Engine::Core::Application::Get().GetWindow().GetWindowSize();
 	Engine::Core::Event::FramebufferResizeEvent e(w, h);
 	editorLayer->OnEvent(e);
 

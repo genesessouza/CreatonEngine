@@ -20,16 +20,11 @@ namespace Engine::Core
 	public:
 		struct WindowProps
 		{
-			std::string Title = "Creation Engine";
+			std::string Title = "Creaton Engine";
 			uint32_t Width = 1280;
 			uint32_t Height = 720;
 		};
 		struct WindowSize
-		{
-			int width;
-			int height;
-		};
-		struct FramebufferSize
 		{
 			int width;
 			int height;
@@ -45,8 +40,6 @@ namespace Engine::Core
 
 		using EventCallbackFn = std::function<void(Event::Event&)>;
 		virtual void SetEventCallback(const EventCallbackFn& callback) = 0;
-
-		virtual FramebufferSize GetFramebufferSize() = 0;
 
 		virtual void Init(const Window::WindowProps props) = 0;
 

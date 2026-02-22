@@ -27,6 +27,7 @@ namespace Engine::Sandbox
 			{
 				auto cyanLightGO = Engine::Framework::Entity::CreateBillboard("[Point Light] New Light", 1.0f, glm::vec4(1.0f));
 				cyanLightGO->GetTransform().SetPosition({ 0.0f, 2.0f, 0.0f });
+				cyanLightGO->SetEnabled(false);
 
 				auto newLight = cyanLightGO->AddComponent<Engine::Framework::Lights::PointLight>();
 				newLight->SetIntensity(10.0f);
@@ -54,7 +55,7 @@ namespace Engine::Sandbox
 
 				// SPHERE
 				m_DefaultSphere = Engine::Framework::Entity::CreateWithPhysics("[Entity] Default Sphere", Engine::Framework::MeshLibrary::InstantiateSphere());
-				m_DefaultSphere->GetTransform().SetPosition({ -3.0f, 3.0f, 0.0f });
+				m_DefaultSphere->GetTransform().SetPosition({ 3.0f, 5.5f, 0.0f });
 				m_DefaultSphere->GetComponent<Engine::Rendering::MeshRenderer>()->GetMaterial()->SetColor(glm::vec4(0.05f, 0.9f, 0.05f, 1.0f)); // Sets color to green
 
 				AddEntity(std::move(m_DefaultSphere));

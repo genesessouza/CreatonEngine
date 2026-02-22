@@ -47,13 +47,14 @@ namespace Engine::Editor
 		void DrawSceneViewport();
 		void DrawConsole();
 		void DrawObjectInfo();
+		void DrawRenderingPanel();
 
 		void SelectEntity(Engine::Framework::Entity* entity) { m_SelectedEntity = entity; }
 		Engine::Framework::Entity* GetSelectedEntity() const { return m_SelectedEntity; }
 
 		void DrawEntityUI(Engine::Framework::Entity* obj);
 
-		static EditorGUI& Get();
+		static EditorGUI* Get();
 	private:
 		ResizeCallback m_ResizeCallback;
 

@@ -9,7 +9,7 @@ namespace Engine::Framework::Lights
 	{
 		m_Color = glm::vec4(1.00f, 0.95f, 0.70f, 1.0f); // light yellow
 		m_Intensity = 3.0f;
-		m_Direction = glm::vec3(0.0f, 90.0f, 0.0f);
+		m_Direction = glm::vec3(-90.0f, -30.0f, -130.0f);
 
 		GetOwner()->GetTransform().SetPosition(glm::vec3(1.0f, 5.0f, -3.0f));
 		GetOwner()->GetTransform().SetScale(glm::vec3(1.0f));

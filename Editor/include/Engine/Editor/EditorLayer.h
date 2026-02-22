@@ -6,6 +6,8 @@
 #include <Engine/Core/Layer/Layer.h>
 #include <Engine/Core/Log/Logger.h>
 
+#include <Engine/Core/Event/FramebufferEvent.h>
+
 namespace Engine::Editor
 {
 	class EditorLayer : public Engine::Core::Layer::Layer

@@ -11,6 +11,7 @@
 #include <Engine/Framework/Physics/Collider.h>
 #include <Engine/Framework/Physics/PhysicsComponent.h>
 
+#include <Engine/Rendering/Renderer.h>
 #include <Engine/Rendering/MeshRenderer.h>
 
 #include <ImGui/imgui_impl_glfw.h>
@@ -31,9 +32,9 @@ namespace Engine::Editor
 		s_EditorGUIInstance = this;
 	}
 
-	EditorGUI& EditorGUI::Get()
+	EditorGUI* EditorGUI::Get()
 	{
-		return *s_EditorGUIInstance;
+		return s_EditorGUIInstance;
 	}
 
 	void EditorGUI::OnInit()
@@ -153,11 +154,6 @@ namespace Engine::Editor
 		}
 		else if (activeScene.GetSceneState() == Engine::Framework::Scene::SceneState::Play)
 		{
-			if (ImGui::Button("Pause", ImVec2(size, 0)))
-				activeScene.SetSceneState(Engine::Framework::Scene::Pause);
-		}
-		else
-		{
 			if (ImGui::Button("Edit", ImVec2(size, 0)))
 				activeScene.SetSceneState(Engine::Framework::Scene::Edit);
 		}
@@ -171,12 +167,12 @@ namespace Engine::Editor
 				m_ViewportSize = { viewportPanelSize.x, viewportPanelSize.y };
 
 				if (m_ResizeCallback)
-					m_ResizeCallback((uint32_t)viewportPanelSize.x, (uint32_t)viewportPanelSize.y);
+					m_ResizeCallback((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
 			}
 		}
 
-		uint32_t textureID = Engine::Core::Application::Get().GetFramebuffer()->GetColorAttachmentRendererID();
-		ImGui::Image((void*)(uintptr_t)textureID, { m_ViewportSize.x, m_ViewportSize.y }, { 0, 1 }, { 1, 0 });
+		uint32_t textureID = Engine::Rendering::Renderer::GetFinalRenderTexture();
+		ImGui::Image((void*)(uintptr_t)textureID, m_ViewportSize, { 0, 1 }, { 1, 0 });
 
 		// MOUSE RAYCASTING ON SCENE VIEWPORT FOR PICKING
 		{
@@ -205,23 +201,25 @@ namespace Engine::Editor
 
 			if (ImGuizmo::IsUsing())
 			{
-				glm::vec3 pos{}, rot{}, scl{};
-				glm::quat q{};
-
+				glm::vec3 pos, rot, scl;
+				glm::quat quat;
 				glm::vec3 skew;
-				glm::vec4 persp;
+				glm::vec4 perspective;
+
+				glm::decompose(modelMatrix, scl, quat, pos, skew, perspective);
+
+				rot = glm::eulerAngles(quat);
 
 				auto& t = m_SelectedEntity->GetTransform();
 				t.SetPosition(pos);
-				t.SetRotation(glm::degrees(rot));
 				t.SetScale(scl);
-
-				glm::decompose(modelMatrix, scl, q, pos, skew, persp);
-				rot = glm::eulerAngles(q);
+				t.SetRotation(glm::degrees(rot));
 			}
 		}
 
 		ImGui::End();
+
+		//CRTN_LOG_TRACE("Texture ID being drawn: %d", Engine::Rendering::Renderer::GetFinalRenderTexture());
 	}
 
 	void EditorGUI::DrawConsole()
@@ -290,6 +288,47 @@ namespace Engine::Editor
 		ImGui::End();
 	}
 
+	void EditorGUI::DrawRenderingPanel()
+	{
+		ImGui::Begin("Rendering");
+
+		glm::vec4 clearColor = Engine::Rendering::Renderer::GetSkyboxColor();
+
+		if (ImGui::CollapsingHeader("Skybox & Environment", ImGuiTreeNodeFlags_DefaultOpen))
+		{
+			if (ImGui::ColorEdit4("Skybox Color", glm::value_ptr(clearColor)))
+				Engine::Rendering::Renderer::SetSkyboxColor(clearColor);
+
+			static float exposure = 1.0f;
+			if (ImGui::DragFloat("Exposure", &exposure, 0.01f, 0.0f, 10.0f))
+				Engine::Rendering::Renderer::GetPostProcessPass()->SetExposure(exposure);
+		}
+
+		ImGui::Separator();
+
+		if (ImGui::CollapsingHeader("Scene Params", ImGuiTreeNodeFlags_DefaultOpen))
+		{
+			const char* renderModes[] = { "Ambient", "Diffuse", "Specular", "Normals", "Depth", "Lit" };
+			int currentMode = Engine::Rendering::Renderer::GetRenderMode();
+
+			if (ImGui::Combo("Render Mode", &currentMode, renderModes, IM_ARRAYSIZE(renderModes)))
+				Engine::Rendering::Renderer::SetRenderMode(currentMode);
+
+			auto& renderFBO = Engine::Rendering::Renderer::GetRenderingFBO();
+			auto spec = renderFBO.GetFramebufferSpec();
+			bool isHDR = spec.HDR;
+
+			if (ImGui::Checkbox("Enable HDR (FBO 16f)", &isHDR))
+			{
+				spec.HDR = isHDR;
+				renderFBO.SetFramebufferSpec(spec);
+				renderFBO.Invalidate();
+			}
+		}
+
+		ImGui::End();
+	}
+
 	void EditorGUI::OnGUIRender()
 	{
 		// DOCKING INITIALIZATION
@@ -324,6 +363,7 @@ namespace Engine::Editor
 		DrawHierarchy();
 		DrawSceneViewport();
 		DrawConsole();
+		DrawRenderingPanel();
 		DrawObjectInfo();
 
 		ImGui::End(); // End DockSpace
@@ -354,13 +394,18 @@ namespace Engine::Editor
 					{
 						glm::vec4 color = material->GetColor();
 
+						float amb = material->GetAmbient();
 						float diff = material->GetDiffuse();
 						float spec = material->GetSpecular();
+
 						glm::vec4 specColor = material->GetSpecularColor();
 						float shin = material->GetShininess();
 
 						if (ImGui::ColorEdit4("Albedo", glm::value_ptr(color)))
 							material->SetColor(color);
+
+						if (ImGui::SliderFloat("Ambient", &amb, 0.0f, 1.0f))
+							material->SetAmbient(amb);
 
 						if (ImGui::SliderFloat("Diffuse", &diff, 0.0f, 1.0f))
 							material->SetDiffuse(diff);
@@ -430,32 +475,70 @@ namespace Engine::Editor
 				}
 			}
 
-			auto light = obj->GetComponent<Engine::Framework::Lights::Light>();
-			if (light)
+			auto& light = *obj->GetComponent<Engine::Framework::Lights::Light>();
+			if (&light)
 			{
 				if (ImGui::TreeNodeEx("Light", ImGuiTreeNodeFlags_DefaultOpen))
 				{
-					bool enabled = light->IsEnabled() && m_SelectedEntity->IsEnabled();
+					bool enabled = light.IsEnabled() && m_SelectedEntity->IsEnabled();
 
 					if (ImGui::Checkbox("Enabled", &enabled))
-						light->SetEnabled(enabled);
+						light.SetEnabled(enabled);
 
-					glm::vec3 dir = light->GetDirection();
-					float intensity = light->GetIntensity();
+					glm::vec3 dir = light.GetDirection();
+					float intensity = light.GetIntensity();
 
-					glm::vec4 color = light->GetColor();
+					glm::vec4 color = light.GetColor();
 
 					if (ImGui::ColorEdit4("Color", glm::value_ptr(color)))
-						light->SetColor(color);
+						light.SetColor(color);
 
 					if (ImGui::DragFloat3("Direction", glm::value_ptr(dir), 0.05f))
 					{
-						light->SetDirection(dir);
-						light->GetOwner()->GetTransform().SetRotation(dir);
+						light.SetDirection(dir);
+						light.GetOwner()->GetTransform().SetRotation(dir);
 					}
 
 					if (ImGui::SliderFloat("Intensity", &intensity, 0.0f, 30.0f))
-						light->SetIntensity(intensity);
+						light.SetIntensity(intensity);
+
+					ImGui::Separator();
+					ImGui::Text("Shadow Settings");
+
+					const char* shadowModes[] = { "No Shadows", "Hard Shadows", "Percentage Close Filtering", "Percentage-Closer Soft Shadows" };
+					int currentMode = light.GetShadowType();
+
+					if (ImGui::Combo("Shadow Type", &currentMode, shadowModes, IM_ARRAYSIZE(shadowModes)))
+						light.SetShadowType(currentMode);
+
+					ImGui::Spacing();
+
+					float shadowBias = light.GetShadowBias();
+					if (ImGui::SliderFloat("Bias", &shadowBias, 0.0001f, 0.05f, "%.4f"))
+						light.SetShadowBias(shadowBias);
+
+					float shadowStrength = light.GetShadowStrength();
+					if (ImGui::SliderFloat("Strength", &shadowStrength, 0.0f, 1.0f))
+						light.SetShadowStrength(shadowStrength);
+
+					ImGui::Spacing();
+
+					const char* shadowResolutions[] = { "256x256", "512x512", "1024x1024", "2048x2048", "4096x4096", "8192x8192" };
+					int currentResolution = light.GetShadowResolutionType();
+
+					if (ImGui::Combo("Resolution", &currentResolution, shadowResolutions, IM_ARRAYSIZE(shadowResolutions)))
+						light.SetShadowResolutionType(currentResolution);
+
+					ImGui::Spacing();
+
+					float pcssLightSize = light.GetPCSSLightSize();
+					if (currentMode == 3)
+					{
+						if (ImGui::SliderFloat("Light Size (PCSS Only)", &pcssLightSize, 0.001f, 0.1f, "%.3f"))
+							light.SetPCSSLightSize(pcssLightSize);
+					}
+
+					ImGui::Separator();
 
 					auto billboard = obj->GetComponent<Engine::Framework::Billboard>();
 					if (billboard)

@@ -19,6 +19,8 @@ namespace Engine::Framework
 		// MAIN CAMERA
 		{
 			auto mainCamGO = Entity::CreateBillboard("[Entity] Main Camera", 1.0f, glm::vec4(1.0f));
+			mainCamGO->GetTransform().SetPosition({ 4.0f, 5.5f, 6.0f });
+			mainCamGO->GetTransform().SetRotation({ -20.0f, 10.0f, 0.0f });
 
 			auto mainCam = mainCamGO->AddComponent<Camera>();
 			mainCam->Init();
@@ -33,6 +35,7 @@ namespace Engine::Framework
 
 			auto dirLight = dirLightGO->AddComponent<Lights::DirectionalLight>();
 			dirLight->Init();
+			dirLight->SetDirection({ 0.0f, -90.0f, 0.0f });
 
 			m_DirectionalLight = dirLight;
 
@@ -143,6 +146,18 @@ namespace Engine::Framework
 				obj->OnUpdate();
 
 			Physics::PhysicsSystem::Step(dt);
+		}
+		else
+		{
+			for (auto& obj : m_Entities)
+			{
+				auto physicsComp = obj->GetComponent<Physics::PhysicsComponent>();
+				if (physicsComp)
+				{
+					physicsComp->SetVelocity(glm::vec3(0.0f));
+					physicsComp->SetAngularVelocity(glm::vec3(0.0f));
+				}
+			}
 		}
 	}
 

@@ -2,7 +2,6 @@
 
 #include "Engine/Core/CoreAPI.h"
 #include "Engine/Core/Window.h"
-#include "Engine/Core/Framebuffer.h"
 
 #include "Engine/Core/Log/Logger.h"
 
@@ -13,7 +12,6 @@
 
 #include "Engine/Core/Event/MouseEvent.h"
 #include "Engine/Core/Event/WindowEvent.h"
-#include "Engine/Core/Event/FramebufferEvent.h"
 #include "Engine/Core/Event/InputState.h"
 
 #include <memory>
@@ -33,8 +31,6 @@ namespace Engine::Core
 
 		virtual void Run();
 		virtual void Close();
-
-		std::unique_ptr<Framebuffer>& GetFramebuffer() { return m_Framebuffer; }
 
 		struct MousePosition
 		{
@@ -59,8 +55,6 @@ namespace Engine::Core
 		bool OnMouseMove(Event::MouseMovedEvent& e);
 		bool OnMouseScroll(Event::MouseScrolledEvent& e);
 
-		bool OnFramebufferResize(Event::FramebufferResizeEvent e);
-
 		bool OnWindowMove(Event::WindowMoveEvent& e);
 		bool OnWindowResize(Event::WindowResizeEvent& e);
 		bool OnWindowClose(Event::WindowCloseEvent& e);
@@ -75,8 +69,5 @@ namespace Engine::Core
 	private:
 		Event::State::MouseState m_MouseState;
 		Event::State::WindowState m_WindowState;
-		Event::State::FramebufferState m_FramebufferState;
-	private:
-		std::unique_ptr<Framebuffer> m_Framebuffer;
 	};
 }

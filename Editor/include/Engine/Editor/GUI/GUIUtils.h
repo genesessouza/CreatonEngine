@@ -2,6 +2,11 @@
 
 #include <glm/vec2.hpp>
 
+namespace Engine::Editor
+{
+	class EditorGUI;
+}
+
 namespace Engine::Editor::GUI
 {
 	class GUIUtils

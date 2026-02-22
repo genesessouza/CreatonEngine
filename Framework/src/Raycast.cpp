@@ -48,9 +48,7 @@ namespace Engine::Framework
 		}
 
 		if (result.Success)
-		{
 			result.HitPoint = rayOrigin + (rayDir * result.Distance);
-		}
 
 		if (debug)
 		{

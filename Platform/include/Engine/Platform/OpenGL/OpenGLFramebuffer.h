@@ -10,17 +10,21 @@ namespace Engine::Platform::OpenGL
 		OpenGLFramebuffer(const FramebufferSpec& spec);
 		virtual ~OpenGLFramebuffer();
 
-		void Invalidate();
+		void Invalidate() override;
 
-		virtual void Bind() override;
-		virtual void Unbind() override;
+		void Bind() override;
+		void Unbind() override;
 
-		virtual void Resize(uint32_t width, uint32_t height) override;
+		void Resize(uint32_t width, uint32_t height) override;
 
-		virtual uint32_t GetColorAttachmentRendererID() const override { return m_ColorAttachment; }
+		FramebufferSpec GetFramebufferSpec() const override { return m_Spec; }
+		const void SetFramebufferSpec(const FramebufferSpec& spec) override { m_Spec = spec; }
 
-		virtual uint32_t GetWidth() const override { return m_Spec.Width; }
-		virtual uint32_t GetHeight() const override { return m_Spec.Height; }
+		uint32_t GetColorAttachmentRendererID() const override { if(!m_Spec.DepthOnly) return m_ColorAttachment; } // Fail safe in case of shadow fbo
+		uint32_t GetDepthAttachmentRendererID() const override { return m_DepthAttachment; }
+
+		uint32_t GetWidth() const override { return m_Spec.Width; }
+		uint32_t GetHeight() const override { return m_Spec.Height; }
 	private:
 		uint32_t m_RendererID = 0;
 	
