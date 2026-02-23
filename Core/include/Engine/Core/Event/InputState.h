@@ -28,12 +28,4 @@ namespace Engine::Core::Event::State
         bool Resized = false;
         bool Moved = false;
     };
-
-    struct FramebufferState
-    {
-        uint32_t Width = 0;
-        uint32_t Height = 0;
-
-        bool Resized = false;
-    };
 }

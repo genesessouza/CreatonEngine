@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Engine/Core/Framebuffer.h>
+#include <Engine/Rendering/Framebuffer.h>
 
 #include "Engine/Rendering/RenderPass.h"
 #include "Engine/Rendering/RenderCommand.h"
@@ -111,7 +111,7 @@ namespace Engine::Rendering
 
 		static void BeginScene(const Engine::Framework::Camera& camera, const Engine::Framework::Scene& scene);
 
-		static void Submit(Engine::Rendering::MeshGPU* mesh, Engine::Rendering::Material* mat, const glm::mat4& transformMatrix);
+		static void Submit(MeshGPU* mesh, Material* mat, const glm::mat4& transformMatrix);
 		static void ExecuteShadowPass();
 		static void ExecuteRenderPass();
 		static void ExecutePostProcessPass();
@@ -119,9 +119,9 @@ namespace Engine::Rendering
 
 		static const SceneData& GetSceneData() { return s_SceneData; }
 
-		static Engine::Core::Framebuffer& GetRenderingFBO() { return *m_RenderingFBO.get(); }
+		static Framebuffer& GetRenderingFBO() { return *m_RenderingFBO.get(); }
 
-		static Engine::Core::Framebuffer* GetShadowFBO() { return m_ShadowFBO.get(); }
+		static Framebuffer* GetShadowFBO() { return m_ShadowFBO.get(); }
 
 		static ShadowPass* GetShadowPass() { return m_ShadowPass.get(); }
 		static RenderPass* GetRenderPass() { return m_RenderPass.get(); }
@@ -130,8 +130,8 @@ namespace Engine::Rendering
 		static SceneData s_SceneData;
 		static glm::vec4 s_SkyboxColor;
 	private:
-		static std::unique_ptr<Engine::Core::Framebuffer> m_RenderingFBO;
-		static std::unique_ptr<Engine::Core::Framebuffer> m_ShadowFBO;
+		static std::unique_ptr<Framebuffer> m_RenderingFBO;
+		static std::unique_ptr<Framebuffer> m_ShadowFBO;
 
 		static std::unique_ptr<ShadowPass> m_ShadowPass;
 		static std::unique_ptr<RenderPass> m_RenderPass;

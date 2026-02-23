@@ -1,43 +1,26 @@
 #include "Engine/Core/RenderCommand.h"
 
-#include <Engine/Rendering/RendererAPI.h>
-#include <Engine/Rendering/GUIRenderer.h>
-#include <Engine/Rendering/Renderer.h>
-
-#include <memory>
-
 namespace Engine::Core
 {
-	Engine::Rendering::RendererAPI* RenderCommand::s_RendererAPI = Engine::Rendering::RendererAPI::Create();
-	Engine::Rendering::GUIRenderer* RenderCommand::s_GUIRenderer = Engine::Rendering::GUIRenderer::Create();
+    RendererAPI* RenderCommand::s_API = nullptr;
 
-	void RenderCommand::SetViewport(uint32_t x, uint32_t y, uint32_t width, uint32_t height)
-	{
-		s_RendererAPI->SetViewport(x, y, width, height);
-	}
+    void RenderCommand::Init(RendererAPI* api)
+    {
+        s_API = api;
+    }
 
-	void RenderCommand::Clear()
-	{
-		s_RendererAPI->Clear();
-	}
+    void RenderCommand::Clear()
+    {
+        s_API->Clear();
+    }
 
-	void RenderCommand::MarkFramebufferDirty()
-	{
-		Engine::Rendering::Renderer::MarkCameraDirty();
-	}
+    void RenderCommand::SetClearColor(float r, float g, float b, float a)
+    {
+        s_API->SetClearColor(r, g, b, a);
+    }
 
-	void RenderCommand::ClearUI()
-	{
-		s_GUIRenderer->ClearUI();
-	}
-
-	void RenderCommand::BeginGUI()
-	{
-		s_GUIRenderer->Begin();
-	}
-
-	void RenderCommand::EndGUI()
-	{
-		s_GUIRenderer->End();
-	}
+    void RenderCommand::SetViewport(uint32_t x, uint32_t y, uint32_t width, uint32_t height)
+    {
+        s_API->SetViewport(x, y, width, height);
+    }
 }

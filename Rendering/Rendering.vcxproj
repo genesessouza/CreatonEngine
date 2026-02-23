@@ -93,13 +93,12 @@
     <ClInclude Include="include\Engine\Rendering\Array\Array.h" />
     <ClInclude Include="include\Engine\Rendering\Buffer\Buffer.h" />
     <ClInclude Include="include\Engine\Rendering\Buffer\VertexBufferLayout.h" />
-    <ClInclude Include="include\Engine\Rendering\GUIRenderer.h" />
+    <ClInclude Include="include\Engine\Rendering\Framebuffer.h" />
     <ClInclude Include="include\Engine\Rendering\Material.h" />
     <ClInclude Include="include\Engine\Rendering\MeshRenderer.h" />
     <ClInclude Include="include\Engine\Rendering\RenderCommand.h" />
     <ClInclude Include="include\Engine\Rendering\RenderPass.h" />
     <ClInclude Include="include\Engine\Rendering\Renderer.h" />
-    <ClInclude Include="include\Engine\Rendering\RendererAPI.h" />
     <ClInclude Include="include\Engine\Rendering\Shader.h" />
     <ClInclude Include="include\renderer.h" />
     <ClInclude Include="include\shader.h" />
@@ -108,11 +107,10 @@
   <ItemGroup>
     <ClCompile Include="src\Array\Array.cpp" />
     <ClCompile Include="src\Buffer\Buffer.cpp" />
-    <ClCompile Include="src\GUIRenderer.cpp" />
+    <ClCompile Include="src\Framebuffer.cpp" />
     <ClCompile Include="src\MeshGPU.cpp" />
     <ClCompile Include="src\MeshRenderer.cpp" />
     <ClCompile Include="src\Renderer.cpp" />
-    <ClCompile Include="src\RendererAPI.cpp" />
     <ClCompile Include="src\RenderPass.cpp" />
     <ClCompile Include="src\Shader.cpp" />
   </ItemGroup>

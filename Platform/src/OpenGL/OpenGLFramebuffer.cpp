@@ -3,15 +3,12 @@
 #include <Engine/Core/Log/Logger.h>
 
 #include <glad/glad.h>
-#include "../../../Editor/include/Engine/Editor/GUI/GUIUtils.h"
 
 namespace Engine::Platform::OpenGL
 {
-	OpenGLFramebuffer::OpenGLFramebuffer(const FramebufferSpec& spec)
-		: Framebuffer()
+	OpenGLFramebuffer::OpenGLFramebuffer(const Engine::Rendering::Framebuffer::FramebufferSpec& spec)
+		: Engine::Rendering::Framebuffer(spec), m_Spec(spec)
 	{
-		m_Spec = spec;
-
 		Invalidate();
 	}
 

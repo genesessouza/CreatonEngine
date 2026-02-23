@@ -38,7 +38,7 @@ namespace Engine::Sandbox
 
 		void OnAttach() override
 		{
-			CRTN_LOG_INFO("[SANDBOX LAYER]: Background color set to: <Light Blue>: [R = 0.529, G = 0.808, B = 0.922, A = 1.0] \n");
+			CRTN_LOG_INFO("<SandboxLayer::OnAttach>: Background color set to: <Light Blue>\n");
 
 			m_MainScene = std::make_unique<MainScene>();
 			CRTN_CHECK_PTR(m_MainScene);
@@ -57,10 +57,6 @@ namespace Engine::Sandbox
 			m_MainScene->OnRender();
 
 			Engine::Framework::Debugging::Render(deltaTime, m_MainScene->GetSceneCamera()->GetViewMatrix(), m_MainScene->GetSceneCamera()->GetProjectionMatrix());
-		}
-
-		void OnGUIUpdate() override
-		{
 		}
 
 		void OnEvent(Engine::Core::Event::Event& e) override

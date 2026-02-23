@@ -19,6 +19,7 @@
     <ClInclude Include="include\Engine\Platform\OpenGL\OpenGLFramebuffer.h" />
     <ClInclude Include="include\Engine\Platform\OpenGL\OpenGLRendererAPI.h" />
     <ClInclude Include="include\Engine\Platform\OpenGL\OpenGLRenderPass.h" />
+    <ClInclude Include="include\Engine\Platform\RendererRegistor.h" />
     <ClInclude Include="include\Engine\Platform\Windows\WindowsWindow.h" />
     <ClInclude Include="include\Engine\Platform\Windows\WindowsWindowFactory.h" />
     <ClInclude Include="include\Glad\include\glad\glad.h" />
@@ -48,6 +49,7 @@
     <ClCompile Include="src\OpenGL\OpenGLFramebuffer.cpp" />
     <ClCompile Include="src\OpenGL\OpenGLRendererAPI.cpp" />
     <ClCompile Include="src\OpenGL\OpenGLRenderPass.cpp" />
+    <ClCompile Include="src\RendererRegistor.cpp" />
     <ClCompile Include="src\Windows\WindowsWindow.cpp" />
     <ClCompile Include="src\Windows\WindowsWindowFactory.cpp" />
     <ClCompile Include="vendor\src\glad\glad.c" />

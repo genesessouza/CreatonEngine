@@ -5,7 +5,7 @@
 
 #include <glm/glm.hpp>
 
-namespace Engine::Core
+namespace Engine::Rendering
 {
 	class Framebuffer
 	{
@@ -20,7 +20,7 @@ namespace Engine::Core
 			bool DepthOnly = false;
 		};
 	public:
-		Framebuffer() = default;
+		Framebuffer(const FramebufferSpec& spec) {}
 		virtual ~Framebuffer() = default;
 
 		virtual void Invalidate() = 0;

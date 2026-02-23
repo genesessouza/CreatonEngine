@@ -6,27 +6,12 @@
 #include <Engine/Core/Application.h>
 #include <Engine/Core/MemoryManager.h>
 
-#include <Engine/Platform/RendererRegistor.h>
-
-// For now, OpenGL only
-void RegisterRendererAPI(Engine::Platform::API);
-
 #include <Windows.h>
 
 Engine::Core::Application* CreateApplication();
 
 int main(int argc, char** argv)
 {
-	// --------- RENDERER API INITIALIZATION -----------
-	{
-		RegisterRendererAPI(Engine::Platform::API::OpenGl);
-
-		Engine::Core::RendererFactory::Create();
-
-		auto& renderer = Engine::Core::RendererFactory::Get();
-		Engine::Core::RenderCommand::Init(&renderer);
-	}
-
 	// ------- ENABLE LOG COLORS ON EXE CONSOLE --------
 	{
 		HANDLE hOut = GetStdHandle(STD_OUTPUT_HANDLE);

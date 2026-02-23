@@ -1,13 +1,13 @@
 #pragma once
 
-#include <Engine/Core/Framebuffer.h>
+#include <Engine/Rendering/Framebuffer.h>
 
 namespace Engine::Platform::OpenGL
 {
-	class OpenGLFramebuffer : public Engine::Core::Framebuffer
+	class OpenGLFramebuffer : public Engine::Rendering::Framebuffer
 	{
 	public:
-		OpenGLFramebuffer(const FramebufferSpec& spec);
+		OpenGLFramebuffer(const Engine::Rendering::Framebuffer::FramebufferSpec& spec);
 		virtual ~OpenGLFramebuffer();
 
 		void Invalidate() override;
@@ -17,8 +17,8 @@ namespace Engine::Platform::OpenGL
 
 		void Resize(uint32_t width, uint32_t height) override;
 
-		FramebufferSpec GetFramebufferSpec() const override { return m_Spec; }
-		const void SetFramebufferSpec(const FramebufferSpec& spec) override { m_Spec = spec; }
+		Engine::Rendering::Framebuffer::FramebufferSpec GetFramebufferSpec() const override { return m_Spec; }
+		const void SetFramebufferSpec(const Engine::Rendering::Framebuffer::FramebufferSpec& spec) override { m_Spec = spec; }
 
 		uint32_t GetColorAttachmentRendererID() const override { if(!m_Spec.DepthOnly) return m_ColorAttachment; } // Fail safe in case of shadow fbo
 		uint32_t GetDepthAttachmentRendererID() const override { return m_DepthAttachment; }
@@ -28,7 +28,7 @@ namespace Engine::Platform::OpenGL
 	private:
 		uint32_t m_RendererID = 0;
 	
-		FramebufferSpec m_Spec;
+		Engine::Rendering::Framebuffer::FramebufferSpec m_Spec;
 
 		uint32_t m_ColorAttachment = 0;
 		uint32_t m_DepthAttachment = 0;

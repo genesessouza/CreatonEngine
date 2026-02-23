@@ -53,7 +53,7 @@ namespace Engine::Rendering
 		void Init() override {}
 		virtual void Init(uint32_t width, uint32_t height) override = 0;
 
-		virtual void Render(const Engine::Rendering::RenderCommand& cmd) = 0;
+		virtual void Render(const RenderCommand& cmd) = 0;
 
 		const glm::mat4& GetDirectionalLightSpaceMatrix() const { return m_LightSpaceMatrix; }
 
@@ -67,7 +67,7 @@ namespace Engine::Rendering
 		glm::mat4 m_LightView;
 		glm::mat4 m_LightSpaceMatrix;
 
-		std::shared_ptr<Engine::Rendering::Shader> m_DepthShader;
+		std::shared_ptr<Shader> m_DepthShader;
 	};
 
 	class PostProcessPass : public RenderPass

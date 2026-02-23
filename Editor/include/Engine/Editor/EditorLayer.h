@@ -15,12 +15,28 @@ namespace Engine::Editor
 	public:
 		EditorLayer() : Layer("Editor"), m_EditorGUI(nullptr)
 		{
-			CRTN_LOG_INFO("[EDITOR LAYER]: Started editor");
+			CRTN_LOG_TRACE("<EditorLayer::EditorLayer>: Started editor");
 			m_EditorGUI = new EditorGUI();
+
+			if (!m_EditorGUI)
+			{
+				CRTN_LOG_CRITICAL("<EditorLayer::EditorLayer>: Failed to initialize EditorLayer's Editor reference!");
+				CRTN_ASSERT(!m_EditorGUI, "<EditorLayer::EditorLayer>: Editor's EditorGUI* is null!");
+
+				return;
+			}
 		}
 
 		~EditorLayer()
 		{
+			if (!m_EditorGUI)
+			{
+				CRTN_LOG_CRITICAL("<EditorGUI::~EditorGUI>: EditorGUI is already destroyed!");
+				CRTN_ASSERT(!m_EditorGUI, "<EditorGUI::~EditorGUI>: Failed to destroy EditorGUI!");
+
+				return;
+			}
+
 			m_EditorGUI->OnShutdown();
 		}
 
@@ -32,18 +48,18 @@ namespace Engine::Editor
 				{
 					Engine::Core::Event::FramebufferResizeEvent e(w, h);
 					this->m_EventCallback(e);
+					//CRTN_LOG_TRACE("ImGui FBO Resize Event: %s", e.ToString().c_str());
 				});
 
+			Engine::Platform::GUI::ImGuiRenderer::Create();
 			EditorStyle::ApplyDarkTheme();
 		}
 
 		void OnUpdate(float deltaTime) override
 		{
-		}
-
-		void OnGUIUpdate() override
-		{
+			Engine::Platform::GUI::ImGuiRenderer::Begin();
 			m_EditorGUI->OnGUIRender();
+			Engine::Platform::GUI::ImGuiRenderer::End();
 		}
 
 		void OnEvent(Engine::Core::Event::Event& e) override

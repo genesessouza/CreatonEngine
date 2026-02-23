@@ -1,18 +1,18 @@
 #pragma once
 
-#include <Engine/Rendering/GUIRenderer.h>
-
 namespace Engine::Platform::GUI
 {
-	class ImGuiRenderer : public Engine::Rendering::GUIRenderer
+	class ImGuiRenderer
 	{
 	public:
-		ImGuiRenderer();
+		ImGuiRenderer() = default;
 		virtual ~ImGuiRenderer() = default;
 		
-		void ClearUI() override;
+		static void ClearUI();
 
-		void Begin() override;
-		void End() override;
+		static void Begin();
+		static void End();
+
+		static ImGuiRenderer* Create() { return new Engine::Platform::GUI::ImGuiRenderer(); }
 	};
 }

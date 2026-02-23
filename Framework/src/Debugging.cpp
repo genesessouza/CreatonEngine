@@ -24,20 +24,20 @@ namespace Engine::Framework
         auto* api = Engine::Core::RenderCommand::GetRendererAPI();
 
         auto itLine = s_Lines.begin();
-        while (itLine != s_Lines.end()) {
-            api->DrawLine(itLine->Start, itLine->End, itLine->Color, view, proj);
-            itLine->LifeTime -= deltaTime;
-            if (itLine->LifeTime <= 0) itLine = s_Lines.erase(itLine);
-            else ++itLine;
-        }
+        //while (itLine != s_Lines.end()) {
+        //    api->DrawLine(itLine->Start, itLine->End, itLine->Color, view, proj);
+        //    itLine->LifeTime -= deltaTime;
+        //    if (itLine->LifeTime <= 0) itLine = s_Lines.erase(itLine);
+        //    else ++itLine;
+        //}
 
-        auto itPoint = s_Points.begin();
-        while (itPoint != s_Points.end()) 
-        {
-            api->DrawHitpoint(itPoint->Center, itPoint->Radius, itPoint->Color, view, proj);
-            itPoint->LifeTime -= deltaTime;
-            if (itPoint->LifeTime <= 0) itPoint = s_Points.erase(itPoint);
-            else ++itPoint;
-        }
+        //auto itPoint = s_Points.begin();
+        //while (itPoint != s_Points.end()) 
+        //{
+        //    api->DrawHitpoint(itPoint->Center, itPoint->Radius, itPoint->Color, view, proj);
+        //    itPoint->LifeTime -= deltaTime;
+        //    if (itPoint->LifeTime <= 0) itPoint = s_Points.erase(itPoint);
+        //    else ++itPoint;
+        //}
     }
 }

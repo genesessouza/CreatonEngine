@@ -21,30 +21,55 @@ namespace Engine::Platform::Windows
 
 	WindowsWindow::~WindowsWindow()
 	{
+		if (!m_Window)
+		{
+			CRTN_LOG_INFO("<WindowsWindow::~WindowsWindow>: Window already destroyed");
+			return;
+		}
+
 		glfwDestroyWindow(m_Window);
 		glfwTerminate();
 	}
 
 	void WindowsWindow::SetEventCallback(const EventCallbackFn& callback)
 	{
+		if (!callback)
+		{
+			CRTN_LOG_ERROR("<WindowsWindow::SetEventCallback>: [callback] is null!");
+			return;
+		}
+
 		m_EventCallback = callback;
 	}
 
 	void WindowsWindow::Init(const Window::WindowProps props)
 	{
 		int status = glfwInit();
-		CRTN_ASSERT(status, "Failed to initialize GLFW!");
+		if (!status)
+		{
+			CRTN_LOG_CRITICAL("<WindowsWindow::Init>: GLFW could not be initialized!");
+			CRTN_ASSERT(!status, "Failed to initialize GLFW!");
 
-		CRTN_LOG_DEBUG("[WINDOWS WINDOW]: GLFW initialized");
+			return;
+		}
+
+		CRTN_LOG_TRACE("<WindowsWindow::Init>: GLFW initialized");
 
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 5);
 		glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_COMPAT_PROFILE);
 
 		m_Window = glfwCreateWindow(props.Width, props.Height, props.Title.c_str(), NULL, NULL);
-		CRTN_ASSERT(m_Window, "Failed to create GLFW window!");
+		
+		if(!m_Window)
+		{
+			CRTN_LOG_CRITICAL("<WindowsWindow::Init>: Failed to create GLFW Window!");
+			CRTN_ASSERT(!m_Window, "<WindowsWindow::Init>: Window was not created!");
+		
+			return;
+		}
 
-		CRTN_LOG_TRACE("[WINDOWS WINDOW]: Window Dimensions: [%dx%d]\n", props.Width, props.Height);
+		CRTN_LOG_TRACE("<WindowsWindow::Init>: Window Dimensions: [%dx%d]\n", props.Width, props.Height);
 
 		m_Context = new GraphicsContext(m_Window);
 		m_Context->Init();
@@ -53,7 +78,7 @@ namespace Engine::Platform::Windows
 		/* ------------------------------ WINDOW CALLBACKS -------------------------------- */
 		/* -------------------------------------------------------------------------------- */
 
-		CRTN_LOG_DEBUG("[WINDOWS WINDOW]: Setting GLFW callbacks...");
+		CRTN_LOG_TRACE("<WindowsWindow::Init>: Setting GLFW callbacks...");
 
 		glfwSetWindowUserPointer(m_Window, this);
 
@@ -98,6 +123,7 @@ namespace Engine::Platform::Windows
 				auto* win = (WindowsWindow*)glfwGetWindowUserPointer(window);
 				Engine::Core::Event::FramebufferResizeEvent e(width, height);
 				win->m_EventCallback(e);
+				//CRTN_LOG_TRACE("Window FBO Resize Event: %s", e.ToString().c_str());
 			});
 
 		/* ------------------------------------------------------------------------------------- */
@@ -147,28 +173,28 @@ namespace Engine::Platform::Windows
 
 				switch (action)
 				{
-					case GLFW_PRESS:
-					{
-						Engine::Core::Event::KeyPressedEvent e(key, 0);
-						win->m_EventCallback(e);
-						break;
-					}
-					case GLFW_REPEAT:
-					{
-						Engine::Core::Event::KeyPressedEvent e(key, 1);
-						win->m_EventCallback(e);
-						break;
-					}
-					case GLFW_RELEASE:
-					{
-						Engine::Core::Event::KeyReleasedEvent e(key);
-						win->m_EventCallback(e);
-						break;
-					}
+				case GLFW_PRESS:
+				{
+					Engine::Core::Event::KeyPressedEvent e(key, 0);
+					win->m_EventCallback(e);
+					break;
+				}
+				case GLFW_REPEAT:
+				{
+					Engine::Core::Event::KeyPressedEvent e(key, 1);
+					win->m_EventCallback(e);
+					break;
+				}
+				case GLFW_RELEASE:
+				{
+					Engine::Core::Event::KeyReleasedEvent e(key);
+					win->m_EventCallback(e);
+					break;
+				}
 				}
 			});
 
-		CRTN_LOG_DEBUG("[WINDOWS WINDOW]: Done\n");
+		CRTN_LOG_TRACE("<WindowsWindow::Init>: Done\n");
 
 	}
 
@@ -205,7 +231,7 @@ namespace Engine::Platform::Windows
 			glfwSwapInterval(1);
 		else
 			glfwSwapInterval(0);
-		
+
 		m_VSync = enabled;
 	}
 

@@ -41,7 +41,7 @@ namespace Engine::Rendering
 
 		static Buffer::VertexBufferLayout GetBillboardLayout()
 		{
-			Engine::Rendering::Buffer::VertexBufferLayout layout;
+			Buffer::VertexBufferLayout layout;
 
 			layout.Add(0, 3, GL_FLOAT, false); // offset
 

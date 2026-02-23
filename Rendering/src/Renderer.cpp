@@ -28,8 +28,8 @@ namespace Engine::Rendering
 
 	std::vector<RenderCommand> Renderer::m_CommandQueue;
 
-	std::unique_ptr<Engine::Core::Framebuffer> Renderer::m_ShadowFBO;
-	std::unique_ptr<Engine::Core::Framebuffer> Renderer::m_RenderingFBO;
+	std::unique_ptr<Framebuffer> Renderer::m_ShadowFBO;
+	std::unique_ptr<Framebuffer> Renderer::m_RenderingFBO;
 
 	std::unique_ptr<ShadowPass> Renderer::m_ShadowPass;
 	std::unique_ptr<RenderPass> Renderer::m_RenderPass;
@@ -51,7 +51,7 @@ namespace Engine::Rendering
 		// FBOS
 		{
 			// RENDERING FBO
-			Engine::Core::Framebuffer::FramebufferSpec renderSpec;
+			Framebuffer::FramebufferSpec renderSpec;
 			renderSpec.HasColor = true;
 			renderSpec.HDR = true;
 			renderSpec.HasDepth = true;
@@ -59,10 +59,10 @@ namespace Engine::Rendering
 			renderSpec.Width = initialW;
 			renderSpec.Height = initialH;
 
-			m_RenderingFBO = Engine::Core::Framebuffer::Create(renderSpec);
+			m_RenderingFBO = Framebuffer::Create(renderSpec);
 
 			// SHADOW FBO
-			Engine::Core::Framebuffer::FramebufferSpec shadowSpec;
+			Framebuffer::FramebufferSpec shadowSpec;
 			shadowSpec.HasColor = false;
 			shadowSpec.HDR = false;
 			shadowSpec.HasDepth = true;
@@ -70,18 +70,18 @@ namespace Engine::Rendering
 			shadowSpec.Width = 512;
 			shadowSpec.Height = 512;
 
-			m_ShadowFBO = Engine::Core::Framebuffer::Create(shadowSpec);
+			m_ShadowFBO = Framebuffer::Create(shadowSpec);
 		}
 
 		// PASSES
 		{
-			m_RenderPass = Engine::Rendering::RenderPass::Create();
+			m_RenderPass = RenderPass::Create();
 			m_RenderPass->Init(m_RenderingFBO->GetWidth(), m_RenderingFBO->GetHeight());
 
-			m_ShadowPass = Engine::Rendering::ShadowPass::Create();
+			m_ShadowPass = ShadowPass::Create();
 			m_ShadowPass->Init(m_ShadowFBO->GetWidth(), m_ShadowFBO->GetHeight());
 
-			m_PostProcessPass = Engine::Rendering::PostProcessPass::Create();
+			m_PostProcessPass = PostProcessPass::Create();
 			m_PostProcessPass->Init(initialW, initialH);
 		}
 	}
@@ -376,7 +376,7 @@ namespace Engine::Rendering
 		SetupLights(scene);
 	}
 
-	void Renderer::Submit(Engine::Rendering::MeshGPU* mesh, Engine::Rendering::Material* mat, const glm::mat4& transformMatrix)
+	void Renderer::Submit(MeshGPU* mesh, Material* mat, const glm::mat4& transformMatrix)
 	{
 		m_CommandQueue.push_back({ mesh, mat, transformMatrix });
 	}
@@ -455,7 +455,7 @@ namespace Engine::Rendering
 		s_SceneData.LightsDirty = false;
 	}
 
-	void Renderer::DrawCommand(const Engine::Rendering::RenderCommand& cmd)
+	void Renderer::DrawCommand(const RenderCommand& cmd)
 	{
 		auto& material = *cmd.MaterialPtr;
 		material.Bind();

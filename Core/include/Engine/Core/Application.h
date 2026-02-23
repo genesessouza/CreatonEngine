@@ -43,8 +43,31 @@ namespace Engine::Core
 			return MousePosition{ m_MouseState.Position.x, m_MouseState.Position.y };
 		}
 
-		Window& GetWindow() { return *m_Window; }
-		void* GetNativeWindow() const { return m_Window->GetNativeWindow(); }
+		Window& GetWindow()
+		{
+			auto& win = *m_Window;
+			if (!&win)
+			{
+				CRTN_LOG_CRITICAL("<Application::GetWindow>: Window is null!");
+				CRTN_ASSERT(!&win, "<Application::GetWindow>: Application Window not set!");
+			}
+
+			return win;
+		}
+
+		void* GetNativeWindow() const
+		{
+			auto win = m_Window->GetNativeWindow();
+			if (!&win)
+			{
+				CRTN_LOG_CRITICAL("<Application::GetNativeWindow>: Native Window is null!");
+				CRTN_ASSERT(!&win, "<Application::GetNativeWindow>: Application Native Window cannot be null!");
+
+				return nullptr;
+			}
+
+			return win;
+		}
 	protected:
 		virtual void OnUpdate(float deltaTime);
 		virtual void OnEvent(Event::Event& e);

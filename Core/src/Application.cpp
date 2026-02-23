@@ -10,11 +10,18 @@ namespace Engine::Core
 
 	Application::Application()
 	{
-		CRTN_ASSERT(!s_Instance, "Application already exists!");
+		if (s_Instance) 
+		{
+			CRTN_LOG_ERROR("<Application::Application>: Application already running!");
+			CRTN_ASSERT(s_Instance, "<Application::Application>: [s_Instance] is not null!");
+		
+			return;
+		}
+
 		s_Instance = this;
 
-		CRTN_LOG_DEBUG("[APPLICATION]: Base application initialized");
-		CRTN_LOG_DEBUG("[APPLICATION]: Opening application window\n");
+		CRTN_LOG_TRACE("<Application::Application>: Base application initialized");
+		CRTN_LOG_TRACE("<Application::Application>: Opening application window\n");
 
 		m_Window = Window::Create(Window::WindowProps{});
 		m_Window->SetEventCallback([this](Event::Event& e) { OnEvent(e); });
@@ -25,22 +32,62 @@ namespace Engine::Core
 
 	Application::~Application()
 	{
+		if (!s_Instance)
+		{
+			CRTN_LOG_WARNING("<Application::~Application>: Application [s_Instance] already destroyed.");		
+			return;
+		}
+
 		s_Instance = nullptr;
 	}
 
 	Application& Application::Get()
 	{
+		if (!&s_Instance)
+		{
+			CRTN_LOG_CRITICAL("<Application::Get>: Failed to get application instance!");
+			CRTN_ASSERT(!&s_Instance, "<Application::Get>: [s_Instance] was destroyed!");
+		}
+
 		return *s_Instance;
 	}
 
 	void Application::PushLayer(Layer::Layer* layer)
 	{
+		if (!&m_LayerStack)
+		{
+			CRTN_LOG_CRITICAL("<Application::PushLayer>: [m_LayerStack] is null!");
+			CRTN_ASSERT(!&m_LayerStack, "<Application::PushLayer>: Application layers not initialized!");
+
+			return;
+		}
+
+		if (!layer)
+		{
+			CRTN_LOG_CRITICAL("<Application::PushLayer>: Pushed layer is null pointer!");
+			return;
+		}
+
 		m_LayerStack.PushLayer(layer);
 		layer->SetEventCallback(BIND_EVENT_FN(Application::OnEvent));
 	}
 
 	void Application::PushOverlay(Layer::Layer* layer)
 	{
+		if (!&m_LayerStack)
+		{
+			CRTN_LOG_CRITICAL("<Application::PushOverlay>: [m_LayerStack] is null!");
+			CRTN_ASSERT(!&m_LayerStack, "<Application::PushOverlay>: Application layers not initialized!");
+
+			return;
+		}
+
+		if (!layer)
+		{
+			CRTN_LOG_CRITICAL("<Application::PushOverlay>: Pushed overlay layer is null pointer!");
+			return;
+		}
+
 		m_LayerStack.PushOverlay(layer);
 	}
 
@@ -81,11 +128,6 @@ namespace Engine::Core
 			// SCENE RENDERING
 			for (Layer::Layer* layer : m_LayerStack)
 				layer->OnUpdate(deltaTime);
-
-			RenderCommand::BeginGUI();
-			for (Layer::Layer* layer : m_LayerStack)
-				layer->OnGUIUpdate();
-			RenderCommand::EndGUI();
 
 			OnUpdate(deltaTime);
 			m_Window->OnUpdate();

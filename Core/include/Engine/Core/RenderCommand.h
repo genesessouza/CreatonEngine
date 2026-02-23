@@ -1,31 +1,23 @@
 #pragma once
 
-#include <Engine/Rendering/RendererAPI.h>
-#include <Engine/Rendering/GUIRenderer.h>
-
-#include <glm/vec3.hpp>
-#include <glm/vec4.hpp>
+#include "Engine/Core/RendererAPI.h"
 
 #include <cstdint>
 
 namespace Engine::Core
 {
-	class RenderCommand 
+	class RenderCommand
 	{
 	public:
-		static void SetViewport(uint32_t x, uint32_t y, uint32_t width, uint32_t height);
+		static void Init(RendererAPI* api);
+
 		static void Clear();
+		static void SetClearColor(float r, float g, float b, float a);
 
-		static void MarkFramebufferDirty();
-		
-		static void ClearUI();
-		static void BeginGUI();
-		static void EndGUI();
+		static void SetViewport(uint32_t x, uint32_t y, uint32_t width, uint32_t height);
 
-		static Engine::Rendering::RendererAPI* GetRendererAPI() { return s_RendererAPI; }
-		static Engine::Rendering::GUIRenderer* GetGUIRenderer() { return s_GUIRenderer; }
+		static RendererAPI* GetRendererAPI() { return s_API; }
 	private:
-		static Engine::Rendering::RendererAPI* s_RendererAPI;
-		static Engine::Rendering::GUIRenderer* s_GUIRenderer;
+		static RendererAPI* s_API;
 	};
 }

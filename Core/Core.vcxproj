@@ -19,13 +19,13 @@
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v143</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v143</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
@@ -63,13 +63,14 @@
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
-      <AdditionalIncludeDirectories>$(ProjectDir)include; $(SolutionDir)Rendering\include; $(SolutionDir)Platform\include; $(SolutionDir)vendor\glm\include;</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)include; $(SolutionDir)vendor\GLFW\include; $(SolutionDir)vendor\glad\include; $(SolutionDir)vendor\glm\include;</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>glfw3.lib; opengl32.lib; $(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)vendor\GLFW\lib\</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -82,16 +83,20 @@
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
-      <AdditionalIncludeDirectories>$(ProjectDir)include; $(SolutionDir)Rendering\include; $(SolutionDir)Platform\include; $(SolutionDir)vendor\glm\include;</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)include; $(SolutionDir)vendor\GLFW\include; $(SolutionDir)vendor\glad\include; $(SolutionDir)vendor\glm\include;</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>glfw3.lib; opengl32.lib; $(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)vendor\GLFW\lib\</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="include\Engine\Core\TESTING_CoreLayer.h" />
+    <ClInclude Include="TESTING_CoreApplication.h" />
+    <ClInclude Include="TESTING_EntryPoint.h" />
     <ClInclude Include="include\core\application.h" />
     <ClInclude Include="include\core\logger.h" />
     <ClInclude Include="include\core\time.h" />
@@ -102,7 +107,6 @@
     <ClInclude Include="include\Engine\Core\Event\MouseEvent.h" />
     <ClInclude Include="include\Engine\Core\Event\InputState.h" />
     <ClInclude Include="include\Engine\Core\Event\WindowEvent.h" />
-    <ClInclude Include="include\Engine\Core\Framebuffer.h" />
     <ClInclude Include="include\Engine\Core\Layer\Layer.h" />
     <ClInclude Include="include\Engine\Core\Layer\LayerStack.h" />
     <ClInclude Include="include\Engine\Core\Log\Logger.h" />
@@ -110,18 +114,23 @@
     <ClInclude Include="include\Engine\Core\Paths.h" />
     <ClInclude Include="include\Engine\Core\Event\Event.h" />
     <ClInclude Include="include\Engine\Core\RenderCommand.h" />
+    <ClInclude Include="include\Engine\Core\RendererAPI.h" />
+    <ClInclude Include="include\Engine\Core\RendererFactory.h" />
     <ClInclude Include="include\Engine\Core\Time\Time.h" />
     <ClInclude Include="include\Engine\Core\Window.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="TESTING_CoreApplication.cpp" />
+    <ClCompile Include="TESTING_EntryPoint.cpp" />
     <ClCompile Include="src\Application.cpp" />
-    <ClCompile Include="src\Framebuffer.cpp" />
     <ClCompile Include="src\Layer\LayerStack.cpp" />
     <ClCompile Include="src\Log\Logger.cpp" />
     <ClCompile Include="src\MemoryManager.cpp" />
     <ClCompile Include="src\RenderCommand.cpp" />
+    <ClCompile Include="src\RendererFactory.cpp" />
     <ClCompile Include="src\Time\Time.cpp" />
     <ClCompile Include="src\Window.cpp" />
+    <ClCompile Include="vendor\src\glad\glad.c" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

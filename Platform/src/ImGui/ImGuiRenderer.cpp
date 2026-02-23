@@ -1,5 +1,7 @@
 #include "Engine/Platform/ImGui/ImGuiRenderer.h"
 
+#include <Engine/Core/Log/Logger.h>
+
 #include <ImGui/imgui.h>
 #include <ImGui/imgui_impl_glfw.h>
 #include <ImGui/imgui_impl_opengl3.h>
@@ -9,11 +11,6 @@
 
 namespace Engine::Platform::GUI
 {
-	ImGuiRenderer::ImGuiRenderer()
-	{
-		s_Instance = this;
-	}
-
 	void ImGuiRenderer::ClearUI()
 	{
 		glClearColor(0.1f, 0.1f, 0.1f, 1.0f); // Dark grey

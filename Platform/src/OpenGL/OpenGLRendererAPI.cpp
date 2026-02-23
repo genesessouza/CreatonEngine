@@ -19,8 +19,14 @@ namespace Engine::Platform::OpenGL
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	}
 
+	void OpenGLRendererAPI::SetClearColor(float r, float g, float b, float a)
+	{
+		glClearColor(r, g, b, a);
+	}
+
 	void OpenGLRendererAPI::DrawHitpoint(const glm::vec3& center, float radius, const glm::vec4& color, const glm::mat4& viewMatrix, const glm::mat4& projMatrix)
 	{
+		/*
 		glUseProgram(0);
 		glDisable(GL_LIGHTING);
 		glDisable(GL_DEPTH_TEST);
@@ -57,10 +63,12 @@ namespace Engine::Platform::OpenGL
 
 		glEnable(GL_DEPTH_TEST);
 		glEnable(GL_LIGHTING);
+		*/
 	}
 
 	void OpenGLRendererAPI::DrawLine(const glm::vec3& startingPoint, const glm::vec3& endPoint, const glm::vec4& color, const glm::mat4& viewMatrix, const glm::mat4& projMatrix)
 	{
+		/*
 		glUseProgram(0);
 		glDisable(GL_LIGHTING);
 		glDisable(GL_DEPTH_TEST);
@@ -79,5 +87,6 @@ namespace Engine::Platform::OpenGL
 
 		glEnable(GL_DEPTH_TEST);
 		glEnable(GL_LIGHTING);
+		*/
 	}
 }
